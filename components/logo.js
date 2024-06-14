@@ -5,14 +5,23 @@ import addClassName from "@/tool/addClassName";
 const Logo = ({ width, height, ...props }) => {
   return (
     <div
+      {...props}
       style={{
         width: width ? `${width}px` : "150px",
         height: height ? `${height}px` : "auto",
         aspectRatio: "3.114",
+        ...props.style,
       }}
-      {...props}
     >
-      <Image alt="logo" className="object-fit-contain" style={{left: "-6%"}} fill src="/logo.png" />
+      <Image
+        alt="logo"
+        priority
+        className="object-fit-contain"
+        style={{ left: "-5%" }}
+        fill
+        sizes="50vw"
+        src="/logo.png"
+      />
     </div>
   );
 };

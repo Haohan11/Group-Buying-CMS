@@ -69,7 +69,7 @@ const SidebarLogo = (props) => {
 
         <img
           alt='Logo'
-          src={toAbsoluteUrl('/logo.svg')}
+          src={toAbsoluteUrl('/logo.png')}
           className='ms-1 w-30px app-sidebar-logo-minimize'
         />
       </Link>

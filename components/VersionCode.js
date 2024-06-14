@@ -1,4 +1,6 @@
-import { version } from "@/package.json";  
+import packageInfo from "@/package.json";  
+
+const { version } = packageInfo;
 
 const VersionCode = () => (
   <span>
