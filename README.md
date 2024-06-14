@@ -1,5 +1,6 @@
-node version - 20.11.1
-next version - 14.3.0-canary.39
+## Version
+ - node version: 20.11.1
+ - next version: 14.2.4
 
 ## Style: 
 

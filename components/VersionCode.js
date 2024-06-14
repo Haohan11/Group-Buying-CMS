@@ -1,8 +1,8 @@
-const versionText = "1.0.15"
+import { version } from "@/package.json";  
 
 const VersionCode = () => (
   <span>
-    版本號: {versionText}
+    版本號: {version}
   </span>
 );
 
