@@ -1,5 +1,4 @@
 import Logo from "@/components/logo";
-import Image from "next/image";
 import { getSession } from "next-auth/react";
 
 export default function Home() {

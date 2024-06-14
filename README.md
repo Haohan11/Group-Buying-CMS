@@ -4,4 +4,4 @@
 
 ## Style: 
 
- - Use custom style in _variables.custom.scss
+ - Use custom style in /_metronic/assets/sass/components/_variables.custom.scss

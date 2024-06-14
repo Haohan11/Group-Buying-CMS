@@ -7,9 +7,9 @@ $primary: #0190b9;
 $primary-active: rgba(#0190b9, 0.75);
 $primary-clarity: rgba(#0190b9, 0.2);
 
-$danger: #dc1c16;
-$danger-active: rgba(#dc1c16, 0.75);
-$danger-clarity: rgba(#dc1c16, 0.2);
+$danger: #dd301f;
+$danger-active: rgba(#dd301f, 0.75);
+$danger-clarity: rgba(#dd301f, 0.2);
 
 $checkBlue: #6898d9;
 $star: #ffbd12;
@@ -17,6 +17,11 @@ $star: #ffbd12;
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--bs-scrollbar-hover-color) transparent;
+}
+
+::selection {
+  color: white;
+  background: $primary;
 }
 
 .flex-center {

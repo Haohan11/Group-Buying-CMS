@@ -1,20 +1,16 @@
 import Link from "next/link";
-import Image from "next/image";
-
+import Logo from "@/components/logo";
 
 const Custom404 = () => {
   return (
     <div className="vh-100 flex-center flex-column fs-1">
-      <div className="position-relative w-150px h-150px">
-        <Image alt="logo" fill src="/logo.svg" />
-      </div>
-      <div className="flex-center my-8">
-        <span className="text-primary">404</span>
-        <span className="mx-5 fs-1 lh-1">|</span>
-        <span>訪問的頁面不存在</span>
+      <Logo className="mb-8" width="300" />
+      <div className="mb-16 text-primary fw-bold">
+        <span className="pe-8 me-8" style={{ borderRight: "3px solid" }}>404</span>
+        <span>此頁面不存在</span>
       </div>
       <Link href="/">
-        <button className="btn btn-primary">返回首頁</button>
+        <button className="btn btn-primary px-12">返回首頁</button>
       </Link>
     </div>
   );
