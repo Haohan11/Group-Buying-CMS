@@ -2,14 +2,10 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import { KTIcon, toAbsoluteUrl } from '../../../helpers'
 import { useLayout } from '../../core'
-import { MutableRefObject, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { ToggleComponent } from '../../../assets/ts/components'
 
-type PropsType = {
-  sidebarRef: MutableRefObject<HTMLDivElement | null>
-}
-
-const SidebarLogo = (props: PropsType) => {
+const SidebarLogo = (props) => {
   const { config } = useLayout()
   const toggleRef = useRef<HTMLDivElement>(null)
 
@@ -27,21 +23,19 @@ const SidebarLogo = (props: PropsType) => {
 
   useEffect(() => {
     setTimeout(() => {
-      const toggleObj = ToggleComponent.getInstance(toggleRef.current!) as ToggleComponent | null
+      const toggleObj = ToggleComponent.getInstance(toggleRef.current);
 
-      if (toggleObj === null) {
-        return
-      }
+      if (toggleObj === null) return;
 
       // Add a class to prevent sidebar hover effect after toggle click
       toggleObj.on('kt.toggle.change', function () {
         // Set animation state
-        props.sidebarRef.current!.classList.add('animating')
+        props.sidebarRef.current?.classList.add('animating')
 
         // Wait till animation finishes
         setTimeout(function () {
           // Remove animation state
-          props.sidebarRef.current!.classList.remove('animating')
+          props.sidebarRef.current?.classList.remove('animating')
         }, 300)
       })
     }, 600)
@@ -53,7 +47,7 @@ const SidebarLogo = (props: PropsType) => {
         {config.layoutType === 'dark-sidebar' ? (
           <img
             alt='Logo'
-            src={toAbsoluteUrl('/logo.svg')}
+            src={toAbsoluteUrl('/logo.png')}
             className='h-25px app-sidebar-logo-default'
           />
         ) : (
@@ -61,18 +55,13 @@ const SidebarLogo = (props: PropsType) => {
             <div className='d-flex justify-content-center align-items-center'>
               <img
                 alt='Logo'
-                src={toAbsoluteUrl('/logo.svg')}
-                className='w-50px app-sidebar-logo-default theme-light-show'
-              />
-              <img
-                alt='Logo text'
-                src={toAbsoluteUrl('/logo_text.svg')}
-                className='ms-5 h-20px app-sidebar-logo-default theme-light-show'
+                src={toAbsoluteUrl('/logo.png')}
+                className='w-150px app-sidebar-logo-default theme-light-show'
               />
             </div>
             <img
               alt='Logo'
-              src={toAbsoluteUrl('/logo.svg')}
+              src={toAbsoluteUrl('/logo.png')}
               className='h-25px app-sidebar-logo-default theme-dark-show'
             />
           </>

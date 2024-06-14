@@ -4,9 +4,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 export const authOptions = {
   providers: [
     CredentialsProvider({
-      id: "XiangYu-Backend",
+      id: "YouCanBuy-Backend",
       // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: "XiangYu-Backend",
+      name: "YouCanBuy-Backend",
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
       // e.g. domain, username, password, 2FA token, etc.
@@ -47,7 +47,7 @@ export const authOptions = {
     }),
     // ...add more providers here
   ],
-  secret: "/k3hExYJxB69aDmnr+ojgBd9/luEgnei3Da+SNHWKNk=",
+  secret: "xX9P/9TaMMgDoQEepJwxkipbMRDa0tmcrMz07DYMvSI=",
   pages: {
     signIn: "/",
     signOut: "/",
