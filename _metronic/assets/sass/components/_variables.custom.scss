@@ -1,0 +1,93 @@
+//
+// To make future updates easier consider overriding the global variables from _variables.bootstrap.scss and _variables.custom.scss for current demo in this file.
+// Note that this file is included first and variables defined in _variables.bootstrap.scss and _variables.custom.scss
+// are not accessible in this file but you can override any global variable as shown below:
+//
+$primary: #19315e;
+$primary-active: rgba(#19315e, 0.75);
+$primary-clarity: rgba(#19315e, 0.2);
+
+$danger: #dc1c16;
+$danger-active: rgba(#dc1c16, 0.75);
+$danger-clarity: rgba(#dc1c16, 0.2);
+
+$checkBlue: #6898d9;
+$star: #ffbd12;
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bs-scrollbar-hover-color) transparent;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.tags-label input[type="checkbox"]:checked ~ div {
+  background-color: $checkBlue;
+  color: white;
+  border-color: transparent !important;
+}
+
+.rating label:hover .star-bg,
+.rating label:hover ~ label .star-bg,
+.rating input[type="radio"]:checked ~ label .star-bg {
+  fill: $star;
+}
+
+textarea:focus-visible {
+  outline: 0 !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.form-control.form-control-solid:disabled {
+  color: var(--bs-gray-500) !important;
+  background-color: var(--bs-gray-200) !important;
+  border-color: var(--bs-gray-200) !important;
+  opacity: 1 !important;
+}
+
+// input[type="range"] {
+//   -webkit-appearance: none;
+//   overflow: hidden;
+//   width: 200px;
+//   height: 20px;
+//   outline: none;
+//   background: none;
+// }
+
+// input[type="range"]::-webkit-slider-thumb {
+//   -webkit-appearance: none;
+//   position: relative;
+//   width: 10px;
+//   height: 10px;
+//   background: $primary;
+//   border-radius: 50%;
+// }
+
+// input[type="range"]::-webkit-slider-thumb:before,
+// input[type="range"]::-webkit-slider-thumb:after {
+//   position: absolute;
+//   top: 3px;
+//   width: 2000px; /* 長度很長沒關係，因為剛剛有用 overflow:hidden 了 */
+//   height: 4px;
+//   content: "";
+//   pointer-events: none; /* 讓滑鼠可以點擊穿透偽元素，不然會點不到下面 */
+//   transition: 0.2s;
+// }
+
+// input[type="range"]::-webkit-slider-thumb:before {
+//   left: -1997px;
+//   background: $primary;
+// }
+
+// input[type="range"]::-webkit-slider-thumb:after {
+//   left: 10px;
+//   background: #dc1c16;
+// }
