@@ -2,7 +2,7 @@ import React, { useEffect, Fragment } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 
-import { checkExpires } from "@/tool/hooks";
+import { checkExpires } from "@/tool/helper";
 import ModalWrapper from "@/components/modalWrapper";
 import PopUp from "@/components/popUp";
 import { useModals } from "@/tool/hooks";

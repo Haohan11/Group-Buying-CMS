@@ -1,5 +1,4 @@
 import * as Yup from "yup";
-// import { checkEmailExist } from "@/data-list/core/request";
 
 import {
   stockColumns,

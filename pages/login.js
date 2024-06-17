@@ -17,8 +17,7 @@ import Logo from "@/components/logo";
 
 import VersionCode from "@/components/VersionCode";
 
-import { useModals } from "@/tool/hooks";
-import useLocalStorage from "../tool/useLocalStorage";
+import { useModals, useLocalStorage } from "@/tool/hooks";
 
 const LoginLayout = () => {
   const router = useRouter();

@@ -154,3 +154,21 @@ export const updateDataRequest = async (token, values) => {
     return false;
   }
 };
+
+export const getAllTables = async (token) => {
+  const URL = `${BASEURL}/all-tables`;
+  try {
+    const res = await fetch(URL, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!res.ok) return false;
+    const { data } = await res.json();
+    if(!data) return false;
+    return data;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}

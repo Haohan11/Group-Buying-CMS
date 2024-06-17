@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import addClassName from "@/tool/addClassName";
+import { addClassName } from "@/tool/helper";
 
 const Logo = ({ width, height, ...props }) => {
   return (

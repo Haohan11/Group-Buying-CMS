@@ -69,5 +69,23 @@ export const usePermission = (persist) => {
   return permission;
 };
 
-export const checkExpires = (time) =>
-  time ? time * 1000 < Date.now() : console.log("Invalid exp.");
+export const useLocalStorage = (key, defaultValue) => {
+  const [value] = useState(() => {
+    let currentValue;
+
+    try {
+      currentValue = JSON.parse(
+        localStorage.getItem(key) || String(defaultValue)
+      );
+    } catch {
+      currentValue = defaultValue;
+    }
+
+    return currentValue;
+  });
+
+  const set = (v) => localStorage.setItem(key, JSON.stringify(v));
+  const clear = () => localStorage.removeItem(key);
+
+  return [value, set, clear];
+}
