@@ -15,3 +15,11 @@
 ### role permission
 #### front and back entry 
 #### env, account, stock visitable
+
+### Icon usage:
+
+ - with [Bootstrap Icon](https://icons.getbootstrap.com/)
+```
+<SidebarMenuItemWithSub
+    icon="bi bi-${here just use bootstrap icon name}"
+/>

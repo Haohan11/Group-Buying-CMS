@@ -172,3 +172,18 @@ export const getAllTables = async (token) => {
     return false;
   }
 }
+
+export const getIndexItems = async () => {
+  const URL = `${BASEURL}/get-index-item`;
+
+  try {
+    const res = await fetch(URL);
+    if (!res.ok) return false;
+    const { data } = await res.json();
+    if(!data) return false;
+    return data;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
