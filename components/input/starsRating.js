@@ -3,7 +3,7 @@ import Star from "@/icon/star-outline";
 import { FormLabel } from "react-bootstrap";
 import exposeDiv from "@/components/exposeDiv";
 
-import addClassName from "@/tool/addClassName";
+import { addClassName } from "@/tool/helper";
 const Div = addClassName(exposeDiv, "hstack rating flex-row-reverse justify-content-end align-items-center")
 
 const Stars = ({name, width, value, ...props}) => {

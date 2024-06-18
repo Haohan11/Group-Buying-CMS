@@ -1,12 +1,10 @@
-import {useQuery} from 'react-query'
 import {EditModalForm} from './EditModalForm'
-import {isNotEmpty, QUERIES} from '@/_metronic/helpers'
-import {useListView} from '../core/ListViewProvider'
-import {getUserById} from '../core/_requests'
+// import {isNotEmpty, QUERIES} from '@/_metronic/helpers'
+// import {useListView} from '../core/ListViewProvider'
 
 const EditModalFormWrapper = () => {
-  const {itemIdForUpdate, setItemIdForUpdate} = useListView()
-  const enabledQuery = isNotEmpty(itemIdForUpdate)
+  // const {itemIdForUpdate, setItemIdForUpdate} = useListView()
+  // const enabledQuery = isNotEmpty(itemIdForUpdate)
   // const {
   //   isLoading,
   //   data: user,

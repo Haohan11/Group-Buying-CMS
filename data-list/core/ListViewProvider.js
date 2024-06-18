@@ -16,8 +16,8 @@ const ListViewContext = createContext(initialListView)
 const ListViewProvider = ({children}) => {
   const [selected, setSelected] = useState(initialListView.selected)
   const [itemIdForUpdate, setItemIdForUpdate] = useState(initialListView.itemIdForUpdate)
-  const disabled = useMemo(() => calculatedGroupingIsDisabled(isLoading, data), [isLoading, data])
-  const isAllSelected = useMemo(() => calculateIsAllDataSelected(data, selected), [data, selected])
+  // const disabled = useMemo(() => calculatedGroupingIsDisabled(isLoading, data), [isLoading, data])
+  // const isAllSelected = useMemo(() => calculateIsAllDataSelected(data, selected), [data, selected])
 
   return (
     <ListViewContext.Provider
@@ -25,8 +25,8 @@ const ListViewProvider = ({children}) => {
         selected,
         itemIdForUpdate,
         setItemIdForUpdate,
-        disabled,
-        isAllSelected,
+        // disabled,
+        // isAllSelected,
         onSelect: (id) => {
           groupingOnSelect(id, selected, setSelected)
         },

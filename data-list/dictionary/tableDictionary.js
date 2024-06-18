@@ -18,7 +18,7 @@ const comment_label = "備註";
 
 export const fullData = {
   // -&anchor
-  stock: {
+  ["stock-management"]: {
     pageTitle: "商品維護",
     searchPlaceholder: "商品",
     createHeaderText: "商品資料",

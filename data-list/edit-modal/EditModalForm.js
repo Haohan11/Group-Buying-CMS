@@ -20,12 +20,8 @@ import { useSession } from "next-auth/react";
 
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
-import { useInputFilePath } from "@/tool/hooks";
-import { transImageUrl } from "@/tool/transImageUrl";
-import { getFileUrl } from "@/tool/getFileUrl";
-import { loopObject } from "@/tool/loopObject";
-import onlyInputNumbers from "@/tool/inputOnlyNumbers";
-import { useModals } from "@/tool/hooks";
+import { useInputFilePath, useModals } from "@/tool/hooks";
+import { transImageUrl, getFileUrl, loopObject, onlyInputNumbers } from "@/tool/helper";
 
 import {
   createDataRequest,
