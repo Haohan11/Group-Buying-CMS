@@ -7,6 +7,7 @@ import { TablePagination } from "../components/pagination/TablePagination";
 import { useTableData } from "@/data-list/core/tableDataProvider";
 import { useRouter } from "next/router";
 
+import { placeHolderColumns } from "./columns/_columns";
 import { useSession } from "next-auth/react";
 import { getDataRequest } from "../core/request";
 
@@ -30,7 +31,8 @@ const Table = ({ setTrigger }) => {
   const closeModal = () => setItemIdForUpdate(undefined);
 
   const tableName = currentTable.get();
-  const columns = column[tableName];
+  const columns = column[tableName] || placeHolderColumns;
+  
   const { tableData, setTableData } = useTableData();
   const [totalPages, setTotalPages] = useState(null);
   const [isLoading, setIsLoading] = useState(false);

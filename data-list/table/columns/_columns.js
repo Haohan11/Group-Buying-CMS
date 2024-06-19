@@ -58,6 +58,31 @@ const usersColumns = [
   },
 ]
 
+export const placeHolderColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
+    ),
+    id: 'actions',
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
+    ),
+    id: 'enable',
+    Cell: ({ ...props }) => <ProductAvaliableCell enable={props.data[props.row.index].enable} />,
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='名稱' className='min-w-125px' />,
+    accessor: 'name',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='編號' className='min-w-125px' />,
+    accessor: 'code',
+  },
+]
+
 export const stockColumns = [
   {
     Header: (props) => (

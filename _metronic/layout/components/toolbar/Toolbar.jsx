@@ -32,26 +32,22 @@ const Toolbar = () => {
   }
 }
 
-const updateDOM = (config: ILayout) => {
-  let appToolbarSwapAttributes: {[attrName: string]: string} = {}
+const updateDOM = (config) => {
+  let appToolbarSwapAttributes = {}
   const appToolbarSwapEnabled = config.app?.toolbar?.swap?.enabled
   if (appToolbarSwapEnabled) {
-    appToolbarSwapAttributes = config.app?.toolbar?.swap?.attributes as {[attrName: string]: string}
+    appToolbarSwapAttributes = config.app?.toolbar?.swap?.attributes
   }
 
-  let appToolbarStickyAttributes: {[attrName: string]: string} = {}
+  let appToolbarStickyAttributes = {}
   const appToolbarStickyEnabled = config.app?.toolbar?.sticky?.enabled
   if (appToolbarStickyEnabled) {
-    appToolbarStickyAttributes = config.app?.toolbar?.sticky?.attributes as {
-      [attrName: string]: string
-    }
+    appToolbarStickyAttributes = config.app?.toolbar?.sticky?.attributes
 
-    let appToolbarMinimizeAttributes: {[attrName: string]: string} = {}
+    let appToolbarMinimizeAttributes = {}
     const appToolbarMinimizeEnabled = config.app?.toolbar?.minimize?.enabled
     if (appToolbarMinimizeEnabled) {
-      appToolbarMinimizeAttributes = config.app?.toolbar?.minimize?.attributes as {
-        [attrName: string]: string
-      }
+      appToolbarMinimizeAttributes = config.app?.toolbar?.minimize?.attributes
     }
 
     if (config.app?.toolbar?.fixed?.desktop) {

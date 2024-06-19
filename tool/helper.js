@@ -22,7 +22,7 @@ export const checkExpires = (time) =>
 export const transImageUrl = (path) =>
   `${process.env.NEXT_PUBLIC_BACKENDURL}/${path.replace(/\\/g, "/")}`;
 
-export const onlyNumber = (event) => {
+export const onlyInputNumbers = (event) => {
   if (
     /^\d$/.test(event.key) ||
     event.key === "Backspace" ||

@@ -31,6 +31,7 @@ const SidebarMenuMain = () => {
     {checkArray(items) && items.map((item) => {
       return (
         <SidebarMenuItemWithSub
+          key={item.id}
           title={item.name}
           icon={`bi bi-${item.icon}`}
         >

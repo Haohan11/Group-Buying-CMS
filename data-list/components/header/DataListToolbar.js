@@ -15,7 +15,8 @@ const DataListToolbar = () => {
   const permission = usePermission();
 
   const show = (() => {
-    if (!router || !permission) return false;
+    return true
+    // if (!router || !permission) return false;
 
     if (router.asPath.includes("stock") && !permission?.stock?.modify) return false
     if (router.asPath.includes("environment") && !permission?.environment?.modify) return false
