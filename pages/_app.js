@@ -54,14 +54,12 @@ export default function App({
           <title>YouCanBuy</title>
         </Head>
         <Detector>
-          {/* <QueryClientProvider client={queryClient}> */}
-            <MetronicI18nProvider>
-              <LayoutProvider>
-                  <Component {...pageProps} />
-                  <DynamicMasterInit />
-              </LayoutProvider>
-            </MetronicI18nProvider>
-          {/* </QueryClientProvider> */}
+          <MetronicI18nProvider>
+            <LayoutProvider>
+              <Component {...pageProps} />
+              <DynamicMasterInit />
+            </LayoutProvider>
+          </MetronicI18nProvider>
         </Detector>
       </>
     </SessionProvider>

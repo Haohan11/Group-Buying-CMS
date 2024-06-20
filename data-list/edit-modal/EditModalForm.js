@@ -3,10 +3,9 @@ import { useState, useEffect, useRef } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 
-import { KTSVG } from "@/_metronic/helpers/index";
 import Select from "react-select";
-import Stars from "@/components/input/starsRating";
 import ModalWrapper from "@/components/modalWrapper";
 import PopUp from "@/components/popUp";
 
@@ -18,17 +17,17 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
+const CustomEditor = dynamic(
+  () => {
+    return import("@/components/custom-editor");
+  },
+  { ssr: false }
+);
+
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
-import { useInputFilePath, useModals } from "@/tool/hooks";
-import {
-  transImageUrl,
-  getFileUrl,
-  loopObject,
-  onlyInputNumbers,
-  checkArray,
-  toArray,
-} from "@/tool/helper";
+import { useModals } from "@/tool/hooks";
+import { onlyInputNumbers, toArray } from "@/tool/helper";
 
 import {
   createDataRequest,
@@ -36,7 +35,7 @@ import {
   getDataByTable,
 } from "../core/request";
 
-const { modalConfig, formField, validationSchema } = dict;
+const { inputList, formField, validationSchema } = dict;
 
 const hostFormik = {
   formik: null,
@@ -94,23 +93,46 @@ const ValidateInputField = ({
           className={labelclassname}
         />
       )}
-      <input
-        {...formik.getFieldProps(name)}
-        placeholder={placeholder}
-        className={clsx(
-          "form-control form-control-solid mb-3 mb-lg-0",
-          inputclassname,
-          { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-          { "is-valid": formik?.touched[name] && !formik?.errors[name] }
-        )}
-        type={type}
-        name={name}
-        autoComplete="off"
-        {...(onlynumber && {
-          onKeyDown: onlyInputNumbers,
-        })}
-        disabled={readonly || formik?.isSubmitting}
-      />
+      {type === "select" ? (
+        <>
+          {!0 ? (
+            <Select
+              {...formik.getFieldProps(name)}
+              className={clsx("react-select-styled react-select-solid mb-3 mb-lg-0")}
+              classNamePrefix="react-select"
+              options={[{label: "請選擇", value: 0}].map(({label, value}) => ({
+                label,
+                value,
+              }))}
+              defaultValue={[{label: "請選擇", value: 0}]}
+              name={name}
+              onChange={console.log}
+            />
+          ) : (
+            <div className="form-select form-select-solid mb-3">
+              目前沒有資料
+            </div>
+          )}
+        </>
+      ) : (
+        <input
+          {...formik.getFieldProps(name)}
+          placeholder={placeholder}
+          className={clsx(
+            "form-control form-control-solid mb-3 mb-lg-0",
+            inputclassname,
+            { "is-invalid": formik?.touched[name] && formik?.errors[name] },
+            { "is-valid": formik?.touched[name] && !formik?.errors[name] }
+          )}
+          type={type}
+          name={name}
+          autoComplete="off"
+          {...(onlynumber && {
+            onKeyDown: onlyInputNumbers,
+          })}
+          disabled={readonly || formik?.isSubmitting}
+        />
+      )}
       {formik?.touched[name] && formik?.errors[name] && (
         <div className="fv-plugins-message-container">
           <div className="fv-help-block">
@@ -127,6 +149,8 @@ const TextInput = (props) => ValidateInputField({ ...props, type: "text" });
 const TextHolder = () => ValidateInputField({ holder: true });
 const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
+
+const SelectInput = (props) => ValidateInputField({ ...props, type: "select" });
 
 const SwitchInput = (props) => (
   <Row className="cursor-pointer" as="label">
@@ -281,7 +305,7 @@ const PriceTable = (props) => {
             sm={3}
             key={letter}
             className={`border border-gray-300 ${
-              index !== 0 && index % 4 !== 0 && "border-start-0"
+              index % 4 !== 0 && "border-start-0"
             }`}
           >
             <div className="bg-gray-500 text-white text-center p-2">
@@ -300,6 +324,13 @@ const PriceTable = (props) => {
   );
 };
 
+const EditorField = (props) => (
+  <div>
+    <InputLabel text={props.label} />
+    <CustomEditor />
+  </div>
+);
+
 const inputDictionary = {
   text: TextInput,
   "label-holder": LabelHolder,
@@ -309,6 +340,8 @@ const inputDictionary = {
   image: ImageInput,
   "multi-image": MultiImageInput,
   "price-table": PriceTable,
+  editor: EditorField,
+  select: SelectInput,
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
@@ -351,7 +384,8 @@ const EditModalForm = ({ isUserLoading }) => {
   const editMode = currentMode === "edit";
 
   const tableName = currentTable.get();
-  const config = modalConfig[tableName];
+  const fields =
+    inputList?.[tableName] || (!console.warn("No input list provided.") && []);
   const { tableData } = useTableData();
 
   const currentData = editMode
@@ -431,27 +465,7 @@ const EditModalForm = ({ isUserLoading }) => {
           data-kt-scroll-wrappers="#kt_modal_add_user_scroll"
           data-kt-scroll-offset="300px"
         >
-          {createRowColTree(config.inputList)}
-          {/* {config.inputList.map((group, groupIndex) => {
-            return (
-              <Row className="mb-5 g-5" key={groupIndex}>
-                {group.map((input, inputIndex) => {
-                  const Input = inputDictionary[input.type];
-                  if (!Input) return false;
-
-                  return (
-                    <Col key={inputIndex} className="">
-                      <Input
-                        name={input.name}
-                        label={input.label}
-                        required={input.required}
-                      />
-                    </Col>
-                  );
-                })}
-              </Row>
-            );
-          })} */}
+          {createRowColTree(fields)}
         </div>
 
         {/* begin::Actions */}
