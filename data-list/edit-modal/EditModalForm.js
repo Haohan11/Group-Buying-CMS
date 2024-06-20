@@ -57,13 +57,9 @@ const InputLabel = ({ required, text, className, holder, ...props }) =>
   ) : (
     <label
       {...props}
-      className={clsx(
-        "fw-bold fs-6 mb-2",
-        {
-          required,
-        },
-        className
-      )}
+      className={clsx("fw-bold fs-6 mb-2", {
+        required,
+      })}
     >
       {text}
     </label>
@@ -76,6 +72,7 @@ const ValidateInputField = ({
   formik = hostFormik.get(),
   placeholder,
   inputclassname = "",
+  labelclassname = "",
   type = "text",
   readonly = false,
   onlynumber = false,
@@ -90,7 +87,13 @@ const ValidateInputField = ({
     </>
   ) : (
     <>
-      <InputLabel required={required} text={label} />
+      {label && (
+        <InputLabel
+          required={required}
+          text={label}
+          className={labelclassname}
+        />
+      )}
       <input
         {...formik.getFieldProps(name)}
         placeholder={placeholder}
@@ -154,7 +157,7 @@ const ImageInput = (props) => {
       />
       <div className="flex-center flex-grow-1">
         <label
-          className="position-relative h-100 w-100 bg-gray-100 rounded-3 cursor-pointer overflow-hidden flex-center text-gray-500"
+          className="position-relative h-100 w-100 bg-gray-200 rounded-3 cursor-pointer overflow-hidden flex-center text-gray-500"
           style={{ minHeight: "150px", maxHeight: "200px" }}
           htmlFor={`image_${props.name}`}
         >
@@ -263,6 +266,40 @@ const MultiImageInput = (props) => {
   );
 };
 
+const PriceTable = (props) => {
+  return (
+    <div>
+      <InputLabel
+        htmlFor={`image_${props.name}`}
+        className="p-1 cursor-pointer align-self-start"
+        required={props.required}
+        text={props.label}
+      />
+      <Row className=" g-0">
+        {["A", "B", "C", "D", "E"].map((letter, index) => (
+          <Col
+            sm={3}
+            key={letter}
+            className={`border border-gray-300 ${
+              index !== 0 && index % 4 !== 0 && "border-start-0"
+            }`}
+          >
+            <div className="bg-gray-500 text-white text-center p-2">
+              {letter}
+            </div>
+            <div className="p-5">
+              <NumberInput
+                name={`${props.name}_${letter}`}
+                inputclassname="border"
+              />
+            </div>
+          </Col>
+        ))}
+      </Row>
+    </div>
+  );
+};
+
 const inputDictionary = {
   text: TextInput,
   "label-holder": LabelHolder,
@@ -271,14 +308,15 @@ const inputDictionary = {
   switch: SwitchInput,
   image: ImageInput,
   "multi-image": MultiImageInput,
+  "price-table": PriceTable,
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
     return (
       <Row className="mb-5 g-6" key={groupIndex}>
-        {group.map((input, inputIndex) => {
+        {toArray(group).map((input, inputIndex) => {
           if (Array.isArray(input))
-            return <Col>{createRowColTree([input])}</Col>;
+            return <Col key={inputIndex}>{createRowColTree(input)}</Col>;
           const Input = inputDictionary[input.type];
           if (!Input) return false;
 

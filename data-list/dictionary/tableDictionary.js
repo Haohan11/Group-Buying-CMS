@@ -141,20 +141,19 @@ export const fullData = {
             name: "supplier",
           },
         ],
-        [
-          {
-            type: "table",
-            label: "會員等級定價",
-            name: "grade_price",
-            required: true,
-          },
-          {
-            type: "table",
-            label: "身分別定價",
-            name: "role_price",
-            required: true,
-          },
-        ],
+
+        {
+          type: "price-table",
+          label: "會員等級定價",
+          name: "grade_price",
+          required: true,
+        },
+        {
+          type: "price-table",
+          label: "身分別定價",
+          name: "role_price",
+          required: true,
+        },
         [
           {
             type: "editor",
