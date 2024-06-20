@@ -58,6 +58,13 @@ textarea:focus-visible {
   opacity: 1 !important;
 }
 
+.holder {
+  user-select: none !important;
+  pointer-events: none !important;
+  color: transparent !important;
+  border-color: transparent !important;
+}
+
 // input[type="range"] {
 //   -webkit-appearance: none;
 //   overflow: hidden;

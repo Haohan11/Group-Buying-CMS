@@ -33,35 +33,45 @@ export const fullData = {
           {
             type: "image",
             label: "商品封面照",
+            required: true,
             name: "cover",
           },
-          {
-            type: "image",
-            multiple: true,
-            label: "商品圖片",
-            name: "stock-images",
-          },
+          [
+            {
+              type: "label-holder",
+            },
+            {
+              type: "switch",
+              label: "商品是否上架",
+              name: "enable",
+              col: 12,
+            },
+            {
+              type: "switch",
+              label: "是否為預購商品",
+              name: "is_preorder",
+              col: 12,
+            },
+            {
+              type: "switch",
+              label: "負庫存銷售",
+              name: "allow_nostock_sell",
+              col: 12,
+            },
+            {
+              type: "switch",
+              label: "是否為獨立揀貨",
+              name: "is_independent",
+              col: 12,
+            },
+            ,
+          ],
         ],
         [
           {
-            type: "switch",
-            label: "商品是否上架",
-            name: "enable",
-          },
-          {
-            type: "switch",
-            label: "是否為預購商品",
-            name: "is_preorder",
-          },
-          {
-            type: "switch",
-            label: "負庫存銷售",
-            name: "allow_nostock_sell",
-          },
-          {
-            type: "switch",
-            label: "是否為獨立揀貨",
-            name: "is_independent",
+            type: "multi-image",
+            label: "商品圖片",
+            name: "stock-images",
           },
         ],
         [
@@ -77,6 +87,8 @@ export const fullData = {
             required: true,
             name: "bar_code",
           },
+        ],
+        [
           {
             type: "select",
             label: "商品類別",
@@ -87,6 +99,8 @@ export const fullData = {
             label: "記帳分類",
             name: "accounting_class",
           },
+        ],
+        [
           {
             type: "number",
             label: "預購商品庫存",
@@ -97,6 +111,8 @@ export const fullData = {
             label: "最少訂購數",
             name: "min_order",
           },
+        ],
+        [
           {
             type: "number",
             label: "訂購倍數",
@@ -107,6 +123,8 @@ export const fullData = {
             label: "商品規格",
             name: "specification",
           },
+        ],
+        [
           {
             type: "number",
             label: "售價",
@@ -143,12 +161,11 @@ export const fullData = {
             label: "商品介紹",
             name: "introduction",
           },
-        ]
+        ],
       ],
     },
     fetchUrl: "stock",
-    validationSchema: Yup.object().shape({
-    }),
+    validationSchema: Yup.object().shape({}),
     formField: {
       preorder_count: "",
       price: "",

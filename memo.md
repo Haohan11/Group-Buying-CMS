@@ -1,13 +1,5 @@
-
-## unhandle issue
-
-### Cannot find module 'canvas'
-#### when
- - visit pages used konva directly, it will not fire while visit from other route.
-#### attempted
- - use dynamic import
-
-## todo: Sizebar entry environment page state (query string) maintain 
+## Style: 
+ - Use custom style in /_metronic/assets/sass/components/_variables.custom.scss
 
 #### filter in DataListToolbar
 #### search in ListHeader

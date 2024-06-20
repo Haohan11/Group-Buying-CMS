@@ -26,6 +26,8 @@ import {
   getFileUrl,
   loopObject,
   onlyInputNumbers,
+  checkArray,
+  toArray,
 } from "@/tool/helper";
 
 import {
@@ -35,17 +37,6 @@ import {
 } from "../core/request";
 
 const { modalConfig, formField, validationSchema } = dict;
-
-const InputLabel = ({ required, text, className, ...props }) => (
-  <label
-    {...props}
-    className={clsx("fw-bold fs-6 mb-2", {
-      required,
-    }, className)}
-  >
-    {text}
-  </label>
-);
 
 const hostFormik = {
   formik: null,
@@ -60,6 +51,24 @@ const hostFormik = {
   },
 };
 
+const InputLabel = ({ required, text, className, holder, ...props }) =>
+  holder ? (
+    <div className="fs-6 mb-2 holder">text</div>
+  ) : (
+    <label
+      {...props}
+      className={clsx(
+        "fw-bold fs-6 mb-2",
+        {
+          required,
+        },
+        className
+      )}
+    >
+      {text}
+    </label>
+  );
+
 const ValidateInputField = ({
   required = false,
   label,
@@ -70,90 +79,183 @@ const ValidateInputField = ({
   type = "text",
   readonly = false,
   onlynumber = false,
-}) => (
-  <>
-    <InputLabel required={required} text={label} />
-    <input
-      {...formik.getFieldProps(name)}
-      placeholder={placeholder}
-      className={clsx(
-        "form-control form-control-solid mb-3 mb-lg-0",
-        inputclassname,
-        { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-        { "is-valid": formik?.touched[name] && !formik?.errors[name] }
-      )}
-      type={type}
-      name={name}
-      autoComplete="off"
-      {...(onlynumber && {
-        onKeyDown: onlyInputNumbers,
-      })}
-      disabled={readonly || formik?.isSubmitting}
-    />
-    {formik?.touched[name] && formik?.errors[name] && (
-      <div className="fv-plugins-message-container">
-        <div className="fv-help-block">
-          <span role="alert">{formik?.errors[name]}</span>
-        </div>
+  holder,
+}) =>
+  holder ? (
+    <>
+      <InputLabel holder />
+      <div className="form-control form-control-solid mb-3 mb-lg-0 bg-transparent holder shadow-none">
+        text
       </div>
-    )}
-  </>
-);
+    </>
+  ) : (
+    <>
+      <InputLabel required={required} text={label} />
+      <input
+        {...formik.getFieldProps(name)}
+        placeholder={placeholder}
+        className={clsx(
+          "form-control form-control-solid mb-3 mb-lg-0",
+          inputclassname,
+          { "is-invalid": formik?.touched[name] && formik?.errors[name] },
+          { "is-valid": formik?.touched[name] && !formik?.errors[name] }
+        )}
+        type={type}
+        name={name}
+        autoComplete="off"
+        {...(onlynumber && {
+          onKeyDown: onlyInputNumbers,
+        })}
+        disabled={readonly || formik?.isSubmitting}
+      />
+      {formik?.touched[name] && formik?.errors[name] && (
+        <div className="fv-plugins-message-container">
+          <div className="fv-help-block">
+            <span role="alert">{formik?.errors[name]}</span>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+const LabelHolder = () => InputLabel({ holder: true });
 
 const TextInput = (props) => ValidateInputField({ ...props, type: "text" });
+const TextHolder = () => ValidateInputField({ holder: true });
 const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
 
 const SwitchInput = (props) => (
-  <div className="w-100 d-flex">
-    <label
-      htmlFor={`switch_${props.name}`}
-      className="fw-bold fs-6 cursor-pointer me-3"
-    >
-      {props.label}
-    </label>
-
-    <FormCheck
-      className={"ms-auto me-10"}
-      {...hostFormik.get().getFieldProps(props.name)}
-      inline
-      type="switch"
-      defaultChecked={hostFormik.get().getFieldProps(props.name).value}
-      id={`switch_${props.name}`}
-      name={props.name}
-    />
-  </div>
+  <Row className="cursor-pointer" as="label">
+    <Col>
+      <span className="fw-bold fs-6">{props.label}</span>
+    </Col>
+    <Col sm={"auto"} className="text-center">
+      <FormCheck
+        {...hostFormik.get().getFieldProps(props.name)}
+        inline
+        type="switch"
+        defaultChecked={hostFormik.get().getFieldProps(props.name).value}
+        id={`switch_${props.name}`}
+        name={props.name}
+      />
+    </Col>
+  </Row>
 );
 
 const ImageInput = (props) => {
   return (
+    <div className="d-flex flex-column h-100">
+      <InputLabel
+        htmlFor={`image_${props.name}`}
+        className="p-1 cursor-pointer align-self-start"
+        required={props.required}
+        text={props.label}
+      />
+      <div className="flex-center flex-grow-1">
+        <label
+          className="position-relative h-100 w-100 bg-gray-100 rounded-3 cursor-pointer overflow-hidden flex-center text-gray-500"
+          style={{ minHeight: "150px", maxHeight: "200px" }}
+          htmlFor={`image_${props.name}`}
+        >
+          請選擇照片
+          {hostFormik.get()?.values[`${props.name}_preview`] && (
+            <Image
+              sizes="100px"
+              fill
+              className="top-0 start-0 object-fit-cover"
+              src={hostFormik.get().values[`${props.name}_preview`]}
+              alt={`image_${props.name}`}
+            />
+          )}
+          <input
+            hidden
+            accept="image/*"
+            id={`image_${props.name}`}
+            type="file"
+            onChange={(event) => {
+              const [file] = event.target.files;
+              if (!file) return;
+              const src = URL.createObjectURL(file);
+              hostFormik.get().setFieldValue(`${props.name}_preview`, src);
+              hostFormik.get().setFieldValue(props.name, file);
+            }}
+          />
+        </label>
+      </div>
+    </div>
+  );
+};
+
+const MultiImageInput = (props) => {
+  return (
     <div className="">
-      <InputLabel htmlFor={`image_${props.name}`} className="d-block p-1 cursor-pointer" required={props.required} text={props.label}/>
+      <InputLabel
+        className="d-inline-block p-1 cursor-pointer"
+        htmlFor={`image_${props.name}`}
+        required={props.required}
+        text={props.label}
+      />
       <label
-        className="position-relative bg-gray-100 rounded-3 cursor-pointer overflow-hidden shadow-sm"
-        style={{ width: "100px", height: "100px" }}
+        className="d-block overflow-x-scroll text-nowrap bg-gray-200 p-3 pb-0 rounded-2"
         htmlFor={`image_${props.name}`}
       >
-        {hostFormik.get()?.values[`${props.name}_preview`] && (
-          <Image
-            sizes="100px"
-            fill
-            className="top-0 start-0 object-fit-cover"
-            src={hostFormik.get().values[`${props.name}_preview`]}
-            alt={`image_${props.name}`}
-          />
+        {hostFormik.get()?.values[props.name]?.map(({ id, src }) => (
+          <div key={id} className="position-relative d-inline-block m-5">
+            <div
+              className="position-relative rounded-3 overflow-hidden shadow-sm"
+              style={{ width: "100px", height: "100px" }}
+            >
+              <Image
+                sizes="100px"
+                fill
+                className="top-0 start-0 object-fit-cover"
+                src={src}
+                alt={`image_${props.name}`}
+              />
+            </div>
+            <span
+              className="position-absolute border flex-center top-0 start-100 translate-middle rounded-circle bg-white shadow bi-x cursor-pointer"
+              style={{
+                height: "20px",
+                width: "20px",
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                const prevImages = hostFormik.get().values[props.name];
+                hostFormik.get().setFieldValue(
+                  props.name,
+                  prevImages.filter((image) => image.id !== id)
+                );
+              }}
+            ></span>
+          </div>
+        ))}
+        {!!hostFormik.get()?.values[props.name]?.length || (
+          <div
+            className="text-center text-gray-500 my-5 cursor-pointer"
+            style={{ height: "100px", alignContent: "center" }}
+          >
+            請選擇照片
+          </div>
         )}
         <input
           hidden
           accept="image/*"
+          multiple
           id={`image_${props.name}`}
           type="file"
-          onChange={(event) => {
-            const [file] = event.target.files;
-            if (!file) return;
-            const src = URL.createObjectURL(file);
-            hostFormik.get().setFieldValue(`${props.name}_preview`, src);
-            hostFormik.get().setFieldValue(props.name, file);
+          onInput={(event) => {
+            const files = [...event.target.files];
+            if (files.length === 0) return;
+            const images = files.map((file) => {
+              const url = URL.createObjectURL(file);
+              return { id: url, src: url, file };
+            });
+            const prevImages = hostFormik.get().values[props.name] || [];
+            hostFormik
+              .get()
+              .setFieldValue(props.name, [...prevImages, ...images]);
           }}
         />
       </label>
@@ -163,10 +265,36 @@ const ImageInput = (props) => {
 
 const inputDictionary = {
   text: TextInput,
+  "label-holder": LabelHolder,
+  "text-holder": TextHolder,
   number: NumberInput,
   switch: SwitchInput,
   image: ImageInput,
+  "multi-image": MultiImageInput,
 };
+const createRowColTree = (arr) =>
+  arr.map((group, groupIndex) => {
+    return (
+      <Row className="mb-5 g-6" key={groupIndex}>
+        {group.map((input, inputIndex) => {
+          if (Array.isArray(input))
+            return <Col>{createRowColTree([input])}</Col>;
+          const Input = inputDictionary[input.type];
+          if (!Input) return false;
+
+          return (
+            <Col sm={input.col} key={inputIndex} className="">
+              <Input
+                name={input.name}
+                label={input.label}
+                required={input.required}
+              />
+            </Col>
+          );
+        })}
+      </Row>
+    );
+  });
 
 const EditModalForm = ({ isUserLoading }) => {
   const { data, status } = useSession();
@@ -265,7 +393,8 @@ const EditModalForm = ({ isUserLoading }) => {
           data-kt-scroll-wrappers="#kt_modal_add_user_scroll"
           data-kt-scroll-offset="300px"
         >
-          {config.inputList.map((group, groupIndex) => {
+          {createRowColTree(config.inputList)}
+          {/* {config.inputList.map((group, groupIndex) => {
             return (
               <Row className="mb-5 g-5" key={groupIndex}>
                 {group.map((input, inputIndex) => {
@@ -273,7 +402,7 @@ const EditModalForm = ({ isUserLoading }) => {
                   if (!Input) return false;
 
                   return (
-                    <Col key={inputIndex} sm={6} className="">
+                    <Col key={inputIndex} className="">
                       <Input
                         name={input.name}
                         label={input.label}
@@ -284,7 +413,7 @@ const EditModalForm = ({ isUserLoading }) => {
                 })}
               </Row>
             );
-          })}
+          })} */}
         </div>
 
         {/* begin::Actions */}

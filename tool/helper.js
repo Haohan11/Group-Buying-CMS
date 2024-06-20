@@ -49,3 +49,5 @@ export const loopObject = (obj, callback) =>
   );
 
 export const checkArray = (arr) => Array.isArray(arr) && arr.length > 0;
+
+export const toArray = (target) => (Array.isArray(target) ? target : [target]);
