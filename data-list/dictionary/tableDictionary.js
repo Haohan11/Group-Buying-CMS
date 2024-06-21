@@ -16,6 +16,11 @@ import {
 const enable_label = "啟用狀態";
 const comment_label = "備註";
 
+const regularAdaptor = (data) =>
+  Array.isArray(data)
+    ? data.map(({ id, name }) => ({ label: name, value: id }))
+    : [];
+
 export const fullData = {
   // -&anchor
   "stock-management": {
@@ -87,12 +92,12 @@ export const fullData = {
         {
           type: "select",
           label: "商品類別",
-          name: "serial",
+          name: "category",
         },
         {
-          type: "select",
+          type: "multi-select",
           label: "記帳分類",
-          name: "accounting_class",
+          name: "accounting",
         },
       ],
       [
@@ -136,7 +141,6 @@ export const fullData = {
           name: "supplier",
         },
       ],
-
       {
         type: "price-table",
         label: "會員等級定價",
@@ -149,13 +153,21 @@ export const fullData = {
         name: "role_price",
         required: true,
       },
-      [
-        {
-          type: "editor",
-          label: "商品介紹",
-          name: "introduction",
-        },
-      ],
+      {
+        type: "editor",
+        label: "商品介紹",
+        name: "introduction",
+      },
+    ],
+    preLoad: [
+      {
+        name: "category",
+        fetchUrl: "stock-category",
+        adaptor: regularAdaptor,
+      },
+      { name: "serial", fetchUrl: "stock-serial", adaptor: regularAdaptor },
+      { name: "supplier", fetchUrl: "supplier", adaptor: regularAdaptor },
+      { name: "accounting", fetchUrl: "accounting", adaptor: regularAdaptor },
     ],
     fetchUrl: "stock",
     validationSchema: Yup.object().shape({}),

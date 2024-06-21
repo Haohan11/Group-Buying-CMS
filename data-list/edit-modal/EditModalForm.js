@@ -32,10 +32,10 @@ import { onlyInputNumbers, toArray } from "@/tool/helper";
 import {
   createDataRequest,
   updateDataRequest,
-  getDataByTable,
+  getAllEnableData,
 } from "../core/request";
 
-const { inputList, formField, validationSchema } = dict;
+const { inputList, formField, validationSchema, preLoad } = dict;
 
 const hostFormik = {
   formik: null,
@@ -50,15 +50,32 @@ const hostFormik = {
   },
 };
 
+const hostPreLoadData = {
+  data: null,
+  set(target) {
+    return (this.data = target);
+  },
+  get() {
+    return this.data;
+  },
+  clear() {
+    this.data = null;
+  },
+};
+
 const InputLabel = ({ required, text, className, holder, ...props }) =>
   holder ? (
     <div className="fs-6 mb-2 holder">text</div>
   ) : (
     <label
       {...props}
-      className={clsx("fw-bold fs-6 mb-2", {
-        required,
-      })}
+      className={clsx(
+        "fw-bold fs-6 mb-2",
+        {
+          required,
+        },
+        className
+      )}
     >
       {text}
     </label>
@@ -75,6 +92,7 @@ const ValidateInputField = ({
   type = "text",
   readonly = false,
   onlynumber = false,
+  isMulti = false, // only apply for select
   holder,
 }) =>
   holder ? (
@@ -90,33 +108,38 @@ const ValidateInputField = ({
         <InputLabel
           required={required}
           text={label}
-          className={labelclassname}
+          htmlFor={`input_${name}`}
+          className={clsx(labelclassname, "cursor-pointer")}
         />
       )}
       {type === "select" ? (
         <>
           {!0 ? (
             <Select
-              {...formik.getFieldProps(name)}
-              className={clsx("react-select-styled react-select-solid mb-3 mb-lg-0")}
+              {...{ name, isMulti }}
+              inputId={`input_${name}`}
+              className="react-select-styled react-select-solid border border-gray-100 rounded"
               classNamePrefix="react-select"
-              options={[{label: "請選擇", value: 0}].map(({label, value}) => ({
-                label,
-                value,
-              }))}
-              defaultValue={[{label: "請選擇", value: 0}]}
-              name={name}
-              onChange={console.log}
+              placeholder="請選擇或輸入關鍵字"
+              options={hostPreLoadData.get()?.[name] ?? []}
+              // defaultValue={[{ label: "請選擇", value: 0 }]}
+              onChange={(options) => {
+                formik.setFieldValue(
+                  name,
+                  Array.isArray(options)
+                    ? options.map((option) => option.value)
+                    : options.value
+                );
+              }}
             />
           ) : (
-            <div className="form-select form-select-solid mb-3">
-              目前沒有資料
-            </div>
+            <div className="form-select form-select-solid">目前沒有資料</div>
           )}
         </>
       ) : (
         <input
           {...formik.getFieldProps(name)}
+          id={`input_${name}`}
           placeholder={placeholder}
           className={clsx(
             "form-control form-control-solid mb-3 mb-lg-0",
@@ -151,6 +174,8 @@ const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
 
 const SelectInput = (props) => ValidateInputField({ ...props, type: "select" });
+const MultiSelectInput = (props) =>
+  ValidateInputField({ ...props, type: "select", isMulti: true });
 
 const SwitchInput = (props) => (
   <Row className="cursor-pointer" as="label">
@@ -326,7 +351,7 @@ const PriceTable = (props) => {
 
 const EditorField = (props) => (
   <div>
-    <InputLabel text={props.label} />
+    <InputLabel text={props.label} required={props.required} />
     <CustomEditor />
   </div>
 );
@@ -342,6 +367,7 @@ const inputDictionary = {
   "price-table": PriceTable,
   editor: EditorField,
   select: SelectInput,
+  "multi-select": MultiSelectInput,
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
@@ -367,7 +393,7 @@ const createRowColTree = (arr) =>
     );
   });
 
-const EditModalForm = ({ isUserLoading }) => {
+const EditModalForm = () => {
   const { data, status } = useSession();
   const token = data?.user?.accessToken;
 
@@ -386,7 +412,8 @@ const EditModalForm = ({ isUserLoading }) => {
   const tableName = currentTable.get();
   const fields =
     inputList?.[tableName] || (!console.warn("No input list provided.") && []);
-  const { tableData } = useTableData();
+  const preLoadList = preLoad[tableName] || [];
+  const { tableData, preLoadData, setPreLoadData } = useTableData();
 
   const currentData = editMode
     ? tableData.find((data) => data.id === itemIdForUpdate)
@@ -438,7 +465,27 @@ const EditModalForm = ({ isUserLoading }) => {
 
   const closeModal = () => setItemIdForUpdate(undefined);
 
-  // re assign inital value with keep old input fields values
+  /**
+   * handle preLoad data
+   * Note that actual use data is hostPreLoadData not preLoadData
+   */
+  useEffect(() => {
+    (async () => {
+      if (preLoadList.length === 0) return;
+      await Promise.all(
+        preLoadList.map(async ({ name, fetchUrl, adaptor }) => {
+          if (preLoadData[name]) return;
+          const res = await getAllEnableData(token, fetchUrl);
+          if (!res || !res.data) return;
+          const data =
+            typeof adaptor === "function" ? adaptor(res.data) : res.data;
+          setPreLoadData((pre) =>
+            hostPreLoadData.set({ ...pre, [name]: data })
+          );
+        })
+      );
+    })();
+  }, [token]);
 
   return (
     <>
@@ -475,7 +522,7 @@ const EditModalForm = ({ isUserLoading }) => {
             onClick={() => closeModal()}
             className="btn btn-secondary me-3"
             data-kt-users-modal-action="cancel"
-            disabled={formik.isSubmitting || isUserLoading}
+            disabled={formik.isSubmitting}
           >
             取消
           </button>
@@ -484,15 +531,10 @@ const EditModalForm = ({ isUserLoading }) => {
             type="submit"
             className="btn btn-primary"
             data-kt-users-modal-action="submit"
-            disabled={
-              isUserLoading ||
-              formik.isSubmitting ||
-              !formik.isValid ||
-              !formik.touched
-            }
+            disabled={formik.isSubmitting || !formik.isValid || !formik.touched}
           >
             <span className="indicator-label">確認</span>
-            {(formik.isSubmitting || isUserLoading) && (
+            {formik.isSubmitting && (
               <span className="indicator-progress">
                 Please wait...{" "}
                 <span className="spinner-border spinner-border-sm align-middle ms-2"></span>

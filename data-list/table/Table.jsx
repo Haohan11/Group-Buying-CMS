@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 import { placeHolderColumns } from "./columns/_columns";
 import { useSession } from "next-auth/react";
-import { getDataRequest } from "../core/request";
+import { getDataRequest, getAllEnableData } from "../core/request";
 
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
@@ -33,9 +33,8 @@ const Table = ({ setTrigger }) => {
   const tableName = currentTable.get();
   const columns = column[tableName] || placeHolderColumns;
   
-  const { tableData, setTableData } = useTableData();
+  const { tableData, setTableData, isLoading, setIsLoading, setPreLoadData } = useTableData();
   const [totalPages, setTotalPages] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   
   const permission = usePermission();
   
@@ -84,6 +83,11 @@ const Table = ({ setTrigger }) => {
       setTotalPages(totalPages);
     })();
   }, [router, token]);
+
+  // clear preloadData
+  useEffect(() => {
+    setPreLoadData({});
+  }, [tableName]);
 
   const { getTableProps, getTableBodyProps, headers, rows, prepareRow } =
     useTable({

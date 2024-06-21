@@ -13,7 +13,7 @@ const EditModalHeader = () => {
     <div className='modal-header px-12 justify-content-between'>
       {/* begin::Modal title */}
       <h2 className='fw-bolder m-0'>
-        {createMode ? `新增${createHeaderText[tableName]}` : "編輯"}
+        {createMode ? `新增${createHeaderText[tableName] ?? ""}` : "編輯"}
       </h2>
       {/* end::Modal title */}
 
