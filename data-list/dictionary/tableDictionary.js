@@ -16,10 +16,12 @@ import {
 const enable_label = "啟用狀態";
 const comment_label = "備註";
 
-const regularAdaptor = (data) =>
+const selectAdaptor = (data) =>
   Array.isArray(data)
     ? data.map(({ id, name }) => ({ label: name, value: id }))
     : [];
+const selectInitializer = (data) => data[0].value;
+const multiSelectInitializer = (data) => [data[0].value];
 
 export const fullData = {
   // -&anchor
@@ -163,11 +165,30 @@ export const fullData = {
       {
         name: "category",
         fetchUrl: "stock-category",
-        adaptor: regularAdaptor,
+        adaptor: selectAdaptor,
+        initializer: selectInitializer,
       },
-      { name: "serial", fetchUrl: "stock-serial", adaptor: regularAdaptor },
-      { name: "supplier", fetchUrl: "supplier", adaptor: regularAdaptor },
-      { name: "accounting", fetchUrl: "accounting", adaptor: regularAdaptor },
+      {
+        name: "supplier",
+        fetchUrl: "supplier",
+        adaptor: selectAdaptor,
+        initializer: selectInitializer,
+      },
+      {
+        name: "accounting",
+        fetchUrl: "accounting",
+        adaptor: selectAdaptor,
+        initializer: multiSelectInitializer,
+      },
+      {
+        name: "grade_price",
+        fetchUrl: "grade-price",
+      },
+      {
+        name: "role_price",
+        fetchUrl: "role-price",
+        initializer: data => data,
+      },
     ],
     fetchUrl: "stock",
     validationSchema: Yup.object().shape({}),

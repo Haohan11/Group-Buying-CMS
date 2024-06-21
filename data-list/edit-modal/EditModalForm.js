@@ -94,6 +94,8 @@ const ValidateInputField = ({
   onlynumber = false,
   isMulti = false, // only apply for select
   holder,
+  defaultValue,
+  onChange,
 }) =>
   holder ? (
     <>
@@ -114,15 +116,27 @@ const ValidateInputField = ({
       )}
       {type === "select" ? (
         <>
-          {!0 ? (
+          {formik.values[name] && hostPreLoadData.get()?.[name]?.length > 0 ? (
             <Select
               {...{ name, isMulti }}
               inputId={`input_${name}`}
               className="react-select-styled react-select-solid border border-gray-100 rounded"
               classNamePrefix="react-select"
               placeholder="請選擇或輸入關鍵字"
-              options={hostPreLoadData.get()?.[name] ?? []}
-              // defaultValue={[{ label: "請選擇", value: 0 }]}
+              options={hostPreLoadData.get()[name]}
+              defaultValue={
+                isMulti
+                  ? hostPreLoadData
+                      .get()
+                      [name].filter((option) =>
+                        formik.values[name].includes(option.value)
+                      )
+                  : hostPreLoadData
+                      .get()
+                      [name].find(
+                        (option) => option.value === formik.values[name]
+                      )
+              }
               onChange={(options) => {
                 formik.setFieldValue(
                   name,
@@ -133,7 +147,9 @@ const ValidateInputField = ({
               }}
             />
           ) : (
-            <div className="form-select form-select-solid">目前沒有資料</div>
+            <div className="form-select form-select-solid text-gray-500">
+              目前沒有資料
+            </div>
           )}
         </>
       ) : (
@@ -147,12 +163,14 @@ const ValidateInputField = ({
             { "is-invalid": formik?.touched[name] && formik?.errors[name] },
             { "is-valid": formik?.touched[name] && !formik?.errors[name] }
           )}
+          defaultValue={defaultValue}
           type={type}
           name={name}
           autoComplete="off"
           {...(onlynumber && {
             onKeyDown: onlyInputNumbers,
           })}
+          {...(onChange && typeof onChange === "function" && { onChange })}
           disabled={readonly || formik?.isSubmitting}
         />
       )}
@@ -324,27 +342,37 @@ const PriceTable = (props) => {
         required={props.required}
         text={props.label}
       />
-      <Row className=" g-0">
-        {["A", "B", "C", "D", "E"].map((letter, index) => (
-          <Col
-            sm={3}
-            key={letter}
-            className={`border border-gray-300 ${
-              index % 4 !== 0 && "border-start-0"
-            }`}
-          >
-            <div className="bg-gray-500 text-white text-center p-2">
-              {letter}
-            </div>
-            <div className="p-5">
-              <NumberInput
-                name={`${props.name}_${letter}`}
-                inputclassname="border"
-              />
-            </div>
-          </Col>
-        ))}
-      </Row>
+      {hostPreLoadData.get()?.[props.name]?.length > 0 ? (
+        <Row className="g-0">
+          {hostPreLoadData
+            .get()
+            ?.[props.name].map(({ id, name, price }, index) => (
+              <Col
+                sm={3}
+                key={id}
+                className={`border border-gray-300 ${
+                  index % 4 !== 0 && "border-start-0"
+                }`}
+              >
+                <div className="bg-gray-500 text-white text-center p-2">
+                  {name}
+                </div>
+                <div className="p-5">
+                  <NumberInput
+                    name={`${props.name}_${id}`}
+                    inputclassname="border"
+                    onChange={e => console.log(e.target.value)}
+                    defaultValue={price}
+                  />
+                </div>
+              </Col>
+            ))}
+        </Row>
+      ) : (
+        <div className="bg-gray-200 p-8 text-center text-gray-500 rounded-2">
+          目前沒有資料
+        </div>
+      )}
     </div>
   );
 };
@@ -473,19 +501,24 @@ const EditModalForm = () => {
     (async () => {
       if (preLoadList.length === 0) return;
       await Promise.all(
-        preLoadList.map(async ({ name, fetchUrl, adaptor }) => {
+        preLoadList.map(async ({ name, fetchUrl, adaptor, initializer }) => {
           if (preLoadData[name]) return;
           const res = await getAllEnableData(token, fetchUrl);
           if (!res || !res.data) return;
+          // adapt the fetch data
           const data =
             typeof adaptor === "function" ? adaptor(res.data) : res.data;
+          // handle initial values for create mode
+          createMode &&
+            typeof initializer === "function" &&
+            formik.setFieldValue(name, initializer(data));
           setPreLoadData((pre) =>
             hostPreLoadData.set({ ...pre, [name]: data })
           );
         })
       );
     })();
-  }, [token]);
+  });
 
   return (
     <>

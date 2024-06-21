@@ -46,7 +46,7 @@ export const getDataRequest = async (
 };
 
 export const getAllEnableData = async (token, fetchUrl) => {
-  const URL = `${BASEURL}/${fetchUrl}?onlyEnable=}`;
+  const URL = `${BASEURL}/${fetchUrl}?onlyEnable=`;
 
   try {
     const res = await fetch(URL, {
