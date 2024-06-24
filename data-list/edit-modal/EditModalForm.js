@@ -37,7 +37,7 @@ import {
 
 const { inputList, formField, validationSchema, preLoad } = dict;
 
-const hostFormik = {
+const hoistFormik = {
   formik: null,
   set(target) {
     this.formik = target;
@@ -50,7 +50,7 @@ const hostFormik = {
   },
 };
 
-const hostPreLoadData = {
+const hoistPreLoadData = {
   data: null,
   set(target) {
     return (this.data = target);
@@ -85,7 +85,7 @@ const ValidateInputField = ({
   required = false,
   label,
   name,
-  formik = hostFormik.get(),
+  formik = hoistFormik.get(),
   placeholder,
   inputclassname = "",
   labelclassname = "",
@@ -114,66 +114,80 @@ const ValidateInputField = ({
           className={clsx(labelclassname, "cursor-pointer")}
         />
       )}
-      {type === "select" ? (
-        <>
-          {formik.values[name] && hostPreLoadData.get()?.[name]?.length > 0 ? (
-            <Select
-              {...{ name, isMulti }}
-              inputId={`input_${name}`}
-              className="react-select-styled react-select-solid border border-gray-100 rounded"
-              classNamePrefix="react-select"
-              placeholder="請選擇或輸入關鍵字"
-              options={hostPreLoadData.get()[name]}
-              defaultValue={
-                isMulti
-                  ? hostPreLoadData
-                      .get()
-                      [name].filter((option) =>
-                        formik.values[name].includes(option.value)
-                      )
-                  : hostPreLoadData
-                      .get()
-                      [name].find(
-                        (option) => option.value === formik.values[name]
-                      )
-              }
-              onChange={(options) => {
-                formik.setFieldValue(
-                  name,
-                  Array.isArray(options)
-                    ? options.map((option) => option.value)
-                    : options.value
-                );
-              }}
+      {
+        {
+          text: (
+            <input
+              {...formik.getFieldProps(name)}
+              id={`input_${name}`}
+              placeholder={placeholder}
+              className={clsx(
+                "form-control form-control-solid mb-3 mb-lg-0",
+                inputclassname,
+                { "is-invalid": formik?.touched[name] && formik?.errors[name] },
+                { "is-valid": formik?.touched[name] && !formik?.errors[name] }
+              )}
+              defaultValue={defaultValue}
+              type={type}
+              name={name}
+              autoComplete="off"
+              {...(onlynumber && {
+                onKeyDown: onlyInputNumbers,
+              })}
+              {...(onChange && typeof onChange === "function" && { onChange })}
+              disabled={readonly || formik?.isSubmitting}
             />
-          ) : (
-            <div className="form-select form-select-solid text-gray-500">
-              目前沒有資料
-            </div>
-          )}
-        </>
-      ) : (
-        <input
-          {...formik.getFieldProps(name)}
-          id={`input_${name}`}
-          placeholder={placeholder}
-          className={clsx(
-            "form-control form-control-solid mb-3 mb-lg-0",
-            inputclassname,
-            { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-            { "is-valid": formik?.touched[name] && !formik?.errors[name] }
-          )}
-          defaultValue={defaultValue}
-          type={type}
-          name={name}
-          autoComplete="off"
-          {...(onlynumber && {
-            onKeyDown: onlyInputNumbers,
-          })}
-          {...(onChange && typeof onChange === "function" && { onChange })}
-          disabled={readonly || formik?.isSubmitting}
-        />
-      )}
+          ),
+          select: (
+            <>
+              {formik.values[name] &&
+              hoistPreLoadData.get()?.[name]?.length > 0 ? (
+                <Select
+                  {...{ name, isMulti }}
+                  inputId={`input_${name}`}
+                  className="react-select-styled react-select-solid border border-gray-100 rounded"
+                  classNamePrefix="react-select"
+                  placeholder="請選擇或輸入關鍵字"
+                  options={hoistPreLoadData.get()[name]}
+                  defaultValue={
+                    isMulti
+                      ? hoistPreLoadData
+                          .get()
+                          [name].filter((option) =>
+                            formik.values[name].includes(option.value)
+                          )
+                      : hoistPreLoadData
+                          .get()
+                          [name].find(
+                            (option) => option.value === formik.values[name]
+                          )
+                  }
+                  onChange={(options) => {
+                    formik.setFieldValue(
+                      name,
+                      Array.isArray(options)
+                        ? options.map((option) => option.value)
+                        : options.value
+                    );
+                  }}
+                />
+              ) : (
+                <div className="form-select form-select-solid text-gray-500">
+                  目前沒有資料
+                </div>
+              )}
+            </>
+          ),
+          textarea: (
+            <textarea
+              {...formik.getFieldProps(name)}
+              id={`input_${name}`}
+              className="w-100 border border-1 border-gray-200 form-control form-control-solid  rounded-2 px-4 py-2 fs-3"
+              style={{ minHeight: "120px" }}
+            ></textarea>
+          ),
+        }[type]
+      }
       {formik?.touched[name] && formik?.errors[name] && (
         <div className="fv-plugins-message-container">
           <div className="fv-help-block">
@@ -194,6 +208,8 @@ const NumberInput = (props) =>
 const SelectInput = (props) => ValidateInputField({ ...props, type: "select" });
 const MultiSelectInput = (props) =>
   ValidateInputField({ ...props, type: "select", isMulti: true });
+const TextareaInput = (props) =>
+  ValidateInputField({ ...props, type: "textarea" });
 
 const SwitchInput = (props) => (
   <Row className="cursor-pointer" as="label">
@@ -202,10 +218,10 @@ const SwitchInput = (props) => (
     </Col>
     <Col sm={"auto"} className="text-center">
       <FormCheck
-        {...hostFormik.get().getFieldProps(props.name)}
+        {...hoistFormik.get().getFieldProps(props.name)}
         inline
         type="switch"
-        defaultChecked={hostFormik.get().getFieldProps(props.name).value}
+        defaultChecked={hoistFormik.get().getFieldProps(props.name).value}
         id={`switch_${props.name}`}
         name={props.name}
       />
@@ -229,12 +245,12 @@ const ImageInput = (props) => {
           htmlFor={`image_${props.name}`}
         >
           請選擇照片
-          {hostFormik.get()?.values[`${props.name}_preview`] && (
+          {hoistFormik.get()?.values[`${props.name}_preview`] && (
             <Image
               sizes="100px"
               fill
               className="top-0 start-0 object-fit-cover"
-              src={hostFormik.get().values[`${props.name}_preview`]}
+              src={hoistFormik.get().values[`${props.name}_preview`]}
               alt={`image_${props.name}`}
             />
           )}
@@ -247,8 +263,8 @@ const ImageInput = (props) => {
               const [file] = event.target.files;
               if (!file) return;
               const src = URL.createObjectURL(file);
-              hostFormik.get().setFieldValue(`${props.name}_preview`, src);
-              hostFormik.get().setFieldValue(props.name, file);
+              hoistFormik.get().setFieldValue(`${props.name}_preview`, src);
+              hoistFormik.get().setFieldValue(props.name, file);
             }}
           />
         </label>
@@ -270,7 +286,7 @@ const MultiImageInput = (props) => {
         className="d-block overflow-x-scroll text-nowrap bg-gray-200 p-3 pb-0 rounded-2"
         htmlFor={`image_${props.name}`}
       >
-        {hostFormik.get()?.values[props.name]?.map(({ id, src }) => (
+        {hoistFormik.get()?.values[props.name]?.map(({ id, src }) => (
           <div key={id} className="position-relative d-inline-block m-5">
             <div
               className="position-relative rounded-3 overflow-hidden shadow-sm"
@@ -292,8 +308,8 @@ const MultiImageInput = (props) => {
               }}
               onClick={(e) => {
                 e.preventDefault();
-                const prevImages = hostFormik.get().values[props.name];
-                hostFormik.get().setFieldValue(
+                const prevImages = hoistFormik.get().values[props.name];
+                hoistFormik.get().setFieldValue(
                   props.name,
                   prevImages.filter((image) => image.id !== id)
                 );
@@ -301,7 +317,7 @@ const MultiImageInput = (props) => {
             ></span>
           </div>
         ))}
-        {!!hostFormik.get()?.values[props.name]?.length || (
+        {!!hoistFormik.get()?.values[props.name]?.length || (
           <div
             className="text-center text-gray-500 my-5 cursor-pointer"
             style={{ height: "100px", alignContent: "center" }}
@@ -322,8 +338,8 @@ const MultiImageInput = (props) => {
               const url = URL.createObjectURL(file);
               return { id: url, src: url, file };
             });
-            const prevImages = hostFormik.get().values[props.name] || [];
-            hostFormik
+            const prevImages = hoistFormik.get().values[props.name] || [];
+            hoistFormik
               .get()
               .setFieldValue(props.name, [...prevImages, ...images]);
           }}
@@ -342,9 +358,9 @@ const PriceTable = (props) => {
         required={props.required}
         text={props.label}
       />
-      {hostPreLoadData.get()?.[props.name]?.length > 0 ? (
+      {hoistPreLoadData.get()?.[props.name]?.length > 0 ? (
         <Row className="g-0">
-          {hostPreLoadData
+          {hoistPreLoadData
             .get()
             ?.[props.name].map(({ id, name, price }, index) => (
               <Col
@@ -396,6 +412,7 @@ const inputDictionary = {
   editor: EditorField,
   select: SelectInput,
   "multi-select": MultiSelectInput,
+  textarea: TextareaInput,
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
@@ -465,7 +482,7 @@ const EditModalForm = () => {
     onSubmit: async (values) => {
       await {
         async create() {
-          return console.log(values);
+          // return console.log(values);
           await createDataRequest(token, values);
           setPopupSet({
             message: "新增成功",
@@ -489,13 +506,13 @@ const EditModalForm = () => {
       }[currentMode]();
     },
   });
-  hostFormik.set(formik);
+  hoistFormik.set(formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
 
   /**
    * handle preLoad data
-   * Note that actual use data is hostPreLoadData not preLoadData
+   * Note that actual use data is hoistPreLoadData not preLoadData
    * preLoadData is use for cache
    */
   useEffect(() => {
@@ -521,7 +538,7 @@ const EditModalForm = () => {
               typeof initializer === "function" ? initializer(data) : data
             );
 
-          hostPreLoadData.set({ ...hostPreLoadData.get(), [name]: data });
+          hoistPreLoadData.set({ ...hoistPreLoadData.get(), [name]: data });
         })
       );
     })();

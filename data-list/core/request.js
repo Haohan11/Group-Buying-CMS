@@ -151,6 +151,26 @@ export const updateDataRequest = async (token, values) => {
   }
 };
 
+export const deleteDataRequest = async (token, id) => {
+  const URL = `${BASEURL}/${getTableUrl()}`;
+  const formData = new FormData();
+  formData.append("id", id);
+  try {
+    const res = await fetch(URL, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+    if (!res.ok) return false;
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 export const getAllTables = async (token) => {
   const URL = `${BASEURL}/all-tables`;
   try {

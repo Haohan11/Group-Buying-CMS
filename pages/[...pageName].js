@@ -21,6 +21,7 @@ export default TablePage;
 
 export const getStaticPaths = async () => {
   const list = await getIndexItems();
+  if (!list) return { paths: [], fallback: false };
 
   const paths = list.reduce(
     (pathArray, moduleItem) => [
@@ -40,7 +41,11 @@ export const getStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async ({ params: { pageName } }) => {
+export const getStaticProps = async ({ params = {} }) => {
+  const { pageName } = params;
+
+  if(!pageName) return { props: {} };
+
   return {
     props: {
       tableName: pageName.join("-"),
