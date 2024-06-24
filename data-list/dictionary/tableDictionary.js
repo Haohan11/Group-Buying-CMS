@@ -97,9 +97,21 @@ export const fullData = {
           name: "category",
         },
         {
-          type: "multi-select",
-          label: "記帳分類",
-          name: "accounting",
+          type: "text",
+          label: "商品規格",
+          name: "specification",
+        },
+      ],
+      [
+        {
+          type: "select",
+          label: "商品品牌",
+          name: "brand",
+        },
+        {
+          type: "select",
+          label: "供應商",
+          name: "supplier",
         },
       ],
       [
@@ -109,21 +121,21 @@ export const fullData = {
           name: "preorder_count",
         },
         {
-          type: "number",
-          label: "最少訂購數",
-          name: "min_order",
+          type: "multi-select",
+          label: "記帳分類",
+          name: "accounting",
         },
       ],
       [
         {
           type: "number",
-          label: "訂購倍數",
-          name: "order_step",
+          label: "最少訂購數",
+          name: "min_order",
         },
         {
-          type: "text",
-          label: "商品規格",
-          name: "specification",
+          type: "number",
+          label: "訂購倍數",
+          name: "order_step",
         },
       ],
       [
@@ -136,11 +148,6 @@ export const fullData = {
           type: "number",
           label: "進貨價",
           name: "purchase_price",
-        },
-        {
-          type: "select",
-          label: "供應商",
-          name: "supplier",
         },
       ],
       {
@@ -187,7 +194,12 @@ export const fullData = {
       {
         name: "role_price",
         fetchUrl: "role-price",
-        initializer: data => data,
+      },
+      {
+        name: "brand",
+        fetchUrl: "stock-brand",
+        adaptor: selectAdaptor,
+        initializer: selectInitializer,
       },
     ],
     fetchUrl: "stock",

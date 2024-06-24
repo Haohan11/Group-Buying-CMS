@@ -361,7 +361,7 @@ const PriceTable = (props) => {
                   <NumberInput
                     name={`${props.name}_${id}`}
                     inputclassname="border"
-                    onChange={e => console.log(e.target.value)}
+                    onChange={(e) => console.log(e.target.value)}
                     defaultValue={price}
                   />
                 </div>
@@ -496,29 +496,36 @@ const EditModalForm = () => {
   /**
    * handle preLoad data
    * Note that actual use data is hostPreLoadData not preLoadData
+   * preLoadData is use for cache
    */
   useEffect(() => {
     (async () => {
       if (preLoadList.length === 0) return;
       await Promise.all(
         preLoadList.map(async ({ name, fetchUrl, adaptor, initializer }) => {
-          if (preLoadData[name]) return;
-          const res = await getAllEnableData(token, fetchUrl);
-          if (!res || !res.data) return;
-          // adapt the fetch data
+          const rawData = await (async () => {
+            if (preLoadData[name]) return preLoadData[name];
+            const res = await getAllEnableData(token, fetchUrl);
+            if (!res || !res.data) return false;
+            setPreLoadData((pre) => ({ ...pre, [name]: res.data }));
+            return res.data;
+          })();
+          if (!rawData) return;
+
           const data =
-            typeof adaptor === "function" ? adaptor(res.data) : res.data;
+            typeof adaptor === "function" ? adaptor(rawData) : rawData;
           // handle initial values for create mode
           createMode &&
-            typeof initializer === "function" &&
-            formik.setFieldValue(name, initializer(data));
-          setPreLoadData((pre) =>
-            hostPreLoadData.set({ ...pre, [name]: data })
-          );
+            formik.setFieldValue(
+              name,
+              typeof initializer === "function" ? initializer(data) : data
+            );
+
+          hostPreLoadData.set({ ...hostPreLoadData.get(), [name]: data });
         })
       );
     })();
-  });
+  }, []);
 
   return (
     <>
