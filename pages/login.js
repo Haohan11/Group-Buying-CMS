@@ -17,6 +17,7 @@ import Logo from "@/components/logo";
 
 import VersionCode from "@/components/VersionCode";
 
+import copyRightText from "@/tool/copyright";
 import { useModals, useLocalStorage } from "@/tool/hooks";
 
 const LoginLayout = () => {
@@ -165,7 +166,7 @@ const LoginLayout = () => {
       </div>
       <div className="flex-center" style={{ height: "8vh" }}>
         <p style={{ color: "grey", letterSpacing: "1px" }}>
-          Copyright © 2024 YouCanBuy. All rights reserved
+          {copyRightText}
         </p>
       </div>
       <div
