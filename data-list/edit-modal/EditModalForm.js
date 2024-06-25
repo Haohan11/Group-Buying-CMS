@@ -212,11 +212,11 @@ const TextareaInput = (props) =>
   ValidateInputField({ ...props, type: "textarea" });
 
 const SwitchInput = (props) => (
-  <Row className="cursor-pointer" as="label">
+  <Row className={`cursor-pointer ${props.inline && "flex-column g-3"}`} as="label">
     <Col>
       <span className="fw-bold fs-6">{props.label}</span>
     </Col>
-    <Col sm={"auto"} className="text-center">
+    <Col sm={"auto"} className={`${!props.inline && "text-center"}`}>
       <FormCheck
         {...hoistFormik.get().getFieldProps(props.name)}
         inline
@@ -234,14 +234,14 @@ const ImageInput = (props) => {
     <div className="d-flex flex-column h-100">
       <InputLabel
         htmlFor={`image_${props.name}`}
-        className="p-1 cursor-pointer align-self-start"
+        className="cursor-pointer align-self-start"
         required={props.required}
         text={props.label}
       />
       <div className="flex-center flex-grow-1">
         <label
           className="position-relative h-100 w-100 bg-gray-200 rounded-3 cursor-pointer overflow-hidden flex-center text-gray-500"
-          style={{ minHeight: "150px", maxHeight: "200px" }}
+          style={props.imagestyle || {minHeight: "100px"}}
           htmlFor={`image_${props.name}`}
         >
           請選擇照片
@@ -277,7 +277,7 @@ const MultiImageInput = (props) => {
   return (
     <div className="">
       <InputLabel
-        className="d-inline-block p-1 cursor-pointer"
+        className="d-inline-block cursor-pointer"
         htmlFor={`image_${props.name}`}
         required={props.required}
         text={props.label}
@@ -430,6 +430,7 @@ const createRowColTree = (arr) =>
                 name={input.name}
                 label={input.label}
                 required={input.required}
+                {...input.props}
               />
             </Col>
           );

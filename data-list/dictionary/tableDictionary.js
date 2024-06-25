@@ -3,15 +3,7 @@ import * as Yup from "yup";
 import {
   stockColumns,
   stockBrandColumns,
-  seriesColumns,
-  colorSchemeColumns,
-  designColumns,
-  materialColumns,
-  supplierColumns,
-  accountsColumns,
-  roleColumns,
-  environmentColumns,
-  colorColumns,
+  stockCategoryColumns,
 } from "../table/columns/_columns";
 
 const enable_label = "啟用狀態";
@@ -25,7 +17,6 @@ const selectInitializer = (data) => data[0].value;
 const multiSelectInitializer = (data) => [data[0].value];
 
 export const fullData = {
-  // -&anchor
   "stock-management": {
     pageTitle: "商品維護",
     searchPlaceholder: "商品",
@@ -38,6 +29,9 @@ export const fullData = {
           label: "商品封面照",
           required: true,
           name: "cover",
+          props: {
+            imagestyle: { minHeight: "150px", maxHeight: "200px" },
+          },
         },
         [
           {
@@ -216,54 +210,6 @@ export const fullData = {
       price: "",
     },
   },
-  "stock-tag": {
-    pageTitle: "商品維護",
-    searchPlaceholder: "商品",
-    createHeaderText: "商品資料",
-    column: stockColumns,
-    modalConfig: {
-      avatar: false,
-      name_label: "商品樣式",
-      name_placeholder: "請輸入商品樣式",
-      name_required: true,
-      code_label: "商品型號",
-      code_required: true,
-      code_placeholder: "請輸入商品型號",
-      supplier_label: "供應廠商",
-      enable_label: "上架狀態",
-      series_label: "商品系列",
-      color_label: "商品顏色",
-      color_placeholder: "輸入商品顏色名稱",
-      material_label: "面料材質",
-      design_label: "商品風格",
-      absorption_label: "吸音效果",
-      block_label: "遮光效果",
-      description_label: "商品描述",
-    },
-    fetchUrl: "stock",
-    validationSchema: Yup.object().shape({
-      name: Yup.string()
-        .min(2, "至少 2 個字")
-        .max(15, "至多 15 個字")
-        .required("此欄位必填"),
-      series: Yup.string().required(),
-      code: Yup.string().max(15, "至多 15 個字").required("此欄位必填"),
-    }),
-    formField: {
-      name: "",
-      code: "",
-      enable: true,
-      series: "",
-      supplier: "",
-      material: [],
-      design: [],
-      absorption: 1,
-      block: 1,
-      description: "",
-      environment: [],
-      colorImages: [],
-    },
-  },
   "stock-brand": {
     pageTitle: "商品品牌維護",
     searchPlaceholder: "品牌",
@@ -275,7 +221,7 @@ export const fullData = {
         label: "品牌名稱",
         required: true,
         name: "name",
-        col: 6
+        col: 6,
       },
       {
         type: "textarea",
@@ -284,6 +230,65 @@ export const fullData = {
       },
     ],
     fetchUrl: "stock-brand",
+    validationSchema: Yup.object().shape({
+      name: Yup.string()
+        .min(2, "至少 2 個字")
+        .max(15, "至多 15 個字")
+        .required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
+    },
+  },
+  "stock-category": {
+    pageTitle: "商品類別維護",
+    searchPlaceholder: "類別",
+    createHeaderText: "類別資料",
+    column: stockCategoryColumns,
+    inputList: [
+      [
+        {
+          type: "text",
+          label: "類別名稱",
+          required: true,
+          name: "name",
+          col: 6,
+        },
+        [
+          [
+            {
+              type: "label-holder",
+            },
+            {
+              type: "switch",
+              label: "是否為精選分類",
+              name: "is_recommended",
+              col: 5,
+              props: {
+                inline: true
+              }
+            },
+            {
+              type: "label-holder",
+              col: 5
+            },
+          ],
+        ],
+      ],
+      {
+        type: "image",
+        label: "精選分類縮圖",
+        name: "recommended_image",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "stock-category",
     validationSchema: Yup.object().shape({
       name: Yup.string()
         .min(2, "至少 2 個字")

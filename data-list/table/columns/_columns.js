@@ -146,13 +146,6 @@ export const stockColumns = [
     accessor: 'design',
     Cell: ({ ...props }) => <ColorSchemeCell colorScheme={props.data[props.row.index].design} />,
   },
-  // {
-  //   Header: (props) => (
-  //     <UserCustomHeader tableProps={props} title='適用場景' className='min-w-125px' />
-  //   ),
-  //   accessor: 'environment',
-  //   Cell: ({ ...props }) => <ColorSchemeCell colorScheme={props.data[props.row.index].environment} />,
-  // },
   {
     Header: (props) => (
       <UserCustomHeader tableProps={props} title='遮光效果' className='min-w-125px' />
@@ -205,7 +198,7 @@ export const stockBrandColumns = [
   },
 ]
 
-export const seriesColumns= [
+export const stockCategoryColumns = [
   {
     Header: (props) => (
       <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
@@ -214,231 +207,19 @@ export const seriesColumns= [
     Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
   },
   {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='系列編號' className='min-w-125px' />,
-    accessor: 'code',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='系列名稱' className='min-w-125px' />,
+    Header: (props) => <UserCustomHeader tableProps={props} title='類別名稱' className='min-w-125px' />,
     accessor: 'name',
   },
   {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const colorColumns = [
-  {
     Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
+      <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />
     ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+    accessor: 'description',
   },
   {
     Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
+      <UserCustomHeader tableProps={props} title='創建時間' className='min-w-125px' />
     ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='顏色名稱' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const colorSchemeColumns = [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='色系名稱' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const designColumns = [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='風格名稱' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const materialColumns = [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='面料名稱' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const supplierColumns= [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='供應商編號' className='min-w-125px' />,
-    accessor: 'code',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='供應商名稱' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const accountsColumns = [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='啟用狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <EnableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='員工角色' className='min-w-125px' />,
-    accessor: 'role_name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='員工編號' className='min-w-125px' />,
-    accessor: 'code',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='員工姓名' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='身分證號' className='min-w-125px' />,
-    accessor: 'id_code',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='手機號碼' className='min-w-125px' />,
-    accessor: 'phone_number',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='電子郵箱' className='min-w-125px' />,
-    accessor: 'email',
-  },
-]
-
-export const roleColumns = [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='角色名稱' className='min-w-125px' />,
-    accessor: 'name',
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />,
-    accessor: 'comment',
-  },
-]
-
-export const environmentColumns = [
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
-    ),
-    id: 'actions',
-    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader tableProps={props} title='上架狀態' className='min-w-125px' />
-    ),
-    id: 'enable',
-    Cell: ({ ...props }) => <ProductAvaliableCell enable={props.data[props.row.index].enable} />,
-  },
-  {
-    Header: (props) => <UserCustomHeader tableProps={props} title='場景名稱' className='min-w-125px' />,
-    accessor: 'name',
+    accessor: 'create_time',
   },
 ]

@@ -8,18 +8,13 @@ import "@/_metronic/assets/sass/style.scss";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 
-// import axios from "axios";
-// import { AuthProvider, setupAxios } from "@/_metronic/auth";
 import { SessionProvider } from "next-auth/react";
 import Detector from "../components/Detector";
 
 import { MetronicI18nProvider } from "@/_metronic/i18n/Metronici18n";
-// import { QueryClient, QueryClientProvider } from "react-query";
 import { LayoutProvider } from "@/_metronic/layout/core";
 
 import ScreenLoad from "@/components/loading/ScreenLoad";
-
-// setupAxios(axios);
 
 // need { MasterInit } to get sidebar work, but it require to control ther document node, so use dynamic import with no ssr
 const DynamicMasterInit = dynamic(
