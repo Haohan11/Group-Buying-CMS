@@ -32,7 +32,7 @@ import { onlyInputNumbers, toArray } from "@/tool/helper";
 import {
   createDataRequest,
   updateDataRequest,
-  getAllEnableData,
+  getAllData,
 } from "../core/request";
 
 const { inputList, formField, validationSchema, preLoad } = dict;
@@ -182,7 +182,7 @@ const ValidateInputField = ({
             <textarea
               {...formik.getFieldProps(name)}
               id={`input_${name}`}
-              className="w-100 border border-1 border-gray-200 form-control form-control-solid  rounded-2 px-4 py-2 fs-3"
+              className="border border-1 border-gray-200 form-control form-control-solid"
               style={{ minHeight: "120px" }}
             ></textarea>
           ),
@@ -460,16 +460,18 @@ const EditModalForm = () => {
   const preLoadList = preLoad[tableName] || [];
   const { tableData, preLoadData, setPreLoadData } = useTableData();
 
-  const currentData = editMode
-    ? tableData.find((data) => data.id === itemIdForUpdate)
-    : null;
+  const [initialValues, setInitialValues] = useState(
+    (() => {
+      if (createMode) return formField[tableName];
 
-  const handleCurrentData = (data) => data;
+      const currentData = tableData.find((data) => data.id === itemIdForUpdate);
 
-  const [initialValues, setInitialValues] = useState({
-    ...formField[tableName],
-    ...(currentData !== null && handleCurrentData(currentData)),
-  });
+      return Object.keys(formField[tableName]).reduce((result, key) => {
+        result[key] = currentData[key];
+        return result;
+      }, {});
+    })()
+  );
 
   //提醒系列
   const [popupSet, setPopupSet] = useState({ message: "", icon: "" });
@@ -491,9 +493,9 @@ const EditModalForm = () => {
           handleShowModal("popup");
         },
         async edit() {
-          return console.log(values);
+          // return console.log(values);
           await updateDataRequest(token, {
-            ...flatColorImagesField(values),
+            ...values,
             id: itemIdForUpdate,
           });
           setPopupSet({
@@ -522,7 +524,7 @@ const EditModalForm = () => {
         preLoadList.map(async ({ name, fetchUrl, adaptor, initializer }) => {
           const rawData = await (async () => {
             if (preLoadData[name]) return preLoadData[name];
-            const res = await getAllEnableData(token, fetchUrl);
+            const res = await getAllData(token, fetchUrl);
             if (!res || !res.data) return false;
             setPreLoadData((pre) => ({ ...pre, [name]: res.data }));
             return res.data;

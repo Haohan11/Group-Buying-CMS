@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 import { placeHolderColumns } from "./columns/_columns";
 import { useSession } from "next-auth/react";
-import { getDataRequest, getAllEnableData } from "../core/request";
+import { getDataRequest } from "../core/request";
 
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
@@ -97,7 +97,7 @@ const Table = ({ setTrigger }) => {
 
   return (
     <div className="py-4">
-      <div className="table-responsive mb-8">
+      <div className={`px-2 table-responsive mb-8 ${rows.length > 0 && "min-h-250px"}`}>
         <table
           id="kt_table_users"
           className="table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer"
@@ -119,8 +119,8 @@ const Table = ({ setTrigger }) => {
             ) : (
               <tr>
                 <td colSpan={7}>
-                  <div className="d-flex text-center w-100 align-content-center justify-content-center">
-                    <span className="">
+                  <div className="flex-center">
+                    <span>
                       {isLoading ? "載入中..." : "目前沒有資料"}
                     </span>
                   </div>

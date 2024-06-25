@@ -292,7 +292,7 @@ export const fullData = {
     }),
     formField: {
       name: "",
-      comment: "",
+      description: "",
     },
   },
 };
