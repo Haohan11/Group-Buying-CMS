@@ -6,8 +6,6 @@ import {
   stockCategoryColumns,
 } from "../table/columns/_columns";
 
-const enable_label = "啟用狀態";
-const comment_label = "備註";
 
 const selectAdaptor = (data) =>
   Array.isArray(data)
@@ -294,10 +292,16 @@ export const fullData = {
         .min(2, "至少 2 個字")
         .max(15, "至多 15 個字")
         .required("此欄位必填"),
+      recommended_image: Yup.mixed().when("is_recommended", {
+        is: true,
+        then: () => Yup.mixed().required("精選分類請提供縮圖"),
+      }).nullable(true),
     }),
     formField: {
       name: "",
       description: "",
+      is_recommended: false,
+      recommended_image: null,
     },
   },
 };

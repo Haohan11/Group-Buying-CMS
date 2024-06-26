@@ -20,7 +20,9 @@ export const checkExpires = (time) =>
   time ? time * 1000 < Date.now() : console.log("Invalid exp.");
 
 export const transImageUrl = (path) =>
-  `${process.env.NEXT_PUBLIC_BACKENDURL}/${path.replace(/\\/g, "/")}`;
+  path && path?.replace
+    ? `${process.env.NEXT_PUBLIC_BACKENDURL}/${path.replace(/\\/g, "/")}`
+    : "";
 
 export const onlyInputNumbers = (event) => {
   if (

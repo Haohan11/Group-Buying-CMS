@@ -27,7 +27,7 @@ const CustomEditor = dynamic(
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
 import { useModals } from "@/tool/hooks";
-import { onlyInputNumbers, toArray } from "@/tool/helper";
+import { onlyInputNumbers, toArray, transImageUrl } from "@/tool/helper";
 
 import {
   createDataRequest,
@@ -212,7 +212,10 @@ const TextareaInput = (props) =>
   ValidateInputField({ ...props, type: "textarea" });
 
 const SwitchInput = (props) => (
-  <Row className={`cursor-pointer ${props.inline && "flex-column g-3"}`} as="label">
+  <Row
+    className={`cursor-pointer ${props.inline && "flex-column g-3"}`}
+    as="label"
+  >
     <Col>
       <span className="fw-bold fs-6">{props.label}</span>
     </Col>
@@ -241,16 +244,20 @@ const ImageInput = (props) => {
       <div className="flex-center flex-grow-1">
         <label
           className="position-relative h-100 w-100 bg-gray-200 rounded-3 cursor-pointer overflow-hidden flex-center text-gray-500"
-          style={props.imagestyle || {minHeight: "100px"}}
+          style={props.imagestyle || { minHeight: "100px" }}
           htmlFor={`image_${props.name}`}
         >
           請選擇照片
-          {hoistFormik.get()?.values[`${props.name}_preview`] && (
+          {(hoistFormik.get()?.values[`${props.name}_preview`] ||
+            transImageUrl(hoistFormik.get()?.values[props.name])) && (
             <Image
               sizes="100px"
               fill
               className="top-0 start-0 object-fit-cover"
-              src={hoistFormik.get().values[`${props.name}_preview`]}
+              src={
+                hoistFormik.get().values[`${props.name}_preview`] ||
+                transImageUrl(hoistFormik.get().values[props.name])
+              }
               alt={`image_${props.name}`}
             />
           )}
@@ -269,6 +276,13 @@ const ImageInput = (props) => {
           />
         </label>
       </div>
+      {hoistFormik.get()?.errors[props.name] && (
+        <div className="fv-plugins-message-container">
+          <div className="fv-help-block">
+            <span role="alert">{hoistFormik.get()?.errors[props.name]}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

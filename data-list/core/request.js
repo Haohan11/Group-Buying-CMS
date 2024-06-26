@@ -65,91 +65,66 @@ export const getAllData = async (token, fetchUrl) => {
   }
 };
 
-export const createDataRequest = async (token, values) => {
-  const URL = `${BASEURL}/${getTableUrl()}`;
-
-  const formData = new FormData();
-  for (const key in values) {
-    const value = values[key];
-
-    try {
-      if (!Array.isArray(value)) {
-        formData.append(
-          key,
-          (typeof value === "object" && value !== null && !(value instanceof File))
-            ? JSON.stringify(value)
-            : value
-        );
-        continue;
-      }
-    } catch (error) {
-      return !!console.warn(error);
-    }
-
-    value.forEach((item) => {
-      formData.append(key, item);
-    });
-  }
-
-  try {
-    const res = await fetch(URL, {
+const CUDataRequest = (action) => {
+  const actionDict = {
+    create: {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    const result = await res.json();
-    console.log("submited:", result);
-    if (!res.ok) return false;
-    return result.status;
-  } catch (error) {
-    console.log("error:", error);
-    return false;
-  }
-};
-
-export const updateDataRequest = async (token, values) => {
-  const URL = `${BASEURL}/${getTableUrl()}`;
-
-  const formData = new FormData();
-  for (const key in values) {
-    const value = values[key];
-    if (!Array.isArray(value)) {
-      formData.append(
-        key,
-        (typeof value === "object" && value !== null && !(value instanceof File))
-          ? JSON.stringify(value)
-          : value
-      );
-      continue;
-    }
-
-    value.forEach((item) => {
-      formData.append(
-        key,
-        typeof item === "object" && !(item instanceof File)
-          ? JSON.stringify(item)
-          : item
-      );
-    });
-  }
-
-  try {
-    const res = await fetch(URL, {
+      logMessage: "新增",
+    },
+    update: {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    const result = await res.json();
-    return { status: res.ok, message: result.message };
-  } catch (error) {
-    console.log("error:", error);
-    return false;
+      logMessage: "編輯",
+    },
   }
-};
+  return async (token, values) => {
+    const URL = `${BASEURL}/${getTableUrl()}`;
+  
+    const formData = new FormData();
+    for (const key in values) {
+      const value = values[key];
+  
+      try {
+        if(value === null || value === undefined) continue;
+        if (!Array.isArray(value)) {
+          formData.append(
+            key,
+            (typeof value === "object" && !(value instanceof File))
+              ? JSON.stringify(value)
+              : value
+          );
+          continue;
+        }
+      } catch (error) {
+        return !!console.warn(error);
+      }
+  
+      value.forEach((item) => {
+        formData.append(key, item);
+      });
+    }
+  
+    try {
+      const res = await fetch(URL, {
+        method: actionDict[action].method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+      const result = await res.json();
+      console.log(`${actionDict[action].logMessage}:`, result);
+      if (!res.ok) return false;
+      return result.status;
+    } catch (error) {
+      console.log(`${actionDict[action].logMessage} error:`, error);
+      return false;
+    }
+  };
+}
+
+export const createDataRequest = CUDataRequest("create");
+
+export const updateDataRequest = CUDataRequest("update");
 
 export const deleteDataRequest = async (token, id) => {
   const URL = `${BASEURL}/${getTableUrl()}`;
