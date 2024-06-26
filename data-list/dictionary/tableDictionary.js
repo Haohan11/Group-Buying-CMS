@@ -13,8 +13,8 @@ const selectAdaptor = (data) =>
   Array.isArray(data)
     ? data.map(({ id, name }) => ({ label: name, value: id }))
     : [];
-const selectInitializer = (data) => data[0].value;
-const multiSelectInitializer = (data) => [data[0].value];
+const selectInitializer = (data) => data?.[0]?.value;
+const multiSelectInitializer = (data) => [data?.[0]?.value];
 
 export const fullData = {
   "stock-management": {
