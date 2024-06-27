@@ -6,7 +6,7 @@ import { SidebarMenuItem } from "./SidebarMenuItem";
 import { checkIsActive, KTIcon, WithChildren } from "../../../../helpers";
 import { signOut } from "next-auth/react";
 
-import { getIndexItems } from "@/data-list/core/request";
+import { getIndexItems, updateIndexItem } from "@/data-list/core/request";
 
 import { usePermission } from "@/tool/hooks";
 import { checkArray } from "@/tool/helper";
@@ -23,31 +23,52 @@ const SidebarMenuMain = () => {
       const indexItems = await getIndexItems();
 
       setItems(indexItems);
-    })()
+    })();
   }, []);
 
   return (
     <>
-    {checkArray(items) && items.map((item) => {
-      return (
-        <SidebarMenuItemWithSub
-          key={item.id}
-          title={item.name}
-          icon={`bi bi-${item.icon}`}
+      {checkArray(items) &&
+        items.map((item) => {
+          return (
+            <SidebarMenuItemWithSub
+              key={item.id}
+              title={item.name}
+              icon={`bi bi-${item.icon}`}
+            >
+              {checkArray(item.indexItems) &&
+                item.indexItems.map((child) => {
+                  return (
+                    <SidebarMenuItem
+                      key={child.id}
+                      to={`${item.route}/${child.route}`}
+                      title={child.name}
+                      hasBullet
+                    />
+                  );
+                })}
+            </SidebarMenuItemWithSub>
+          );
+        })}
+      <div className="menu-item">
+        <Link
+          href="/"
+          className={clsx("menu-link without-sub")}
+          onClick={async () => {
+            const confirm = window.confirm("更新作業項?");
+          if (confirm) {
+            const res = await updateIndexItem();
+            console.log(res);
+          }
+          }}
         >
-          {checkArray(item.indexItems) && item.indexItems.map((child) => {
-            return (
-              <SidebarMenuItem
-                key={child.id}
-                to={`${item.route}/${child.route}`}
-                title={child.name}
-                hasBullet
-              />
-            );
-          })}
-        </SidebarMenuItemWithSub>
-      )
-    })}
+          <span className="menu-icon">
+            {" "}
+            <KTIcon iconName="bi bi-bounding-box" className="fs-2" />
+          </span>
+          <span className="menu-title">更新作業項</span>
+        </Link>
+      </div>
       <div className="menu-item">
         <Link
           href="/"

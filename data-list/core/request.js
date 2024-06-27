@@ -17,6 +17,18 @@ export const alterSyncTables = async () => {
   }
 };
 
+export const updateIndexItem = async () => {
+  const URL = `${BASEURL}/create-index-item`;
+  try {
+    const res = await fetch(URL);
+    if (!res.ok) return false;
+    return await res.json();
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
 export const getDataRequest = async (
   token,
   { page, size, keyword, sort, item, isEnable }
