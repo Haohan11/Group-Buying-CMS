@@ -346,13 +346,96 @@ export const fullData = {
         .max(35, "至多 35 個字")
         .required("此欄位必填"),
       code: Yup.string()
-      .matches(/^[a-zA-Z0-9]+$/, "僅限輸入英數字")
-      .required("此欄位必填"),
+        .matches(/^[a-zA-Z0-9]+$/, "僅限輸入英數字")
+        .required("此欄位必填"),
       sorting: Yup.string().matches(/^[0-9]+$/, "僅限輸入數字"),
     }),
     formField: {
       name: "",
       sorting: 1,
+      code: "",
+      description: "",
+    },
+  },
+  "purchase-supplier": {
+    pageTitle: "供應商管理",
+    searchPlaceholder: "供應商",
+    createHeaderText: "供應商",
+    editHeaderText: "供應商",
+    column: stockAccountsColumns,
+    inputList: [
+      [
+        {
+          type: "text",
+          label: "供應商名稱",
+          required: true,
+          name: "name",
+        },
+        {
+          type: "text",
+          label: "供應商編號",
+          required: true,
+          name: "code",
+        },
+      ],
+      [
+        {
+          type: "select",
+          label: "付款方式",
+          name: "payment_method",
+        },
+        {
+          type: "select",
+          label: "結帳方式",
+          name: "accounting_method",
+        },
+      ],
+      [
+        {
+          type: "number",
+          label: "統一編號",
+          name: "uniform_number",
+        },
+        {
+          type: "number",
+          label: "聯絡電話",
+          name: "phone",
+        },
+      ],
+      [
+        {
+          label: "聯絡地址",
+          name: "contact_address",
+        },
+        {
+          label: "聯絡人",
+          name: "contact_person",
+        },
+      ],
+      {
+        type: "number",
+        label: "聯絡人電話",
+        name: "contact_phone",
+        col: 6
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "purchase-supplier",
+    validationSchema: Yup.object().shape({
+      name: Yup.string()
+        .min(1, "至少 2 個字")
+        .max(35, "至多 35 個字")
+        .required("此欄位必填"),
+      code: Yup.string()
+        .matches(/^[a-zA-Z0-9]+$/, "僅限輸入英數字")
+        .required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
       code: "",
       description: "",
     },

@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 import { placeHolderColumns } from "./columns/_columns";
 import { useSession } from "next-auth/react";
-import { getDataRequest } from "../core/request";
+import { readDataRequest } from "../core/request";
 
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
@@ -20,7 +20,7 @@ const { column } = dict;
 const fetchTableData = async (
   token,
   { page = 1, size = 5, keyword = "", sort, item, isEnable }
-) => await getDataRequest(token, { page, size, keyword, sort, item, isEnable });
+) => await readDataRequest(token, { page, size, keyword, sort, item, isEnable });
 
 const Table = ({ setTrigger }) => {
   const { data, status } = useSession();

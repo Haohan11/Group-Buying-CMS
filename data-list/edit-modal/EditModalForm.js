@@ -32,7 +32,7 @@ import { onlyInputNumbers, toArray, transImageUrl } from "@/tool/helper";
 import {
   createDataRequest,
   updateDataRequest,
-  getAllData,
+  regularReadData,
 } from "../core/request";
 
 const { inputList, formField, validationSchema, preLoad } = dict;
@@ -539,7 +539,7 @@ const EditModalForm = () => {
         preLoadList.map(async ({ name, fetchUrl, adaptor, initializer }) => {
           const rawData = await (async () => {
             if (preLoadData[name]) return preLoadData[name];
-            const res = await getAllData(token, fetchUrl);
+            const res = await regularReadData(token, fetchUrl);
             if (!res || !res.data) return false;
             setPreLoadData((pre) => ({ ...pre, [name]: res.data }));
             return res.data;

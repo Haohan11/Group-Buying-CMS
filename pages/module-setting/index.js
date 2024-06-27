@@ -1,6 +1,6 @@
 import { Container, Row, Col } from "react-bootstrap";
 import { getSession } from "next-auth/react";
-import { getAllTables } from "@/data-list/core/request";
+// import { getAllTables } from "@/data-list/core/request";
 import Select from "react-select";
 
 const ModuleSettingPage = ({ list }) => {
@@ -29,18 +29,18 @@ const ModuleSettingPage = ({ list }) => {
   );
 };
 
-export const getServerSideProps = async (context) => {
-  const session = await getSession(context);
-  const accessToken = session?.user?.accessToken;
+// export const getServerSideProps = async (context) => {
+//   const session = await getSession(context);
+//   const accessToken = session?.user?.accessToken;
 
-  try {
-    const list = await getAllTables(accessToken);
+//   try {
+//     const list = await getAllTables(accessToken);
 
-    return { props: { list } };
-  } catch (error) {
-    console.log(error);
-    return { props: { list: [] } };
-  }
-};
+//     return { props: { list } };
+//   } catch (error) {
+//     console.log(error);
+//     return { props: { list: [] } };
+//   }
+// };
 
 export default ModuleSettingPage;

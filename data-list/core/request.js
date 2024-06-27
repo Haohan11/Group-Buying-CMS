@@ -5,8 +5,8 @@ const { fetchUrl } = dict;
 const BASEURL = process.env.NEXT_PUBLIC_BACKENDURL;
 const getTableUrl = () => fetchUrl[currentTable.get()];
 
-export const alterSyncTables = async () => {
-  const URL = `${BASEURL}/alter-tables`;
+const createFetcher = (url) => async () => {
+  const URL = `${BASEURL}/${url}`;
   try {
     const res = await fetch(URL);
     if (!res.ok) return false;
@@ -17,19 +17,11 @@ export const alterSyncTables = async () => {
   }
 };
 
-export const updateIndexItem = async () => {
-  const URL = `${BASEURL}/create-index-item`;
-  try {
-    const res = await fetch(URL);
-    if (!res.ok) return false;
-    return await res.json();
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
-};
+export const alterSyncTables = createFetcher("alter-tables");
+export const updateIndexItem = createFetcher("create-index-item");
 
-export const getDataRequest = async (
+// fetch data through global variable currentTable return { total, totalPages, data: list }
+export const readDataRequest = async (
   token,
   { page, size, keyword, sort, item, isEnable }
 ) => {
@@ -57,7 +49,8 @@ export const getDataRequest = async (
   }
 };
 
-export const getAllData = async (token, fetchUrl) => {
+// fetch data with custom url and return { total, totalPages, data: list }
+export const regularReadData = async (token, fetchUrl) => {
   const URL = `${BASEURL}/${fetchUrl}`;
 
   try {
@@ -157,24 +150,6 @@ export const deleteDataRequest = async (token, id) => {
     return false;
   }
 };
-
-export const getAllTables = async (token) => {
-  const URL = `${BASEURL}/all-tables`;
-  try {
-    const res = await fetch(URL, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!res.ok) return false;
-    const { data } = await res.json();
-    if(!data) return false;
-    return data;
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
-}
 
 export const getIndexItems = async () => {
   const URL = `${BASEURL}/get-index-item`;
