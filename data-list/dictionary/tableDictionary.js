@@ -4,8 +4,8 @@ import {
   stockColumns,
   stockBrandColumns,
   stockCategoryColumns,
+  stockAccountsColumns,
 } from "../table/columns/_columns";
-
 
 const selectAdaptor = (data) =>
   Array.isArray(data)
@@ -182,7 +182,7 @@ export const fullData = {
       },
       {
         name: "accounting",
-        fetchUrl: "accounting",
+        fetchUrl: "stock-accounting",
         adaptor: selectAdaptor,
         initializer: multiSelectInitializer,
       },
@@ -264,12 +264,12 @@ export const fullData = {
               name: "is_recommended",
               col: 5,
               props: {
-                inline: true
-              }
+                inline: true,
+              },
             },
             {
               type: "label-holder",
-              col: 5
+              col: 5,
             },
           ],
         ],
@@ -292,16 +292,69 @@ export const fullData = {
         .min(2, "至少 2 個字")
         .max(15, "至多 15 個字")
         .required("此欄位必填"),
-      recommended_image: Yup.mixed().when("is_recommended", {
-        is: true,
-        then: () => Yup.mixed().required("精選分類請提供縮圖"),
-      }).nullable(true),
+      recommended_image: Yup.mixed()
+        .when("is_recommended", {
+          is: true,
+          then: () => Yup.mixed().required("精選分類請提供縮圖"),
+        })
+        .nullable(true),
     }),
     formField: {
       name: "",
       description: "",
       is_recommended: false,
       recommended_image: null,
+    },
+  },
+  "stock-accounting": {
+    pageTitle: "記帳分類維護",
+    searchPlaceholder: "記帳分類",
+    createHeaderText: "記帳分類",
+    editHeaderText: "記帳分類",
+    column: stockAccountsColumns,
+    inputList: [
+      [
+        {
+          type: "text",
+          label: "類別名稱",
+          required: true,
+          name: "name",
+        },
+        {
+          type: "text",
+          label: "類別代號",
+          required: true,
+          name: "code",
+        },
+      ],
+      {
+        type: "number",
+        label: "排序位置",
+        name: "sorting",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "stock-accounting",
+    validationSchema: Yup.object().shape({
+      name: Yup.string()
+        .min(1, "至少 1 個字")
+        .max(35, "至多 35 個字")
+        .required("此欄位必填"),
+      code: Yup.string()
+      .matches(/^[a-zA-Z0-9]+$/, "僅限輸入英數字")
+      .required("此欄位必填"),
+      sorting: Yup.string().matches(/^[0-9]+$/, "僅限輸入數字"),
+    }),
+    formField: {
+      name: "",
+      sorting: 1,
+      code: "",
+      description: "",
     },
   },
 };
