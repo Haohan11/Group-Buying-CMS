@@ -5,6 +5,7 @@ import {
   stockBrandColumns,
   stockCategoryColumns,
   stockAccountsColumns,
+  supplierColumns
 } from "../table/columns/_columns";
 
 const selectAdaptor = (data) =>
@@ -362,7 +363,7 @@ export const fullData = {
     searchPlaceholder: "供應商",
     createHeaderText: "供應商",
     editHeaderText: "供應商",
-    column: stockAccountsColumns,
+    column: supplierColumns,
     inputList: [
       [
         {
@@ -382,12 +383,12 @@ export const fullData = {
         {
           type: "select",
           label: "付款方式",
-          name: "payment_method",
+          name: "payment_id",
         },
         {
           type: "select",
           label: "結帳方式",
-          name: "accounting_method",
+          name: "accounting_id",
         },
       ],
       [
@@ -415,8 +416,8 @@ export const fullData = {
       {
         type: "number",
         label: "聯絡人電話",
-        name: "contact_phone",
-        col: 6
+        name: "mobile",
+        col: 6,
       },
       {
         type: "textarea",
@@ -424,7 +425,21 @@ export const fullData = {
         name: "description",
       },
     ],
-    fetchUrl: "purchase-supplier",
+    preLoad: [
+      {
+        name: "payment_id",
+        fetchUrl: "payment",
+        adaptor: selectAdaptor,
+        initializer: selectInitializer,
+      },
+      {
+        name: "accounting_id",
+        fetchUrl: "account-method",
+        adaptor: selectAdaptor,
+        initializer: selectInitializer,
+      },
+    ],
+    fetchUrl: "supplier",
     validationSchema: Yup.object().shape({
       name: Yup.string()
         .min(1, "至少 2 個字")

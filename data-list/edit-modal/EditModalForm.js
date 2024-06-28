@@ -17,6 +17,8 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
+const testMode = false;
+
 const CustomEditor = dynamic(
   () => {
     return import("@/components/custom-editor");
@@ -499,7 +501,7 @@ const EditModalForm = () => {
     onSubmit: async (values) => {
       await {
         async create() {
-          // return console.log(values);
+          if (testMode) return console.log(values);
           await createDataRequest(token, values);
           setPopupSet({
             message: "新增成功",
@@ -508,7 +510,7 @@ const EditModalForm = () => {
           handleShowModal("popup");
         },
         async edit() {
-          // return console.log(values);
+          if (testMode) return console.log(values);
           await updateDataRequest(token, {
             ...values,
             id: itemIdForUpdate,
@@ -537,6 +539,11 @@ const EditModalForm = () => {
       if (preLoadList.length === 0) return;
       await Promise.all(
         preLoadList.map(async ({ name, fetchUrl, adaptor, initializer }) => {
+          if (!name || !fetchUrl)
+            return console.warn(
+              "No fetchUrl or name provided for perLoadData."
+            );
+
           const rawData = await (async () => {
             if (preLoadData[name]) return preLoadData[name];
             const res = await regularReadData(token, fetchUrl);
@@ -548,6 +555,7 @@ const EditModalForm = () => {
 
           const data =
             typeof adaptor === "function" ? adaptor(rawData) : rawData;
+
           // handle initial values for create mode
           createMode &&
             formik.setFieldValue(

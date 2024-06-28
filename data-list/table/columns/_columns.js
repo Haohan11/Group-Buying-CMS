@@ -204,3 +204,61 @@ export const stockAccountsColumns = [
     accessor: 'create_time',
   },
 ]
+
+export const supplierColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='操作' className='text-start min-w-100px' />
+    ),
+    id: 'actions',
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='供應商名稱' className='min-w-125px' />,
+    accessor: 'name',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='供應商編號' className='min-w-125px' />,
+    accessor: 'code',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='付款方式' className='min-w-125px' />,
+    accessor: 'payment',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='結帳方式' className='min-w-125px' />,
+    accessor: 'accounting',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='統一編號' className='min-w-125px' />,
+    accessor: 'uniform_number',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='聯絡電話' className='min-w-125px' />,
+    accessor: 'phone',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='聯絡地址' className='min-w-125px' />,
+    accessor: 'contact_address',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='聯絡人' className='min-w-125px' />,
+    accessor: 'contact_person',
+  },
+  {
+    Header: (props) => <UserCustomHeader tableProps={props} title='聯絡人電話' className='min-w-125px' />,
+    accessor: 'mobile',
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='備註' className='min-w-125px' />
+    ),
+    accessor: 'description',
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader tableProps={props} title='創建時間' className='min-w-125px' />
+    ),
+    accessor: 'create_time',
+  },
+]

@@ -54,25 +54,6 @@ const SidebarMenuMain = () => {
         <Link
           href="/"
           className={clsx("menu-link without-sub")}
-          onClick={async () => {
-            const confirm = window.confirm("更新作業項?");
-          if (confirm) {
-            const res = await updateIndexItem();
-            console.log(res);
-          }
-          }}
-        >
-          <span className="menu-icon">
-            {" "}
-            <KTIcon iconName="bi bi-bounding-box" className="fs-2" />
-          </span>
-          <span className="menu-title">更新作業項</span>
-        </Link>
-      </div>
-      <div className="menu-item">
-        <Link
-          href="/"
-          className={clsx("menu-link without-sub")}
           onClick={logout}
         >
           <span className="menu-icon">
