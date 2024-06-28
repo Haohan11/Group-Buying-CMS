@@ -20,9 +20,9 @@ const SidebarMenuMain = () => {
 
   useEffect(() => {
     (async () => {
-      const indexItems = await getIndexItems();
+      const indexItems = await getIndexItems();  
 
-      setItems(indexItems);
+      indexItems && setItems(indexItems);
     })();
   }, []);
 
