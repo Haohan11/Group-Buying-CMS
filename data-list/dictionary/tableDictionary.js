@@ -8,6 +8,7 @@ import {
   stockAccountsColumns,
   supplierColumns,
   memberGradeColumns,
+  memberRoleColumns,
 } from "../table/columns/_columns";
 
 const selectAdaptor = (data) =>
@@ -495,6 +496,35 @@ export const fullData = {
       },
     ],
     fetchUrl: "member-grade",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
+    },
+  },
+  "member-role": {
+    pageTitle: "會員角色",
+    searchPlaceholder: "會員角色",
+    createHeaderText: "會員角色",
+    editHeaderText: "會員角色",
+    column: memberRoleColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "角色名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description"
+      },
+    ],
+    fetchUrl: "member-role",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
     }),
