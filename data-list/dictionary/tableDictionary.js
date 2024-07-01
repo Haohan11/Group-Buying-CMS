@@ -1,11 +1,13 @@
 import * as Yup from "yup";
 
 import {
+  placeHolderColumns,
   stockColumns,
   stockBrandColumns,
   stockCategoryColumns,
   stockAccountsColumns,
   supplierColumns,
+  memberGradeColumns,
 } from "../table/columns/_columns";
 
 const selectAdaptor = (data) =>
@@ -470,6 +472,35 @@ export const fullData = {
       phone: "",
       contact_address: "",
       contact_person: "",
+    },
+  },
+  "member-grade": {
+    pageTitle: "會員等級",
+    searchPlaceholder: "會員等級",
+    createHeaderText: "會員等級",
+    editHeaderText: "會員等級",
+    column: memberGradeColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "等級名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description"
+      },
+    ],
+    fetchUrl: "member-grade",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
     },
   },
 };
