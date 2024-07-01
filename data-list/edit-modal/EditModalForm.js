@@ -136,7 +136,7 @@ const ValidateInputField = ({
               {...(onlynumber && {
                 onKeyDown: onlyInputNumbers,
               })}
-              {...(onChange && typeof onChange === "function" && { onChange })}
+              {...(typeof onChange === "function" && { onChange })}
               disabled={readonly || formik?.isSubmitting}
             />
           ),
@@ -538,7 +538,7 @@ const EditModalForm = () => {
     (async () => {
       if (preLoadList.length === 0) return;
       await Promise.all(
-        preLoadList.map(async ({ name, fetchUrl, adaptor, initializer }) => {
+        preLoadList.map(async ({ name, fetchUrl, adaptor, createInitor }) => {
           if (!name || !fetchUrl)
             return console.warn(
               "No fetchUrl or name provided for perLoadData."
@@ -556,12 +556,9 @@ const EditModalForm = () => {
           const data =
             typeof adaptor === "function" ? adaptor(rawData) : rawData;
 
-          // handle initial values for create mode
-          createMode &&
-            formik.setFieldValue(
-              name,
-              typeof initializer === "function" ? initializer(data) : data
-            );
+          if (createMode && typeof createInitor === "function") {
+            formik.setFieldValue(name, createInitor(data));
+          }
 
           hoistPreLoadData.set({ ...hoistPreLoadData.get(), [name]: data });
         })

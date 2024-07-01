@@ -5,12 +5,12 @@ import {
   stockBrandColumns,
   stockCategoryColumns,
   stockAccountsColumns,
-  supplierColumns
+  supplierColumns,
 } from "../table/columns/_columns";
 
 const selectAdaptor = (data) =>
   Array.isArray(data)
-    ? data.map(({ id, name }) => ({ label: name, value: id }))
+    ? data.map(({ id, name }) => ({ label: name, value: `${id}` }))
     : [];
 const selectInitializer = (data) => data?.[0]?.value;
 const multiSelectInitializer = (data) => [data?.[0]?.value];
@@ -173,19 +173,19 @@ export const fullData = {
         name: "category",
         fetchUrl: "stock-category",
         adaptor: selectAdaptor,
-        initializer: selectInitializer,
+        createInitor: selectInitializer,
       },
       {
         name: "supplier",
         fetchUrl: "supplier",
         adaptor: selectAdaptor,
-        initializer: selectInitializer,
+        createInitor: selectInitializer,
       },
       {
         name: "accounting",
         fetchUrl: "stock-accounting",
         adaptor: selectAdaptor,
-        initializer: multiSelectInitializer,
+        createInitor: multiSelectInitializer,
       },
       {
         name: "grade_price",
@@ -199,7 +199,7 @@ export const fullData = {
         name: "brand",
         fetchUrl: "stock-brand",
         adaptor: selectAdaptor,
-        initializer: selectInitializer,
+        createInitor: selectInitializer,
       },
     ],
     fetchUrl: "stock",
@@ -398,27 +398,28 @@ export const fullData = {
           name: "uniform_number",
         },
         {
-          type: "number",
-          label: "聯絡電話",
-          name: "phone",
-        },
-      ],
-      [
-        {
-          label: "聯絡地址",
-          name: "contact_address",
-        },
-        {
+          type: "text",
           label: "聯絡人",
           name: "contact_person",
         },
       ],
       {
-        type: "number",
-        label: "聯絡人電話",
-        name: "mobile",
-        col: 6,
+        type: "text",
+        label: "聯絡地址",
+        name: "contact_address",
       },
+      [
+        {
+          type: "number",
+          label: "聯絡人電話",
+          name: "mobile",
+        },
+        {
+          type: "number",
+          label: "聯絡電話",
+          name: "phone",
+        },
+      ],
       {
         type: "textarea",
         label: "備註",
@@ -430,13 +431,13 @@ export const fullData = {
         name: "payment_id",
         fetchUrl: "payment",
         adaptor: selectAdaptor,
-        initializer: selectInitializer,
+        createInitor: selectInitializer,
       },
       {
         name: "accounting_id",
         fetchUrl: "account-method",
         adaptor: selectAdaptor,
-        initializer: selectInitializer,
+        createInitor: selectInitializer,
       },
     ],
     fetchUrl: "supplier",
@@ -448,11 +449,27 @@ export const fullData = {
       code: Yup.string()
         .matches(/^[a-zA-Z0-9]+$/, "僅限輸入英數字")
         .required("此欄位必填"),
+      uniform_number: Yup.string().matches(/^[0-9]{8}$/, "統一編號格式錯誤"),
+      mobile: Yup.string()
+        .min(8, "電話格式錯誤")
+        .max(10, "電話格式錯誤")
+        .matches(/^[0-9]+$/, "電話格式錯誤"),
+      phone: Yup.string()
+        .min(8, "電話格式錯誤")
+        .max(10, "電話格式錯誤")
+        .matches(/^[0-9]+$/, "電話格式錯誤"),
     }),
     formField: {
       name: "",
       code: "",
       description: "",
+      payment_id: null,
+      accounting_id: null,
+      uniform_number: "",
+      mobile: "",
+      phone: "",
+      contact_address: "",
+      contact_person: "",
     },
   },
 };
