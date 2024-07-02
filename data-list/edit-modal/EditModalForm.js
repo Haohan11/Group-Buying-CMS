@@ -29,7 +29,12 @@ const CustomEditor = dynamic(
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
 import { useModals } from "@/tool/hooks";
-import { onlyInputNumbers, toArray, transImageUrl } from "@/tool/helper";
+import {
+  onlyInputNumbers,
+  toArray,
+  transImageUrl,
+  checkArray,
+} from "@/tool/helper";
 
 import {
   createDataRequest,
@@ -131,7 +136,6 @@ const ValidateInputField = ({
               )}
               defaultValue={defaultValue}
               type={type}
-              name={name}
               autoComplete="off"
               {...(onlynumber && {
                 onKeyDown: onlyInputNumbers,
@@ -278,13 +282,14 @@ const ImageInput = (props) => {
           />
         </label>
       </div>
-      {hoistFormik.get()?.errors[props.name] && (
-        <div className="fv-plugins-message-container">
-          <div className="fv-help-block">
-            <span role="alert">{hoistFormik.get()?.errors[props.name]}</span>
+      {hoistFormik.get()?.touched[props.name] &&
+        hoistFormik.get()?.errors[props.name] && (
+          <div className="fv-plugins-message-container">
+            <div className="fv-help-block">
+              <span role="alert">{hoistFormik.get()?.errors[props.name]}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };
@@ -302,37 +307,38 @@ const MultiImageInput = (props) => {
         className="d-block overflow-x-scroll text-nowrap bg-gray-200 p-3 pb-0 rounded-2"
         htmlFor={`image_${props.name}`}
       >
-        {hoistFormik.get()?.values[props.name]?.map(({ id, src }) => (
-          <div key={id} className="position-relative d-inline-block m-5">
-            <div
-              className="position-relative rounded-3 overflow-hidden shadow-sm"
-              style={{ width: "100px", height: "100px" }}
-            >
-              <Image
-                sizes="100px"
-                fill
-                className="top-0 start-0 object-fit-cover"
-                src={src}
-                alt={`image_${props.name}`}
-              />
+        {checkArray(hoistFormik.get()?.values?.[props.name]) &&
+          hoistFormik.get().values[props.name].map(({ id, src }) => (
+            <div key={id} className="position-relative d-inline-block m-5">
+              <div
+                className="position-relative rounded-3 overflow-hidden shadow-sm"
+                style={{ width: "100px", height: "100px" }}
+              >
+                <Image
+                  sizes="100px"
+                  fill
+                  className="top-0 start-0 object-fit-cover"
+                  src={src}
+                  alt={`image_${props.name}`}
+                />
+              </div>
+              <span
+                className="position-absolute border flex-center top-0 start-100 translate-middle rounded-circle bg-white shadow bi-x cursor-pointer"
+                style={{
+                  height: "20px",
+                  width: "20px",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const prevImages = hoistFormik.get().values[props.name];
+                  hoistFormik.get().setFieldValue(
+                    props.name,
+                    prevImages.filter((image) => image.id !== id)
+                  );
+                }}
+              ></span>
             </div>
-            <span
-              className="position-absolute border flex-center top-0 start-100 translate-middle rounded-circle bg-white shadow bi-x cursor-pointer"
-              style={{
-                height: "20px",
-                width: "20px",
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                const prevImages = hoistFormik.get().values[props.name];
-                hoistFormik.get().setFieldValue(
-                  props.name,
-                  prevImages.filter((image) => image.id !== id)
-                );
-              }}
-            ></span>
-          </div>
-        ))}
+          ))}
         {!!hoistFormik.get()?.values[props.name]?.length || (
           <div
             className="text-center text-gray-500 my-5 cursor-pointer"
@@ -555,7 +561,7 @@ const EditModalForm = () => {
             typeof adaptor === "function" ? adaptor(rawData) : rawData;
 
           if (createMode && typeof createInitor === "function") {
-            formik.setFieldValue(name, createInitor(data));
+            setInitialValues(prev => ({...prev, [name]: createInitor(data)}));
           }
 
           hoistPreLoadData.set({ ...hoistPreLoadData.get(), [name]: data });

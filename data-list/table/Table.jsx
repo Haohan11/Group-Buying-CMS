@@ -76,7 +76,7 @@ const Table = ({ setTrigger }) => {
         isEnable,
       });
       setIsLoading(false);
-      if (result === false) return;
+      if (result === false) return setTableData([]);
 
       const { data, totalPages } = result;
       setTableData(data);

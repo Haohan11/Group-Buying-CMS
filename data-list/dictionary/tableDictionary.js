@@ -92,11 +92,12 @@ export const fullData = {
           type: "text",
           label: "商品條碼",
           required: true,
-          name: "bar_code",
+          name: "barcode",
         },
         {
           type: "text",
           label: "商品規格",
+          required: true,
           name: "specification",
         },
       ],
@@ -116,12 +117,12 @@ export const fullData = {
         {
           type: "select",
           label: "記帳分類",
-          name: "accounting",
+          name: "accounting_id",
         },
         {
           type: "select",
           label: "供應商",
-          name: "supplier",
+          name: "supplier_id",
         },
       ],
       [
@@ -139,18 +140,20 @@ export const fullData = {
       [
         {
           type: "number",
-          label: "預購商品庫存",
-          name: "preorder_count",
-        },
-        {
-          type: "number",
           label: "售價",
           name: "price",
+          required: true,
         },
         {
           type: "number",
           label: "進貨價",
           name: "purchase_price",
+          required: true,
+        },
+        {
+          type: "number",
+          label: "預購商品庫存",
+          name: "preorder_count",
         },
       ],
       {
@@ -184,13 +187,13 @@ export const fullData = {
         createInitor: selectInitializer,
       },
       {
-        name: "supplier",
+        name: "supplier_id",
         fetchUrl: "supplier",
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
       },
       {
-        name: "accounting",
+        name: "accounting_id",
         fetchUrl: "stock-accounting",
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
@@ -211,10 +214,47 @@ export const fullData = {
       },
     ],
     fetchUrl: "stock",
-    validationSchema: Yup.object().shape({}),
+    validationSchema: Yup.object().shape({
+      name: Yup.string()
+        .min(2, "至少 2 個字")
+        .max(35, "至多 35 個字")
+        .required("此欄位必填"),
+      code: Yup.string()
+        .min(2, "至少 2 個字")
+        .max(35, "至多 35 個字")
+        .required("此欄位必填"),
+      barcode: Yup.string()
+        .min(2, "至少 2 個字")
+        .max(35, "至多 35 個字")
+        .required("此欄位必填"),
+      cover_image: Yup.mixed().required("請提供商品封面圖"),
+      specification: Yup.string().required("此欄位必填"),
+      price: Yup.number().required("此欄位必填"),
+      purchase_price: Yup.number().required("此欄位必填"),
+    }),
     formField: {
+      cover_image: null,
+      is_valid: true,
+      is_preorder: false,
+      is_nostock_sell: false,
+      is_independent: false,
+      name: "",
+      code: "",
+      barcode: "",
+      specification: "",
+      stock_brand_id: null,
+      stock_category_id: null,
+      accounting_id: null,
+      supplier_id: null,
+      min_order: 1,
+      order_step: 1,
       preorder_count: "",
       price: "",
+      purchase_price: "",
+      grade_price: "",
+      role_price: "",
+      introduction: "",
+      description: "",
     },
   },
   "stock-brand": {
