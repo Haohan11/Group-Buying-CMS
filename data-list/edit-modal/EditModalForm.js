@@ -368,12 +368,7 @@ const MultiImageInput = (props) => {
 const PriceTable = (props) => {
   return (
     <div>
-      <InputLabel
-        htmlFor={`image_${props.name}`}
-        className="p-1 cursor-pointer align-self-start"
-        required={props.required}
-        text={props.label}
-      />
+      <InputLabel required={props.required} text={props.label} />
       {hoistPreLoadData.get()?.[props.name]?.length > 0 ? (
         <Row className="g-0">
           {hoistPreLoadData
@@ -386,7 +381,10 @@ const PriceTable = (props) => {
                   index % 4 !== 0 && "border-start-0"
                 }`}
               >
-                <div className="bg-gray-500 text-white text-center p-2">
+                <div
+                  className="bg-gray-500 text-white text-center p-2"
+                  style={{ letterSpacing: "1px" }}
+                >
                   {name}
                 </div>
                 <div className="p-5">
@@ -501,7 +499,7 @@ const EditModalForm = () => {
     onSubmit: async (values) => {
       await {
         async create() {
-          if (testMode) return console.log(values);
+          if (testMode) return console.log("Create Test: ", values);
           await createDataRequest(token, values);
           setPopupSet({
             message: "新增成功",
@@ -510,7 +508,7 @@ const EditModalForm = () => {
           handleShowModal("popup");
         },
         async edit() {
-          if (testMode) return console.log(values);
+          if (testMode) return console.log("Edit Test: ", values);
           await updateDataRequest(token, {
             ...values,
             id: itemIdForUpdate,

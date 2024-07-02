@@ -30,7 +30,7 @@ export const fullData = {
           type: "image",
           label: "商品封面照",
           required: true,
-          name: "cover",
+          name: "cover_image",
           props: {
             imagestyle: { minHeight: "150px", maxHeight: "200px" },
           },
@@ -42,7 +42,7 @@ export const fullData = {
           {
             type: "switch",
             label: "商品是否上架",
-            name: "enable",
+            name: "is_valid",
             col: 12,
           },
           {
@@ -54,7 +54,7 @@ export const fullData = {
           {
             type: "switch",
             label: "負庫存銷售",
-            name: "allow_nostock_sell",
+            name: "is_nostock_sell",
             col: 12,
           },
           {
@@ -70,7 +70,7 @@ export const fullData = {
         {
           type: "multi-image",
           label: "商品圖片",
-          name: "stock-images",
+          name: "stock_image",
         },
       ],
       [
@@ -104,24 +104,24 @@ export const fullData = {
         {
           type: "select",
           label: "商品品牌",
-          name: "brand",
+          name: "stock_brand_id",
         },
         {
           type: "select",
           label: "商品類別",
-          name: "category",
+          name: "stock_category_id",
         },
       ],
       [
         {
           type: "select",
-          label: "供應商",
-          name: "supplier",
-        },
-        {
-          type: "multi-select",
           label: "記帳分類",
           name: "accounting",
+        },
+        {
+          type: "select",
+          label: "供應商",
+          name: "supplier",
         },
       ],
       [
@@ -170,6 +170,11 @@ export const fullData = {
         label: "商品介紹",
         name: "introduction",
       },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
     ],
     preLoad: [
       {
@@ -188,15 +193,15 @@ export const fullData = {
         name: "accounting",
         fetchUrl: "stock-accounting",
         adaptor: selectAdaptor,
-        createInitor: multiSelectInitializer,
+        createInitor: selectInitializer,
       },
       {
         name: "grade_price",
-        fetchUrl: "grade-price",
+        fetchUrl: "member-grade",
       },
       {
         name: "role_price",
-        fetchUrl: "role-price",
+        fetchUrl: "member-role",
       },
       {
         name: "brand",
@@ -492,7 +497,7 @@ export const fullData = {
       {
         type: "textarea",
         label: "備註",
-        name: "description"
+        name: "description",
       },
     ],
     fetchUrl: "member-grade",
@@ -521,7 +526,7 @@ export const fullData = {
       {
         type: "textarea",
         label: "備註",
-        name: "description"
+        name: "description",
       },
     ],
     fetchUrl: "member-role",
