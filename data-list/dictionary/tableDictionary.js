@@ -178,7 +178,7 @@ export const fullData = {
     ],
     preLoad: [
       {
-        name: "category",
+        name: "stock_category_id",
         fetchUrl: "stock-category",
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
@@ -204,7 +204,7 @@ export const fullData = {
         fetchUrl: "member-role",
       },
       {
-        name: "brand",
+        name: "stock_brand_id",
         fetchUrl: "stock-brand",
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
