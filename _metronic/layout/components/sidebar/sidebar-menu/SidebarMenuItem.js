@@ -13,7 +13,7 @@ const SidebarMenuItem = ({
   fontIcon,
   hasBullet = false,
 }) => {
-  const { pathname, asPath } = useRouter();
+  const { asPath } = useRouter();
 
   const isActive = checkIsActive(asPath, to);
   const { config } = useLayout();

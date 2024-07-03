@@ -35,6 +35,7 @@ const SidebarMenuMain = () => {
               key={item.id}
               title={item.name}
               icon={`bi bi-${item.icon}`}
+              to={item.route}
             >
               {checkArray(item.indexItems) &&
                 item.indexItems.map((child) => {

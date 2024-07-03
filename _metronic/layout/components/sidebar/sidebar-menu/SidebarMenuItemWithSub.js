@@ -12,16 +12,18 @@ const SidebarMenuItemWithSub = ({
   fontIcon,
   hasBullet,
 }) => {
-  const { pathname } = useRouter();
-  console.log("pathname", pathname)
-  console.log("to", to)
-  const isActive = checkIsActive(pathname, to);
+  const { asPath } = useRouter();
+  const isActive = checkIsActive(asPath, to);
   const { config } = useLayout();
   const { app } = config;
 
   return (
     <div
-      className={clsx("menu-item", { "here show": isActive }, "menu-accordion")}
+      className={clsx(
+        "menu-item",
+        { "here show": isActive },
+        "menu-accordion"
+      )}
       data-kt-menu-trigger="click"
     >
       <span className="menu-link">
@@ -32,13 +34,16 @@ const SidebarMenuItemWithSub = ({
         )}
         {icon && app?.sidebar?.default?.menu?.iconType === "svg" && (
           <span className="menu-icon">
-            <KTIcon iconName={icon} className="fs-2" />
+            <KTIcon
+              iconName={icon}
+              className={`fs-2 ${isActive && "text-primary"}`}
+            />
           </span>
         )}
         {fontIcon && app?.sidebar?.default?.menu?.iconType === "font" && (
           <i className={clsx("bi fs-3", fontIcon)}></i>
         )}
-        <span className="menu-title">{title}</span>
+        <span className={`menu-title ${isActive && "text-primary"}`}>{title}</span>
         <span className="menu-arrow"></span>
       </span>
       <div
