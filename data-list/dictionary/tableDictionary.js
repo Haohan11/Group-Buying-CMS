@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { transImageUrl } from "@/tool/helper";
 
 import {
   placeHolderColumns,
@@ -229,13 +230,14 @@ export const fullData = {
         .required("此欄位必填"),
       cover_image: Yup.mixed().required("請提供商品封面圖"),
       specification: Yup.string().required("此欄位必填"),
-      price: Yup.number().required("此欄位必填"),
-      purchase_price: Yup.number().required("此欄位必填"),
-      preorder_count: Yup.number(),
+      price: Yup.number().typeError("只能輸入數字").required("此欄位必填"),
+      purchase_price: Yup.number().typeError("只能輸入數字").required("此欄位必填"),
+      preorder_count: Yup.number().typeError("只能輸入數字"),
     }),
     formField: {
       cover_image: null,
       stock_image: null,
+      stock_image_preview: null,
       is_valid: true,
       is_preorder: false,
       is_nostock_sell: false,
@@ -258,6 +260,12 @@ export const fullData = {
       introduction: "",
       description: "",
     },
+    editAdaptor: {
+      "stock_image_preview": (data) => Array.isArray(data) ? data.map(url => ({
+        id: url,
+        src: transImageUrl(url),
+      })) : [],
+    }
   },
   "stock-brand": {
     pageTitle: "商品品牌維護",

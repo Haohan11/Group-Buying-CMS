@@ -17,7 +17,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = true;
+const testMode = false;
 
 const CustomEditor = dynamic(
   () => {
@@ -42,7 +42,7 @@ import {
   regularReadData,
 } from "../core/request";
 
-const { inputList, formField, validationSchema, preLoad } = dict;
+const { inputList, formField, validationSchema, preLoad, editAdaptor } = dict;
 
 const hoistFormik = {
   formik: null,
@@ -307,39 +307,54 @@ const MultiImageInput = (props) => {
         className="d-block overflow-x-scroll text-nowrap bg-gray-200 p-3 pb-0 rounded-2"
         htmlFor={`image_${props.name}`}
       >
-        {checkArray(hoistFormik.get()?.values?.[props.name]) &&
-          hoistFormik.get().values[props.name].map(({ id, src }) => (
-            <div key={id} className="position-relative d-inline-block m-5">
-              <div
-                className="position-relative rounded-3 overflow-hidden shadow-sm"
-                style={{ width: "100px", height: "100px" }}
-              >
-                <Image
-                  sizes="100px"
-                  fill
-                  className="top-0 start-0 object-fit-cover"
-                  src={src}
-                  alt={`image_${props.name}`}
-                />
+        {checkArray(hoistFormik.get()?.values?.[`${props.name}_preview`]) ? (
+          hoistFormik
+            .get()
+            .values[`${props.name}_preview`].map(({ id, src }) => (
+              <div key={id} className="position-relative d-inline-block m-5">
+                <div
+                  className="position-relative rounded-3 overflow-hidden shadow-sm"
+                  style={{ width: "100px", height: "100px" }}
+                >
+                  <Image
+                    sizes="100px"
+                    fill
+                    className="top-0 start-0 object-fit-cover"
+                    src={src}
+                    alt={`image_${props.name}`}
+                  />
+                </div>
+                <span
+                  className="position-absolute border flex-center top-0 start-100 translate-middle rounded-circle bg-white shadow bi-x cursor-pointer"
+                  style={{
+                    height: "20px",
+                    width: "20px",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const newValues = hoistFormik
+                      .get()
+                      .values[`${props.name}_preview`].filter(
+                        (image) => image.id !== id
+                      );
+
+                    hoistFormik
+                      .get()
+                      .setFieldValue(`${props.name}_preview`, newValues);
+
+                    hoistFormik.get().setFieldValue(
+                      props.name,
+                      newValues.reduce(
+                        (dict, image) =>
+                          image.file ? [...dict, image.file] : dict,
+                        []
+                      )
+                    );
+                  }}
+                ></span>
               </div>
-              <span
-                className="position-absolute border flex-center top-0 start-100 translate-middle rounded-circle bg-white shadow bi-x cursor-pointer"
-                style={{
-                  height: "20px",
-                  width: "20px",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const prevImages = hoistFormik.get().values[props.name];
-                  hoistFormik.get().setFieldValue(
-                    props.name,
-                    prevImages.filter((image) => image.id !== id)
-                  );
-                }}
-              ></span>
-            </div>
-          ))}
-        {!!hoistFormik.get()?.values[props.name]?.length || (
+            ))
+        ) : (
           <div
             className="text-center text-gray-500 my-5 cursor-pointer"
             style={{ height: "100px", alignContent: "center" }}
@@ -360,10 +375,18 @@ const MultiImageInput = (props) => {
               const url = URL.createObjectURL(file);
               return { id: url, src: url, file };
             });
-            const prevImages = hoistFormik.get().values[props.name] || [];
-            hoistFormik
-              .get()
-              .setFieldValue(props.name, [...prevImages, ...images]);
+            const newValues = [
+              ...(hoistFormik.get().values[`${props.name}_preview`] || []),
+              ...images,
+            ];
+            hoistFormik.get().setFieldValue(`${props.name}_preview`, newValues);
+            hoistFormik.get().setFieldValue(
+              props.name,
+              newValues.reduce(
+                (dict, image) => (image.file ? [...dict, image.file] : dict),
+                []
+              )
+            );
           }}
         />
       </label>
@@ -488,7 +511,10 @@ const EditModalForm = () => {
       const currentData = tableData.find((data) => data.id === itemIdForUpdate);
 
       return Object.keys(formField[tableName]).reduce((result, key) => {
-        result[key] = currentData[key];
+        result[key] =
+          typeof editAdaptor[tableName][key] === "function"
+            ? editAdaptor[tableName][key](currentData[key])
+            : currentData[key];
         return result;
       }, {});
     })()
@@ -561,7 +587,10 @@ const EditModalForm = () => {
             typeof adaptor === "function" ? adaptor(rawData) : rawData;
 
           if (createMode && typeof createInitor === "function") {
-            setInitialValues(prev => ({...prev, [name]: createInitor(data)}));
+            setInitialValues((prev) => ({
+              ...prev,
+              [name]: createInitor(data),
+            }));
           }
 
           hoistPreLoadData.set({ ...hoistPreLoadData.get(), [name]: data });
