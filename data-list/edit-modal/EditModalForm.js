@@ -17,7 +17,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = false;
+const testMode = true;
 
 const CustomEditor = dynamic(
   () => {

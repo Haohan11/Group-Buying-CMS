@@ -2,8 +2,19 @@ import { ActionsCell } from "./ActionsCell";
 import { UserCustomHeader } from "./UserCustomHeader";
 import { ColorsCell } from "./ColorsCell";
 import { ColorSchemeCell } from "./ColorSchemeCell";
-import { EnableCell } from "./enableCell";
-import { ProductAvaliableCell } from "./ProductAvaliableCell";
+import { AvaliableCell } from "./AvaliableCell";
+
+const EnableCell = ({ status }) => (
+  <AvaliableCell status={status} validText="啟用中" inValidText="未啟用"  />
+)
+
+const ValiableCell = ({ status }) => (
+  <AvaliableCell status={status} validText="已上架" inValidText="未上架"  />
+)
+
+const BinaryCell = ({ status }) => (
+  <AvaliableCell status={status} validText="是" inValidText="否" className={"px-3"} />
+)
 
 export const placeHolderColumns = [
   {
@@ -27,7 +38,7 @@ export const placeHolderColumns = [
     ),
     id: "enable",
     Cell: ({ ...props }) => (
-      <ProductAvaliableCell enable={props.data[props.row.index].enable} />
+      <EnableCell status={props.data[props.row.index].enable} />
     ),
   },
   {
@@ -72,26 +83,55 @@ export const stockColumns = [
         className="min-w-125px"
       />
     ),
-    id: "enable",
+    id: "is_valid",
     Cell: ({ ...props }) => (
-      <ProductAvaliableCell enable={props.data[props.row.index].enable} />
+      <ValiableCell status={props.data[props.row.index].is_valid} />
     ),
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="商品型號"
+        title="是否為預購商品"
         className="min-w-125px"
       />
     ),
-    accessor: "code",
+    id: "is_preorder",
+    Cell: ({ ...props }) => (
+      <BinaryCell status={props.data[props.row.index].is_preorder} />
+    ),
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="商品樣式"
+        title="負庫存銷售"
+        className="min-w-125px"
+      />
+    ),
+    id: "is_nostock_sell",
+    Cell: ({ ...props }) => (
+      <BinaryCell status={props.data[props.row.index].is_nostock_sell} />
+    ),
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="是否為獨立揀貨"
+        className="min-w-125px"
+      />
+    ),
+    id: "is_independent",
+    Cell: ({ ...props }) => (
+      <BinaryCell status={props.data[props.row.index].is_independent} />
+    ),
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="商品名稱"
         className="min-w-125px"
       />
     ),
@@ -101,11 +141,61 @@ export const stockColumns = [
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="商品系列"
+        title="商品編號"
         className="min-w-125px"
       />
     ),
-    accessor: "series.name",
+    accessor: "code",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="商品條碼"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "barcode",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="商品規格"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "specification",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="商品品牌"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "brand",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="商品類別"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "category",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="記帳分類"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "accounting",
   },
   {
     Header: (props) => (
@@ -115,85 +205,63 @@ export const stockColumns = [
         className="min-w-125px"
       />
     ),
-    accessor: "supplier.name",
+    accessor: "supplier",
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="商品顏色"
+        title="最少訂購數"
         className="min-w-125px"
       />
     ),
-    id: "colors",
-    Cell: ({ ...props }) => (
-      <ColorsCell colorList={props.data[props.row.index].colorList} />
-    ),
+    accessor: "min_order",
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="色系類別"
+        title="訂購倍數"
         className="min-w-125px"
       />
     ),
-    accessor: "colorScheme",
-    Cell: ({ ...props }) => (
-      <ColorSchemeCell colorScheme={props.data[props.row.index].colorScheme} />
-    ),
+    accessor: "order_step",
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="面料材質"
+        title="售價"
         className="min-w-125px"
       />
     ),
-    accessor: "material",
-    Cell: ({ ...props }) => (
-      <ColorSchemeCell colorScheme={props.data[props.row.index].material} />
-    ),
+    accessor: "price",
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="商品風格"
+        title="進貨價"
         className="min-w-125px"
       />
     ),
-    accessor: "design",
-    Cell: ({ ...props }) => (
-      <ColorSchemeCell colorScheme={props.data[props.row.index].design} />
-    ),
+    accessor: "purchase_price",
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="遮光效果"
+        title="預購商品庫存"
         className="min-w-125px"
       />
     ),
-    accessor: "block",
+    accessor: "preorder_count",
   },
   {
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="吸音效果"
-        className="min-w-125px"
-      />
-    ),
-    accessor: "absorption",
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader
-        tableProps={props}
-        title="商品描述"
+        title="備註"
         className="min-w-125px"
       />
     ),
