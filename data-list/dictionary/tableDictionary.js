@@ -231,7 +231,9 @@ export const fullData = {
       cover_image: Yup.mixed().required("請提供商品封面圖"),
       specification: Yup.string().required("此欄位必填"),
       price: Yup.number().typeError("只能輸入數字").required("此欄位必填"),
-      purchase_price: Yup.number().typeError("只能輸入數字").required("此欄位必填"),
+      purchase_price: Yup.number()
+        .typeError("只能輸入數字")
+        .required("此欄位必填"),
       preorder_count: Yup.number().typeError("只能輸入數字"),
     }),
     formField: {
@@ -260,12 +262,27 @@ export const fullData = {
       introduction: "",
       description: "",
     },
-    editAdaptor: {
-      "stock_image_preview": (data) => Array.isArray(data) ? data.map(url => ({
-        id: url,
-        src: transImageUrl(url),
-      })) : [],
-    }
+    editAdaptor: (data) => {
+      const { stock_image_preview = [], stock_image_persist = [] } = Array.isArray(
+        data.stock_image_preview
+      )
+        ? data.stock_image_preview.reduce(
+            (dict, url) => ({
+              stock_image_preview: dict.stock_image_preview.concat({
+                id: url,
+                src: transImageUrl(url),
+              }),
+              stock_image_persist: dict.stock_image_persist.concat(url),
+            }),
+            { stock_image_preview: [], stock_image_persist: [] }
+          )
+        : {};
+      return {
+        ...data,
+        stock_image_preview,
+        stock_image_persist,
+      }
+    },
   },
   "stock-brand": {
     pageTitle: "商品品牌維護",

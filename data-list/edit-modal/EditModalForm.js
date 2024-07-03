@@ -338,18 +338,32 @@ const MultiImageInput = (props) => {
                         (image) => image.id !== id
                       );
 
-                    hoistFormik
-                      .get()
-                      .setFieldValue(`${props.name}_preview`, newValues);
-
-                    hoistFormik.get().setFieldValue(
-                      props.name,
-                      newValues.reduce(
-                        (dict, image) =>
-                          image.file ? [...dict, image.file] : dict,
-                        []
-                      )
+                    const { fileList, persistUrl } = newValues.reduce(
+                      (dict, image) => ({
+                        ...dict,
+                        ...(image.file
+                          ? { fileList: [...dict.fileList, image.file] }
+                          : { persistUrl: [...dict.persistUrl, image.id] }),
+                      }),
+                      { fileList: [], persistUrl: [] }
                     );
+
+                    [
+                      {
+                        fieldName: `${props.name}_preview`,
+                        fieldValue: newValues,
+                      },
+                      {
+                        fieldName: props.name,
+                        fieldValue: fileList,
+                      },
+                      {
+                        fieldName: `${props.name}_persist`,
+                        fieldValue: persistUrl,
+                      },
+                    ].forEach(({ fieldName, fieldValue }) => {
+                      hoistFormik.get().setFieldValue(fieldName, fieldValue);
+                    });
                   }}
                 ></span>
               </div>
@@ -510,13 +524,15 @@ const EditModalForm = () => {
 
       const currentData = tableData.find((data) => data.id === itemIdForUpdate);
 
-      return Object.keys(formField[tableName]).reduce((result, key) => {
-        result[key] =
-          typeof editAdaptor[tableName][key] === "function"
-            ? editAdaptor[tableName][key](currentData[key])
-            : currentData[key];
-        return result;
-      }, {});
+      return typeof editAdaptor[tableName] === "function"
+        ? editAdaptor[tableName](currentData)
+        : Object.keys(formField[tableName]).reduce((result, key) => {
+            result[key] =
+              typeof editAdaptor[tableName][key] === "function"
+                ? editAdaptor[tableName][key](currentData[key])
+                : currentData[key];
+            return result;
+          }, {});
     })()
   );
 
