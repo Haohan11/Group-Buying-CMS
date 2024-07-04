@@ -16,7 +16,7 @@ const selectAdaptor = (data) =>
   Array.isArray(data)
     ? data.map(({ id, name }) => ({ label: name, value: `${id}` }))
     : [];
-const selectInitializer = (data) => data?.[0]?.value;
+const selectInitializer = (data) => `${data?.[0]?.id}`;
 const multiSelectInitializer = (data) => [data?.[0]?.value];
 
 export const fullData = {
@@ -202,10 +202,18 @@ export const fullData = {
       {
         name: "grade_price",
         fetchUrl: "member-grade",
+        adaptor: (data) =>
+          data.map(({ name, id, price }) => ({ name, id, price })),
+        createInitor: (data) =>
+          data.reduce((dict, { id }) => ({ ...dict, [id]: null }), {}),
       },
       {
         name: "role_price",
         fetchUrl: "member-role",
+        adaptor: (data) =>
+          data.map(({ name, id, price }) => ({ name, id, price })),
+        createInitor: (data) =>
+          data.reduce((dict, { id }) => ({ ...dict, [id]: null }), {}),
       },
       {
         name: "stock_brand_id",
@@ -235,6 +243,12 @@ export const fullData = {
         .typeError("只能輸入數字")
         .required("此欄位必填"),
       preorder_count: Yup.number().typeError("只能輸入數字"),
+      // grade_price: Yup.array().of(Yup.object().shape({
+      //   cell: Yup.number().typeError("只能輸入數字"),
+      // })),
+      // role_price: Yup.array().of(Yup.object().shape({
+      //   cell: Yup.number().typeError("只能輸入數字"),
+      // })),
     }),
     formField: {
       cover_image: null,
@@ -244,44 +258,43 @@ export const fullData = {
       is_preorder: false,
       is_nostock_sell: false,
       is_independent: false,
-      name: "",
-      code: "",
-      barcode: "",
-      specification: "",
+      name: "test",
+      code: "test",
+      barcode: "test",
+      specification: "test",
       stock_brand_id: null,
       stock_category_id: null,
       accounting_id: null,
       supplier_id: null,
       min_order: 1,
       order_step: 1,
-      price: "",
+      price: 123,
       preorder_count: 0,
-      purchase_price: "",
-      grade_price: "",
-      role_price: "",
+      purchase_price: 123,
+      grade_price: null,
+      role_price: null,
       introduction: "",
       description: "",
     },
     editAdaptor: (data) => {
-      const { stock_image_preview = [], stock_image_persist = [] } = Array.isArray(
-        data.stock_image_preview
-      )
-        ? data.stock_image_preview.reduce(
-            (dict, url) => ({
-              stock_image_preview: dict.stock_image_preview.concat({
-                id: url,
-                src: transImageUrl(url),
+      const { stock_image_preview = [], stock_image_persist = [] } =
+        Array.isArray(data.stock_image_preview)
+          ? data.stock_image_preview.reduce(
+              (dict, url) => ({
+                stock_image_preview: dict.stock_image_preview.concat({
+                  id: url,
+                  src: transImageUrl(url),
+                }),
+                stock_image_persist: dict.stock_image_persist.concat(url),
               }),
-              stock_image_persist: dict.stock_image_persist.concat(url),
-            }),
-            { stock_image_preview: [], stock_image_persist: [] }
-          )
-        : {};
+              { stock_image_preview: [], stock_image_persist: [] }
+            )
+          : {};
       return {
         ...data,
         stock_image_preview,
         stock_image_persist,
-      }
+      };
     },
   },
   "stock-brand": {

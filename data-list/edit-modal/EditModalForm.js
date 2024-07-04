@@ -17,7 +17,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = false;
+const testMode = true;
 
 const CustomEditor = dynamic(
   () => {
@@ -141,6 +141,7 @@ const ValidateInputField = ({
                 onKeyDown: onlyInputNumbers,
               })}
               {...(typeof onChange === "function" && { onChange })}
+              {...(typeof onBlur === "function" && { onBlur })}
               disabled={readonly || formik?.isSubmitting}
             />
           ),
@@ -431,11 +432,56 @@ const PriceTable = (props) => {
                   {name}
                 </div>
                 <div className="p-5">
-                  <NumberInput
-                    name={`${props.name}_${id}`}
-                    inputclassname="border"
-                    onChange={(e) => console.log(e.target.value)}
-                    defaultValue={price}
+                  <input
+                    {...hoistFormik.get().getFieldProps(`${props.name}_${id}`)}
+                    // test={console.log(
+                    //   "=====touched=====",
+                    //   hoistFormik.get().touched[props.name]?.[id]
+                    // )}
+                    className={clsx(
+                      "form-control form-control-solid mb-3 mb-lg-0",
+                      {
+                        "is-invalid":
+                          (hoistFormik.get().touched[`${props.name}_${id}`] ||
+                            hoistFormik.get().touched[props.name]?.[id]) &&
+                          (hoistFormik.get().status?.[`${props.name}_${id}`] ??
+                            true),
+                      },
+                      {
+                        "is-valid":
+                          (hoistFormik.get().touched[`${props.name}_${id}`] ||
+                            hoistFormik.get().touched[props.name]?.[id]) &&
+                          !hoistFormik.get().status?.[`${props.name}_${id}`],
+                      }
+                    )}
+                    type="text"
+                    autoComplete="off"
+                    onKeyDown={onlyInputNumbers}
+                    onChange={(e) => {
+                      const prevStatus = hoistFormik.get().status;
+                      hoistFormik.get().setStatus({
+                        ...prevStatus,
+                        [`${props.name}_${id}`]:
+                          e.target.value !== "" && isNaN(e.target.value),
+                      });
+                      hoistFormik
+                        .get()
+                        .setFieldError(
+                          `${props.name}_${id}`,
+                          e.target.value !== "" && isNaN(e.target.value)
+                        );
+                    }}
+                    onBlur={(e) => {
+                      hoistFormik
+                        .get()
+                        .setFieldTouched(`${props.name}_${id}`, true);
+                      const prevStatus = hoistFormik.get().status;
+                      hoistFormik.get().setStatus({
+                        ...prevStatus,
+                        [`${props.name}_${id}`]:
+                          e.target.value === "" || isNaN(e.target.value),
+                      });
+                    }}
                   />
                 </div>
               </Col>
@@ -572,6 +618,7 @@ const EditModalForm = () => {
     },
   });
   hoistFormik.set(formik);
+  console.log(formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
 
@@ -599,17 +646,20 @@ const EditModalForm = () => {
           })();
           if (!rawData) return;
 
-          const data =
-            typeof adaptor === "function" ? adaptor(rawData) : rawData;
-
-          if (createMode && typeof createInitor === "function") {
+          if (createMode) {
             setInitialValues((prev) => ({
               ...prev,
-              [name]: createInitor(data),
+              [name]:
+                typeof createInitor === "function"
+                  ? createInitor(rawData)
+                  : rawData,
             }));
           }
 
-          hoistPreLoadData.set({ ...hoistPreLoadData.get(), [name]: data });
+          hoistPreLoadData.set({
+            ...hoistPreLoadData.get(),
+            [name]: typeof adaptor === "function" ? adaptor(rawData) : rawData,
+          });
         })
       );
     })();
@@ -659,7 +709,12 @@ const EditModalForm = () => {
             type="submit"
             className="btn btn-primary"
             data-kt-users-modal-action="submit"
-            disabled={formik.isSubmitting || !formik.isValid || !formik.touched}
+            disabled={
+              formik.isSubmitting ||
+              !formik.isValid ||
+              !formik.touched ||
+              (formik.status && console.log("test disable submit button", Object.values(formik.status).includes(false)))
+            }
           >
             <span className="indicator-label">確認</span>
             {formik.isSubmitting && (
