@@ -103,6 +103,7 @@ const ValidateInputField = ({
   holder,
   defaultValue,
   onChange,
+  onBlur,
 }) =>
   holder ? (
     <>
@@ -130,9 +131,9 @@ const ValidateInputField = ({
               placeholder={placeholder}
               className={clsx(
                 "form-control form-control-solid mb-3 mb-lg-0",
-                inputclassname,
                 { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-                { "is-valid": formik?.touched[name] && !formik?.errors[name] }
+                { "is-valid": formik?.touched[name] && !formik?.errors[name] },
+                inputclassname
               )}
               defaultValue={defaultValue}
               type={type}
@@ -432,54 +433,75 @@ const PriceTable = (props) => {
                   {name}
                 </div>
                 <div className="p-5">
-                  <input
-                    {...hoistFormik.get().getFieldProps(`${props.name}_${id}`)}
-                    // test={console.log(
-                    //   "=====touched=====",
-                    //   hoistFormik.get().touched[props.name]?.[id]
-                    // )}
-                    className={clsx(
-                      "form-control form-control-solid mb-3 mb-lg-0",
-                      {
-                        "is-invalid":
-                          (hoistFormik.get().touched[`${props.name}_${id}`] ||
-                            hoistFormik.get().touched[props.name]?.[id]) &&
-                          (hoistFormik.get().status?.[`${props.name}_${id}`] ??
-                            true),
-                      },
-                      {
-                        "is-valid":
-                          (hoistFormik.get().touched[`${props.name}_${id}`] ||
-                            hoistFormik.get().touched[props.name]?.[id]) &&
-                          !hoistFormik.get().status?.[`${props.name}_${id}`],
-                      }
-                    )}
-                    type="text"
-                    autoComplete="off"
-                    onKeyDown={onlyInputNumbers}
+                  <NumberInput
+                    name={`${props.name}_${id}`}
+                    defaultValue={price}
+                    inputclassname={{
+                      "is-invalid":
+                        (hoistFormik.get().touched[`${props.name}_${id}`] ||
+                          hoistFormik.get().touched[props.name]?.[id]) &&
+                        (hoistFormik.get().status?.[props.name]?.[
+                          `${props.name}_${id}`
+                        ] ??
+                          true),
+                      "is-valid":
+                        (hoistFormik.get().touched[`${props.name}_${id}`] ||
+                          hoistFormik.get().touched[props.name]?.[id]) &&
+                        !hoistFormik.get().status?.[props.name]?.[
+                          `${props.name}_${id}`
+                        ],
+                    }}
                     onChange={(e) => {
                       const prevStatus = hoistFormik.get().status;
+                      const inValid = isNaN(parseInt(e.target.value));
                       hoistFormik.get().setStatus({
                         ...prevStatus,
-                        [`${props.name}_${id}`]:
-                          e.target.value !== "" && isNaN(e.target.value),
+                        [props.name]: {
+                          ...prevStatus?.[props.name],
+                          [`${props.name}_${id}`]: inValid,
+                        },
                       });
+
                       hoistFormik
                         .get()
-                        .setFieldError(
-                          `${props.name}_${id}`,
-                          e.target.value !== "" && isNaN(e.target.value)
-                        );
+                        .setFieldError(`${props.name}_${id}`, inValid);
+
+                      hoistFormik.get().setFieldValue(
+                        props.name,
+                        hoistFormik
+                          .get()
+                          .values[props.name].filter(({ id: tid }) => tid !== id)
+                          .concat({
+                            id,
+                            price: e.target.value,
+                          })
+                      );
+
+                      console.log(
+                        "hoistFormik.get().values[props.name].filter(({id}) => id !== id)",
+                        hoistFormik
+                          .get()
+                          .values[props.name].filter(({ id: tid }) => tid !== id)
+                          .concat({
+                            id,
+                            price: e.target.value,
+                          })
+                      );
+
+                      hoistFormik.get().setFieldTouched(props.name, true);
                     }}
                     onBlur={(e) => {
+                      hoistFormik.get().setFieldTouched(props.name, true);
+
                       hoistFormik
                         .get()
                         .setFieldTouched(`${props.name}_${id}`, true);
                       const prevStatus = hoistFormik.get().status;
                       hoistFormik.get().setStatus({
                         ...prevStatus,
-                        [`${props.name}_${id}`]:
-                          e.target.value === "" || isNaN(e.target.value),
+                        [`${props.name}_${id}`]: isNaN(
+                          parseInt(e.target.value)
+                        ),
                       });
                     }}
                   />
@@ -492,6 +514,17 @@ const PriceTable = (props) => {
           目前沒有資料
         </div>
       )}
+      {hoistFormik.get().touched[props.name] &&
+        (Object.values(hoistFormik.get().status?.[props.name] ?? {}).some(
+          (price) => isNaN(parseInt(price))
+        ) ||
+          hoistFormik.get().errors[props.name]) && (
+          <div className="fv-plugins-message-container">
+            <div className="fv-help-block">
+              <span role="alert">{hoistFormik.get().errors[props.name]}</span>
+            </div>
+          </div>
+        )}
     </div>
   );
 };
@@ -618,7 +651,7 @@ const EditModalForm = () => {
     },
   });
   hoistFormik.set(formik);
-  console.log(formik);
+  // console.log(formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
 
@@ -709,12 +742,7 @@ const EditModalForm = () => {
             type="submit"
             className="btn btn-primary"
             data-kt-users-modal-action="submit"
-            disabled={
-              formik.isSubmitting ||
-              !formik.isValid ||
-              !formik.touched ||
-              (formik.status && console.log("test disable submit button", Object.values(formik.status).includes(false)))
-            }
+            disabled={formik.isSubmitting || !formik.isValid || !formik.touched}
           >
             <span className="indicator-label">確認</span>
             {formik.isSubmitting && (

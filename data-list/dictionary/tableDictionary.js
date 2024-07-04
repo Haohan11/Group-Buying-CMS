@@ -203,17 +203,17 @@ export const fullData = {
         name: "grade_price",
         fetchUrl: "member-grade",
         adaptor: (data) =>
-          data.map(({ name, id, price }) => ({ name, id, price })),
+          data.map(({ name, id, price }) => ({ name, id: `${id}`, price: "" })),
         createInitor: (data) =>
-          data.reduce((dict, { id }) => ({ ...dict, [id]: null }), {}),
+          data.map(({ name, id, price }) => ({ name, id: `${id}`, price: "" })),
       },
       {
         name: "role_price",
         fetchUrl: "member-role",
         adaptor: (data) =>
-          data.map(({ name, id, price }) => ({ name, id, price })),
+          data.map(({ name, id, price }) => ({ name, id: `${id}`, price: "" })),
         createInitor: (data) =>
-          data.reduce((dict, { id }) => ({ ...dict, [id]: null }), {}),
+          data.map(({ id, price }) => ({ id: `${id}`, price: "" })),
       },
       {
         name: "stock_brand_id",
@@ -243,12 +243,16 @@ export const fullData = {
         .typeError("只能輸入數字")
         .required("此欄位必填"),
       preorder_count: Yup.number().typeError("只能輸入數字"),
-      // grade_price: Yup.array().of(Yup.object().shape({
-      //   cell: Yup.number().typeError("只能輸入數字"),
-      // })),
-      // role_price: Yup.array().of(Yup.object().shape({
-      //   cell: Yup.number().typeError("只能輸入數字"),
-      // })),
+      grade_price: Yup.mixed().test({
+        test: (data) =>
+          !data.some(({price}) => isNaN(parseInt(price))),
+        message: "請提供價錢",
+      }),
+      role_price: Yup.mixed().test({
+        test: (data) =>
+          !data.some(({price}) => isNaN(parseInt(price))),
+        message: "請提供價錢",
+      }),
     }),
     formField: {
       cover_image: null,
