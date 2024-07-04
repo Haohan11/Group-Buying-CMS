@@ -255,7 +255,7 @@ export const fullData = {
       min_order: 1,
       order_step: 1,
       price: "",
-      preorder_count: undefined,
+      preorder_count: 0,
       purchase_price: "",
       grade_price: "",
       role_price: "",

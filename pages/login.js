@@ -99,7 +99,7 @@ const LoginLayout = () => {
               id="rememberMe"
               name="rememberMe"
               label="記住我"
-              defaultValue={!!rememberMe}
+              defaultChecked
               className="text-black mb-10"
             ></FormCheck>
             <Button
