@@ -80,34 +80,44 @@ const CUDataRequest = (action) => {
       method: "PUT",
       logMessage: "編輯",
     },
-  }
+  };
   return async (token, values) => {
     const URL = `${BASEURL}/${getTableUrl()}`;
-  
+
     const formData = new FormData();
     for (const key in values) {
       const value = values[key];
-  
+
       try {
-        if(value === null || value === undefined) continue;
-        if (!Array.isArray(value)) {
-          formData.append(
-            key,
-            (typeof value === "object" && !(value instanceof File))
-              ? JSON.stringify(value)
-              : value
-          );
-          continue;
-        }
+        if (value === null || value === undefined) continue;
+
+        const gateKey = Array.isArray(value) ? "isArray" : "notArray";
+
+        ({
+          isArray() {
+            value.forEach((item) => {
+              formData.append(
+                key,
+                typeof item === "object" && !(item instanceof File)
+                  ? JSON.stringify(item)
+                  : item
+              );
+            });
+          },
+          notArray() {
+            formData.append(
+              key,
+              typeof value === "object" && !(value instanceof File)
+                ? JSON.stringify(value)
+                : value
+            );
+          },
+        })[gateKey]();
       } catch (error) {
         return !!console.warn(error);
       }
-  
-      value.forEach((item) => {
-        formData.append(key, item);
-      });
     }
-  
+
     try {
       const res = await fetch(URL, {
         method: actionDict[action].method,
@@ -125,7 +135,7 @@ const CUDataRequest = (action) => {
       return false;
     }
   };
-}
+};
 
 export const createDataRequest = CUDataRequest("create");
 
@@ -158,10 +168,10 @@ export const getIndexItems = async () => {
     const res = await fetch(URL);
     if (!res.ok) return false;
     const { data } = await res.json();
-    if(!data) return false;
+    if (!data) return false;
     return data;
   } catch (error) {
     console.log(error);
     return false;
   }
-}
+};

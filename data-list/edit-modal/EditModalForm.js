@@ -17,7 +17,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = true;
+const testMode = false;
 
 const CustomEditor = dynamic(
   () => {
@@ -435,74 +435,47 @@ const PriceTable = (props) => {
                 <div className="p-5">
                   <NumberInput
                     name={`${props.name}_${id}`}
-                    defaultValue={price}
+                    defaultValue={
+                      hoistFormik
+                        .get()
+                        .values[props.name]?.find(({ id: tid }) => tid === id)
+                        ?.price || price
+                    }
                     inputclassname={{
                       "is-invalid":
                         (hoistFormik.get().touched[`${props.name}_${id}`] ||
-                          hoistFormik.get().touched[props.name]?.[id]) &&
-                        (hoistFormik.get().status?.[props.name]?.[
-                          `${props.name}_${id}`
-                        ] ??
-                          true),
+                          hoistFormik.get().touched[props.name]?.[index]?.id) &&
+                        !/^[1-9][0-9]*$/.test(
+                          hoistFormik
+                            .get()
+                            .values[props.name]?.find(
+                              ({ id: tid }) => tid === id
+                            )?.price
+                        ),
                       "is-valid":
                         (hoistFormik.get().touched[`${props.name}_${id}`] ||
-                          hoistFormik.get().touched[props.name]?.[id]) &&
-                        !hoistFormik.get().status?.[props.name]?.[
-                          `${props.name}_${id}`
-                        ],
+                          hoistFormik.get().touched[props.name]?.[index]?.id) &&
+                        /^[1-9][0-9]*$/.test(
+                          hoistFormik
+                            .get()
+                            .values[props.name].find(
+                              ({ id: tid }) => tid === id
+                            )?.price
+                        ),
                     }}
                     onChange={(e) => {
-                      const prevStatus = hoistFormik.get().status;
-                      const inValid = isNaN(parseInt(e.target.value));
-                      hoistFormik.get().setStatus({
-                        ...prevStatus,
-                        [props.name]: {
-                          ...prevStatus?.[props.name],
-                          [`${props.name}_${id}`]: inValid,
-                        },
-                      });
-
-                      hoistFormik
-                        .get()
-                        .setFieldError(`${props.name}_${id}`, inValid);
-
                       hoistFormik.get().setFieldValue(
                         props.name,
                         hoistFormik
                           .get()
-                          .values[props.name].filter(({ id: tid }) => tid !== id)
+                          .values[props.name].filter(
+                            ({ id: tid }) => tid !== id
+                          )
                           .concat({
                             id,
                             price: e.target.value,
                           })
                       );
-
-                      console.log(
-                        "hoistFormik.get().values[props.name].filter(({id}) => id !== id)",
-                        hoistFormik
-                          .get()
-                          .values[props.name].filter(({ id: tid }) => tid !== id)
-                          .concat({
-                            id,
-                            price: e.target.value,
-                          })
-                      );
-
-                      hoistFormik.get().setFieldTouched(props.name, true);
-                    }}
-                    onBlur={(e) => {
-                      hoistFormik.get().setFieldTouched(props.name, true);
-
-                      hoistFormik
-                        .get()
-                        .setFieldTouched(`${props.name}_${id}`, true);
-                      const prevStatus = hoistFormik.get().status;
-                      hoistFormik.get().setStatus({
-                        ...prevStatus,
-                        [`${props.name}_${id}`]: isNaN(
-                          parseInt(e.target.value)
-                        ),
-                      });
                     }}
                   />
                 </div>

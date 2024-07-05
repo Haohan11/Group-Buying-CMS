@@ -12,6 +12,16 @@ import {
   memberRoleColumns,
 } from "../table/columns/_columns";
 
+/** Usage of tableDictionary:
+ *
+ *  adaptor (UI render): 
+ *    Use for preload data adapt, 
+ *    which is use for render your ui like select option or table content.
+ * 
+ *  createInitor (Data control): 
+ *    Use for initalize formik data from preload data (not adapt yet) in create mode.
+ */
+
 const selectAdaptor = (data) =>
   Array.isArray(data)
     ? data.map(({ id, name }) => ({ label: name, value: `${id}` }))
@@ -24,6 +34,7 @@ export const fullData = {
     pageTitle: "商品維護",
     searchPlaceholder: "商品",
     createHeaderText: "商品資料",
+    editHeaderText: "商品資料",
     column: stockColumns,
     inputList: [
       [
@@ -203,17 +214,23 @@ export const fullData = {
         name: "grade_price",
         fetchUrl: "member-grade",
         adaptor: (data) =>
-          data.map(({ name, id, price }) => ({ name, id: `${id}`, price: "" })),
+          data.map(({ name, id }) => ({
+            name,
+            id: `${id}`,
+          })),
         createInitor: (data) =>
-          data.map(({ name, id, price }) => ({ name, id: `${id}`, price: "" })),
+          data.map(({ id }) => ({ id: `${id}`, price: "" })),
       },
       {
         name: "role_price",
         fetchUrl: "member-role",
         adaptor: (data) =>
-          data.map(({ name, id, price }) => ({ name, id: `${id}`, price: "" })),
+          data.map(({ name, id }) => ({
+            name,
+            id: `${id}`,
+          })),
         createInitor: (data) =>
-          data.map(({ id, price }) => ({ id: `${id}`, price: "" })),
+          data.map(({ id }) => ({ id: `${id}`, price: "" })),
       },
       {
         name: "stock_brand_id",
@@ -244,13 +261,11 @@ export const fullData = {
         .required("此欄位必填"),
       preorder_count: Yup.number().typeError("只能輸入數字"),
       grade_price: Yup.mixed().test({
-        test: (data) =>
-          !data.some(({price}) => isNaN(parseInt(price))),
+        test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
         message: "請提供價錢",
       }),
       role_price: Yup.mixed().test({
-        test: (data) =>
-          !data.some(({price}) => isNaN(parseInt(price))),
+        test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
         message: "請提供價錢",
       }),
     }),
