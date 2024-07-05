@@ -642,3 +642,230 @@ export const memberRoleColumns = [
     accessor: "create_time",
   },
 ];
+export const memberManagementColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="狀態"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "status",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員名稱"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "name",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員編號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "code",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員帳號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "account",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員密碼"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "password",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員等級"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "grade",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員身分別"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "identity",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員付款方式"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "payment",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="統一編號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "uniform_number",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="公司抬頭"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "company_title",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="出貨方式"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "shipping_method",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="發貨條件"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "shipping_condition",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="聯絡電話"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "phone",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="生日(非必填)"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "birthday",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="聯絡地址"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "address",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="備註"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "description",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="創建時間"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "create_time",
+  },
+];
+export const memberTagColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="標籤名稱"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "name",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="備註"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "description",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="創建時間"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "create_time",
+  },
+ 
+];

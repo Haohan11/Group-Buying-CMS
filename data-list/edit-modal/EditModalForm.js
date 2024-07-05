@@ -194,6 +194,28 @@ const ValidateInputField = ({
               style={{ minHeight: "120px" }}
             ></textarea>
           ),
+          password: (
+            <input
+              {...formik.getFieldProps(name)}
+              id={`input_${name}`}
+              placeholder={placeholder}
+              className={clsx(
+                "form-control form-control-solid mb-3 mb-lg-0",
+                { "is-invalid": formik?.touched[name] && formik?.errors[name] },
+                { "is-valid": formik?.touched[name] && !formik?.errors[name] },
+                inputclassname
+              )}
+              defaultValue={defaultValue}
+              type={type}
+              autoComplete="off"
+              {...(onlynumber && {
+                onKeyDown: onlyInputNumbers,
+              })}
+              {...(typeof onChange === "function" && { onChange })}
+              {...(typeof onBlur === "function" && { onBlur })}
+              disabled={readonly || formik?.isSubmitting}
+            />
+          ),
         }[type]
       }
       {formik?.touched[name] && formik?.errors[name] && (
@@ -209,6 +231,10 @@ const ValidateInputField = ({
 const LabelHolder = () => InputLabel({ holder: true });
 
 const TextInput = (props) => ValidateInputField({ ...props, type: "text" });
+
+const PasswordInput = (props) =>
+  ValidateInputField({ ...props, type: "password" });
+
 const TextHolder = () => ValidateInputField({ holder: true });
 const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
@@ -509,6 +535,7 @@ const EditorField = (props) => (
   </div>
 );
 
+
 const inputDictionary = {
   text: TextInput,
   "label-holder": LabelHolder,
@@ -522,6 +549,7 @@ const inputDictionary = {
   select: SelectInput,
   "multi-select": MultiSelectInput,
   textarea: TextareaInput,
+  password: PasswordInput,
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {

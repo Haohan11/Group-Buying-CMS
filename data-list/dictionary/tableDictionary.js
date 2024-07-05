@@ -10,15 +10,17 @@ import {
   supplierColumns,
   memberGradeColumns,
   memberRoleColumns,
+  memberManagementColumns,
+  memberTagColumns,
 } from "../table/columns/_columns";
 
 /** Usage of tableDictionary:
  *
- *  adaptor (UI render): 
- *    Use for preload data adapt, 
+ *  adaptor (UI render):
+ *    Use for preload data adapt,
  *    which is use for render your ui like select option or table content.
- * 
- *  createInitor (Data control): 
+ *
+ *  createInitor (Data control):
  *    Use for initalize formik data from preload data (not adapt yet) in create mode.
  */
 
@@ -550,7 +552,7 @@ export const fullData = {
     fetchUrl: "supplier",
     validationSchema: Yup.object().shape({
       name: Yup.string()
-        .min(1, "至少 2 個字")
+        .min(1, "至少 1 個字")
         .max(35, "至多 35 個字")
         .required("此欄位必填"),
       code: Yup.string()
@@ -629,6 +631,248 @@ export const fullData = {
       },
     ],
     fetchUrl: "member-role",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
+    },
+  },
+  "member-management": {
+    pageTitle: "會員",
+    searchPlaceholder: "會員",
+    createHeaderText: "會員",
+    editHeaderText: "會員",
+    column: memberManagementColumns,
+    inputList: [
+      {
+        type: "select",
+        label: "狀態",
+        required: true,
+        name: "status",
+      },
+      [
+        {
+          type: "text",
+          label: "會員名稱",
+          required: true,
+          name: "name",
+          props: {
+            placeholder: "輸入會員姓名",
+          },
+        },
+        {
+          type: "text",
+          label: "會員編號",
+          required: false,
+          name: "code",
+          props: {
+            readonly: true,
+          },
+        },
+      ],
+      {
+        type: "text",
+        label: "會員生日",
+        required: false,
+        name: "birthday",
+        col: 6,
+        props: {
+          placeholder: "輸入會員生日",
+        },
+      },
+      [
+        {
+          type: "text",
+          label: "會員帳號",
+          required: true,
+          name: "account",
+          props: {
+            placeholder: "輸入會員帳號",
+          },
+        },
+        {
+          type: "password",
+          label: "會員密碼",
+          required: true,
+          name: "password",
+          props: {
+            placeholder: "輸入會員密碼",
+          },
+        },
+      ],
+      [
+        {
+          type: "select",
+          label: "會員等級",
+          required: true,
+          name: "grade",
+        },
+        {
+          type: "select",
+          label: "會員身分別",
+          required: true,
+          name: "identity",
+        },
+      ],
+      [
+        {
+          type: "text",
+          label: "聯絡電話",
+          required: true,
+          name: "phone",
+          props: {
+            placeholder: "輸入聯絡電話",
+          },
+        },
+        {
+          type: "select",
+          label: "出貨方式",
+          required: true,
+          name: "shipping_method",
+        },
+      ],
+      [
+        {
+          type: "text",
+          label: "統一編號",
+          required: false,
+          name: "uniform_number",
+          props: {
+            placeholder: "輸入統一編號",
+          },
+        },
+        {
+          type: "text",
+          label: "公司抬頭",
+          required: false,
+          name: "company_title",
+          props: {
+            placeholder: "輸入公司抬頭",
+          },
+        },
+      ],
+      [
+        {
+          type: "select",
+          label: "付款方式",
+          required: false,
+          name: "payment",
+        },
+        {
+          type: "select",
+          label: "發貨條件",
+          required: true,
+          name: "shipping_condition",
+        },
+      ],
+      {
+        type: "text",
+        label: "聯絡地址",
+        required: true,
+        name: "address",
+        props: {
+          placeholder: "輸入聯絡地址",
+        },
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        required: false,
+        name: "description",
+      },
+    ],
+    // preLoad: [
+    //   {
+    //     name: "status",
+    //     fetchUrl: "",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "grade",
+    //     fetchUrl: "",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "identity",
+    //     fetchUrl: "",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "shipping_method",
+    //     fetchUrl: "",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "payment",
+    //     fetchUrl: "",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "shipping_condition",
+    //     fetchUrl: "",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    // ],
+    // fetchUrl: "",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+      account: Yup.string().required("此欄位必填"),
+      password: Yup.string().min(4, "至少 4 個字").required("此欄位必填"),
+      phone: Yup.string()
+        .min(8, "電話格式錯誤")
+        .max(10, "電話格式錯誤")
+        .matches(/^[0-9]+$/, "電話格式錯誤")
+        .required("此欄位必填"),
+      uniform_number: Yup.string().min(8, "至少 8 個數字"),
+      address: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      status: null,
+      name: "",
+      code: "",
+      account: "",
+      password: "",
+      birthday: "",
+      grade: null,
+      identity: null,
+      phone: "",
+      shipping_method: null,
+      uniform_number: "",
+      company_title: "",
+      payment: null,
+      shipping_condition: null,
+      address: "",
+      description: "",
+    },
+  },
+  "member-tag": {
+    pageTitle: "會員標籤",
+    searchPlaceholder: "會員標籤",
+    createHeaderText: "會員標籤",
+    editHeaderText: "會員標籤",
+    column: memberTagColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "標籤名稱",
+        required: true,
+        name: "name",
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    // fetchUrl: "",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
     }),
