@@ -17,7 +17,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = false;
+const testMode = true;
 
 const CustomEditor = dynamic(
   () => {
@@ -503,12 +503,65 @@ const PriceTable = (props) => {
   );
 };
 
-const EditorField = (props) => (
-  <div>
-    <InputLabel text={props.label} required={props.required} />
-    <CustomEditor />
-  </div>
-);
+let imageKeeper = [];
+const EditorField = (props) => {
+  const addImage = ({ file, src }) => {
+    imageKeeper.push({ id: src, file, ori: file.name });
+    hoistFormik.get().setFieldValue(`${props.name}_preview`, imageKeeper);
+    hoistFormik.get().setFieldValue(
+      `${props.name}_image`,
+      imageKeeper.map(({ file }) => file)
+    );
+  };
+
+  const onChange = (event, editor) => {
+    const data = editor.getData();
+    hoistFormik.get().setFieldValue(props.name, data);
+
+    const removeImages = event.source.differ._cachedChangesWithGraveyard.reduce(
+      (dict, item) =>
+        item.type === "remove" && item.name === "imageBlock"
+          ? dict.concat(item.attributes.get("src"))
+          : dict,
+      []
+    );
+    // console.log("removeImages", removeImages);
+
+    if (removeImages.length === 0) return;
+
+    const newValue = imageKeeper.filter(({ id }) => !removeImages.includes(id));
+    hoistFormik.get().setFieldValue(
+      `${props.name}_image_persist`,
+      hoistFormik
+        .get()
+        .values[`${props.name}_image_persist`].filter((path) =>
+          removeImages.findIndex((url) => url.includes(path)) === -1
+        )
+    );
+
+    imageKeeper = newValue;
+
+    hoistFormik.get().setFieldValue(`${props.name}_preview`, newValue);
+
+    hoistFormik.get().setFieldValue(
+      `${props.name}_image`,
+      newValue.map(({ file }) => file)
+    );
+  };
+
+  return (
+    <div>
+      <InputLabel text={props.label} required={props.required} />
+      <CustomEditor
+        {...{
+          addImage,
+          onChange,
+          initialData: hoistFormik.get().values[props.name],
+        }}
+      />
+    </div>
+  );
+};
 
 const inputDictionary = {
   text: TextInput,
@@ -626,7 +679,10 @@ const EditModalForm = () => {
     },
   });
   hoistFormik.set(formik);
-  // console.log(formik);
+  // console.log(
+  //   "introduction_image_persist",
+  //   formik.values["introduction_image_persist"]
+  // );
 
   const closeModal = () => setItemIdForUpdate(undefined);
 
@@ -671,6 +727,8 @@ const EditModalForm = () => {
         })
       );
     })();
+
+    return () => (imageKeeper = []);
   }, []);
 
   return (

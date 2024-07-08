@@ -311,10 +311,22 @@ export const fullData = {
               { stock_image_preview: [], stock_image_persist: [] }
             )
           : {};
+      
+      const introduction_image_persist = []
+      const introduction = data.introduction.replaceAll(
+        /src="path:(.*?)"/g,
+        (sub) => {
+          introduction_image_persist.push(sub.slice(10, -1).replaceAll("\\", "/"));
+          return `src="${transImageUrl(sub.slice(10, -1))}"`;
+        }
+      )
+
       return {
         ...data,
         stock_image_preview,
         stock_image_persist,
+        introduction,
+        introduction_image_persist,
       };
     },
   },

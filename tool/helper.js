@@ -21,7 +21,7 @@ export const checkExpires = (time) =>
 
 export const transImageUrl = (path) =>
   path && path?.replace
-    ? `${process.env.NEXT_PUBLIC_BACKENDURL}/${path.replace(/\\/g, "/")}`
+    ? `${process.env.NEXT_PUBLIC_BACKENDURL}${path.replace(/\\/g, "/")}`
     : "";
 
 export const onlyInputNumbers = (event) => {
