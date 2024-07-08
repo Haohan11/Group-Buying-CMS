@@ -12,6 +12,8 @@ import {
   memberRoleColumns,
   memberManagementColumns,
   memberTagColumns,
+  inventoryManagementColumns,
+  inventoryTransferColumns,
 } from "../table/columns/_columns";
 
 /** Usage of tableDictionary:
@@ -673,7 +675,7 @@ export const fullData = {
         },
       ],
       {
-        type: "text",
+        type: "date",
         label: "會員生日",
         required: false,
         name: "birthday",
@@ -879,6 +881,375 @@ export const fullData = {
     formField: {
       name: "",
       description: "",
+    },
+  },
+  "inventory-management": {
+    pageTitle: "盤點作業",
+    searchPlaceholder: "盤點作業",
+    createHeaderText: "盤點作業",
+    editHeaderText: "盤點作業",
+    column: inventoryManagementColumns,
+    inputList: [
+      [
+        {
+          type: "text",
+          label: "盤點單號",
+          required: true,
+          name: "number",
+        },
+        {
+          type: "select",
+          label: "盤點倉別",
+          required: true,
+          name: "category",
+        },
+        {
+          type: "select",
+          label: "盤點儲位",
+          required: true,
+          name: "storage",
+        },
+      ],
+      [
+        {
+          type: "date",
+          label: "盤點日期",
+          required: true,
+          name: "date",
+        },
+        {
+          type: "text",
+          label: "商品",
+          required: true,
+          name: "product",
+        },
+        {
+          type: "text",
+          label: "商品類別",
+          required: true,
+          name: "product_category",
+          props: {
+            readonly: true,
+          },
+        },
+      ],
+      {
+        type: "text",
+        label: "盤點人員",
+        required: true,
+        name: "employee",
+        col: 4,
+      },
+      {
+        type: "text",
+        label: "商品編號",
+        required: true,
+        name: "product_number",
+        props: {
+          readonly: true,
+        },
+      },
+      {
+        type: "text",
+        label: "商品名稱",
+        required: true,
+        name: "product_name",
+        props: {
+          readonly: true,
+        },
+      },
+      {
+        type: "text",
+        label: "商品規格",
+        required: true,
+        name: "product_format",
+        props: {
+          readonly: true,
+        },
+      },
+      {
+        type: "text",
+        label: "儲位",
+        required: true,
+        name: "storage_backup",
+        props: {
+          readonly: true,
+        },
+      },
+      {
+        type: "text",
+        label: "庫存數量",
+        required: true,
+        name: "stock_count",
+        props: {
+          readonly: true,
+        },
+      },
+      {
+        type: "text",
+        label: "盤點數量",
+        required: true,
+        name: "inventory_count",
+      },
+      {
+        type: "text",
+        label: "差異數量",
+        required: true,
+        name: "difference_count",
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+      {
+        type: "checkbox",
+        label: "確認",
+        name: "confirm",
+        col:3
+      },
+    ],
+    // preLoad: [
+    //   {
+    //     name: "stock_category_id",
+    //     fetchUrl: "stock-category",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "supplier_id",
+    //     fetchUrl: "supplier",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "accounting_id",
+    //     fetchUrl: "stock-accounting",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "grade_price",
+    //     fetchUrl: "member-grade",
+    //     adaptor: (data) =>
+    //       data.map(({ name, id }) => ({
+    //         name,
+    //         id: `${id}`,
+    //       })),
+    //     createInitor: (data) =>
+    //       data.map(({ id }) => ({ id: `${id}`, price: "" })),
+    //   },
+    //   {
+    //     name: "role_price",
+    //     fetchUrl: "member-role",
+    //     adaptor: (data) =>
+    //       data.map(({ name, id }) => ({
+    //         name,
+    //         id: `${id}`,
+    //       })),
+    //     createInitor: (data) =>
+    //       data.map(({ id }) => ({ id: `${id}`, price: "" })),
+    //   },
+    //   {
+    //     name: "stock_brand_id",
+    //     fetchUrl: "stock-brand",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    // ],
+    // fetchUrl: "",
+    validationSchema: Yup.object().shape({
+      // name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      number: "",
+      date: "",
+      category: null,
+      storage: null,
+      product: "",
+      productCategory: "",
+      productNumber: "",
+      productName: "",
+      productFormat: "",
+      storageBackUp: "",
+      stockCount: "",
+      inventoryCount: "",
+      differenceCount: "",
+      confirm: "",
+    },
+  },
+  "inventory-transfer": {
+    pageTitle: "調撥作業",
+    searchPlaceholder: "調撥作業",
+    createHeaderText: "調撥作業",
+    editHeaderText: "調撥作業",
+    column: inventoryTransferColumns,
+    inputList: [
+      [
+        {
+          type: "date",
+          label: "出庫日期",
+          required: true,
+          name: "out_warehouse_date",
+        },
+        {
+          type: "select",
+          label: "出庫倉別",
+          required: true,
+          name: "out_warehouse_category",
+        },
+        {
+          type: "select",
+          label: "出庫儲位",
+          required: true,
+          name: "out_warehouse_storage",
+        },
+      ],
+      [
+        {
+          type: "select",
+          label: "入庫倉別",
+          required: true,
+          name: "warehouse_category",
+        },
+        {
+          type: "select",
+          label: "入庫儲位",
+          required: true,
+          name: "warehouse__storage",
+        },
+        {
+          type: "text",
+          label: "調撥商品編號",
+          required: true,
+          name: "transfer_number",
+          props: {
+            readonly: true,
+          },
+        },
+      ],
+      {
+        type: "image",
+        label: "商品封面照",
+        required: true,
+        name: "cover_image",
+        props: {
+          imagestyle: { minHeight: "150px", maxHeight: "200px" },
+        },
+      },
+      [
+        {
+          type: "select",
+          label: "商品名稱",
+          required: true,
+          name: "product_name",
+          props: {
+            readonly: true,
+          },
+        },
+        {
+          type: "number",
+          label: "數量",
+          required: true,
+          name: "product_count",
+          props: {
+            readonly: true,
+          },
+        },
+      ],
+      {
+        type: "switch",
+        label: "調撥",
+        required: true,
+        name: "is_transfer",
+        props: {
+          readonly: true,
+        },
+      },
+      {
+        type: "select",
+        label: "調撥人員",
+        required: true,
+        name: "transfer_employee",
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+      {
+        type: "switch",
+        label: "儲存",
+        required: true,
+        name: "save",
+      },
+    ],
+    // preLoad: [
+    //   {
+    //     name: "stock_category_id",
+    //     fetchUrl: "stock-category",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "supplier_id",
+    //     fetchUrl: "supplier",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "accounting_id",
+    //     fetchUrl: "stock-accounting",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    //   {
+    //     name: "grade_price",
+    //     fetchUrl: "member-grade",
+    //     adaptor: (data) =>
+    //       data.map(({ name, id }) => ({
+    //         name,
+    //         id: `${id}`,
+    //       })),
+    //     createInitor: (data) =>
+    //       data.map(({ id }) => ({ id: `${id}`, price: "" })),
+    //   },
+    //   {
+    //     name: "role_price",
+    //     fetchUrl: "member-role",
+    //     adaptor: (data) =>
+    //       data.map(({ name, id }) => ({
+    //         name,
+    //         id: `${id}`,
+    //       })),
+    //     createInitor: (data) =>
+    //       data.map(({ id }) => ({ id: `${id}`, price: "" })),
+    //   },
+    //   {
+    //     name: "stock_brand_id",
+    //     fetchUrl: "stock-brand",
+    //     adaptor: selectAdaptor,
+    //     createInitor: selectInitializer,
+    //   },
+    // ],
+    // fetchUrl: "",
+    validationSchema: Yup.object().shape({
+      // name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      out_warehouse_date: "",
+      out_warehouse_category: null,
+      out_warehouse_storage: null,
+      warehouse_category: null,
+      warehouse_storage: null,
+      transfer_number: "",
+      cover_image: "",
+      product_name: null,
+      product_count: "",
+      is_transfer: false,
+      transfer_employee: "",
+      description: "",
+      save: false,
     },
   },
 };
