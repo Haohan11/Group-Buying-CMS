@@ -210,6 +210,11 @@ const TextInput = (props) => ValidateInputField({ ...props, type: "text" });
 const PasswordInput = (props) =>
   ValidateInputField({ ...props, type: "password" });
 
+const CheckBoxInput = (props) =>
+  ValidateInputField({ ...props, type: "checkbox" });
+
+const DateInput = (props) => ValidateInputField({ ...props, type: "date" });
+
 const TextHolder = () => ValidateInputField({ holder: true });
 const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
@@ -577,6 +582,8 @@ const inputDictionary = {
   "multi-select": MultiSelectInput,
   textarea: TextareaInput,
   password: PasswordInput,
+  date: DateInput,
+  checkbox:CheckBoxInput
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {

@@ -5,16 +5,21 @@ import { ColorSchemeCell } from "./ColorSchemeCell";
 import { AvaliableCell } from "./AvaliableCell";
 
 const EnableCell = ({ status }) => (
-  <AvaliableCell status={status} validText="啟用中" inValidText="未啟用"  />
-)
+  <AvaliableCell status={status} validText="啟用中" inValidText="未啟用" />
+);
 
 const ValiableCell = ({ status }) => (
-  <AvaliableCell status={status} validText="已上架" inValidText="未上架"  />
-)
+  <AvaliableCell status={status} validText="已上架" inValidText="未上架" />
+);
 
 const BinaryCell = ({ status }) => (
-  <AvaliableCell status={status} validText="是" inValidText="否" className={"px-3"} />
-)
+  <AvaliableCell
+    status={status}
+    validText="是"
+    inValidText="否"
+    className={"px-3"}
+  />
+);
 
 export const placeHolderColumns = [
   {
@@ -867,5 +872,172 @@ export const memberTagColumns = [
     ),
     accessor: "create_time",
   },
- 
+];
+
+export const inventoryManagementColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="盤點單號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "number",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="盤點日期"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "date",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="盤點倉別"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "category",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="盤點儲位"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "storage",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="狀態"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "status",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="備註"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "description",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="創建時間"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "create_time",
+  },
+];
+
+export const inventoryTransferColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="出庫倉別"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "out_warehouse_category",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="出庫儲位"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "out_warehouse_storage",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="入庫倉別"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "warehouse_Category",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="是否已執行出庫"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "is_out_warehouse",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="調撥單號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "transfer_number",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="備註"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "description",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="創建時間"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "create_time",
+  },
 ];
