@@ -122,102 +122,77 @@ const ValidateInputField = ({
           className={clsx(labelclassname, "cursor-pointer")}
         />
       )}
-      {
-        {
-          text: (
-            <input
-              {...formik.getFieldProps(name)}
-              id={`input_${name}`}
-              placeholder={placeholder}
-              className={clsx(
-                "form-control form-control-solid mb-3 mb-lg-0",
-                { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-                { "is-valid": formik?.touched[name] && !formik?.errors[name] },
-                inputclassname
-              )}
-              defaultValue={defaultValue}
-              type={type}
-              autoComplete="off"
-              {...(onlynumber && {
-                onKeyDown: onlyInputNumbers,
-              })}
-              {...(typeof onChange === "function" && { onChange })}
-              {...(typeof onBlur === "function" && { onBlur })}
-              disabled={readonly || formik?.isSubmitting}
-            />
-          ),
-          select: (
-            <>
-              {formik.values[name] &&
-              hoistPreLoadData.get()?.[name]?.length > 0 ? (
-                <Select
-                  {...{ name, isMulti }}
-                  inputId={`input_${name}`}
-                  className="react-select-styled react-select-solid border border-gray-100 rounded"
-                  classNamePrefix="react-select"
-                  placeholder="請選擇或輸入關鍵字"
-                  options={hoistPreLoadData.get()[name]}
-                  defaultValue={
-                    isMulti
-                      ? hoistPreLoadData
-                          .get()
-                          [name].filter((option) =>
-                            formik.values[name].includes(option.value)
-                          )
-                      : hoistPreLoadData
-                          .get()
-                          [name].find(
-                            (option) => option.value === formik.values[name]
-                          )
-                  }
-                  onChange={(options) => {
-                    formik.setFieldValue(
-                      name,
-                      Array.isArray(options)
-                        ? options.map((option) => option.value)
-                        : options.value
-                    );
-                  }}
-                />
-              ) : (
-                <div className="form-select form-select-solid text-gray-500">
-                  目前沒有資料
-                </div>
-              )}
-            </>
-          ),
-          textarea: (
-            <textarea
-              {...formik.getFieldProps(name)}
-              id={`input_${name}`}
-              className="border border-1 border-gray-200 form-control form-control-solid"
-              style={{ minHeight: "120px" }}
-            ></textarea>
-          ),
-          password: (
-            <input
-              {...formik.getFieldProps(name)}
-              id={`input_${name}`}
-              placeholder={placeholder}
-              className={clsx(
-                "form-control form-control-solid mb-3 mb-lg-0",
-                { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-                { "is-valid": formik?.touched[name] && !formik?.errors[name] },
-                inputclassname
-              )}
-              defaultValue={defaultValue}
-              type={type}
-              autoComplete="off"
-              {...(onlynumber && {
-                onKeyDown: onlyInputNumbers,
-              })}
-              {...(typeof onChange === "function" && { onChange })}
-              {...(typeof onBlur === "function" && { onBlur })}
-              disabled={readonly || formik?.isSubmitting}
-            />
-          ),
-        }[type]
-      }
+      {{
+        select: (
+          <>
+            {formik.values[name] &&
+            hoistPreLoadData.get()?.[name]?.length > 0 ? (
+              <Select
+                {...{ name, isMulti }}
+                inputId={`input_${name}`}
+                className="react-select-styled react-select-solid border border-gray-100 rounded"
+                classNamePrefix="react-select"
+                placeholder="請選擇或輸入關鍵字"
+                options={hoistPreLoadData.get()[name]}
+                defaultValue={
+                  isMulti
+                    ? hoistPreLoadData
+                        .get()
+                        [name].filter((option) =>
+                          formik.values[name].includes(option.value)
+                        )
+                    : hoistPreLoadData
+                        .get()
+                        [name].find(
+                          (option) => option.value === formik.values[name]
+                        )
+                }
+                onChange={(options) => {
+                  formik.setFieldValue(
+                    name,
+                    Array.isArray(options)
+                      ? options.map((option) => option.value)
+                      : options.value
+                  );
+                }}
+              />
+            ) : (
+              <div className="form-select form-select-solid text-gray-500">
+                目前沒有資料
+              </div>
+            )}
+          </>
+        ),
+        textarea: (
+          <textarea
+            {...formik.getFieldProps(name)}
+            id={`input_${name}`}
+            className="border border-1 border-gray-200 form-control form-control-solid"
+            style={{ minHeight: "120px" }}
+          ></textarea>
+        ),
+      }[type] ?? (
+        <input
+          {...formik.getFieldProps(name)}
+          id={`input_${name}`}
+          placeholder={placeholder}
+          className={clsx(
+            "form-control form-control-solid mb-3 mb-lg-0",
+            { "is-invalid": formik?.touched[name] && formik?.errors[name] },
+            { "is-valid": formik?.touched[name] && !formik?.errors[name] },
+            inputclassname
+          )}
+          defaultValue={defaultValue}
+          type={type}
+          autoComplete="off"
+          {...(onlynumber && {
+            onKeyDown: onlyInputNumbers,
+          })}
+          {...(typeof onChange === "function" && { onChange })}
+          {...(typeof onBlur === "function" && { onBlur })}
+          disabled={readonly || formik?.isSubmitting}
+        />
+      )}
       {formik?.touched[name] && formik?.errors[name] && (
         <div className="fv-plugins-message-container">
           <div className="fv-help-block">
@@ -534,7 +509,6 @@ const EditorField = (props) => (
     <CustomEditor />
   </div>
 );
-
 
 const inputDictionary = {
   text: TextInput,
