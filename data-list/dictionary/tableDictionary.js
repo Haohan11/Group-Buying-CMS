@@ -24,6 +24,9 @@ import {
  *
  *  createInitor (Data control):
  *    Use for initalize formik data from preload data (not adapt yet) in create mode.
+ * 
+ *  editAdaptor (Data control):
+ *    Use for adapt data for formik initialValue in edit mode.
  */
 
 const selectAdaptor = (data) =>
@@ -327,6 +330,7 @@ export const fullData = {
 
       return {
         ...data,
+        supplier_id: `${data.supplier_id}`,
         stock_image_preview,
         stock_image_persist,
         introduction,
