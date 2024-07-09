@@ -888,7 +888,7 @@ export const fullData = {
         name: "description",
       },
     ],
-    // fetchUrl: "",
+    fetchUrl: "member-tag",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
     }),

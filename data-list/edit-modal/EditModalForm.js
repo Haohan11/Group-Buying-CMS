@@ -638,7 +638,7 @@ const EditModalForm = () => {
         ? editAdaptor[tableName](currentData)
         : Object.keys(formField[tableName]).reduce((result, key) => {
             result[key] =
-              typeof editAdaptor[tableName][key] === "function"
+              typeof editAdaptor[tableName]?.[key] === "function"
                 ? editAdaptor[tableName][key](currentData[key])
                 : currentData[key];
             return result;
