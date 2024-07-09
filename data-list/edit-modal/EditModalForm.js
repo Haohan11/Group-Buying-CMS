@@ -17,7 +17,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = true;
+const testMode = false;
 
 const CustomEditor = dynamic(
   () => {
@@ -204,26 +204,16 @@ const ValidateInputField = ({
   );
 
 const LabelHolder = () => InputLabel({ holder: true });
-
-const TextInput = (props) => ValidateInputField({ ...props, type: "text" });
-
-const PasswordInput = (props) =>
-  ValidateInputField({ ...props, type: "password" });
+const TextHolder = () => ValidateInputField({ holder: true });
 
 const CheckBoxInput = (props) =>
   ValidateInputField({ ...props, type: "checkbox" });
 
-const DateInput = (props) => ValidateInputField({ ...props, type: "date" });
-
-const TextHolder = () => ValidateInputField({ holder: true });
 const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
 
-const SelectInput = (props) => ValidateInputField({ ...props, type: "select" });
 const MultiSelectInput = (props) =>
   ValidateInputField({ ...props, type: "select", isMulti: true });
-const TextareaInput = (props) =>
-  ValidateInputField({ ...props, type: "textarea" });
 
 const SwitchInput = (props) => (
   <Row
@@ -539,8 +529,8 @@ const EditorField = (props) => {
       `${props.name}_image_persist`,
       hoistFormik
         .get()
-        .values[`${props.name}_image_persist`].filter((path) =>
-          removeImages.findIndex((url) => url.includes(path)) === -1
+        .values[`${props.name}_image_persist`].filter(
+          (path) => removeImages.findIndex((url) => url.includes(path)) === -1
         )
     );
 
@@ -568,22 +558,28 @@ const EditorField = (props) => {
   );
 };
 
+const getInput = (type) => (props) => ValidateInputField({ ...props, type });
+const dynaGenerate = (arr) =>
+  arr.reduce(
+    (dict, type) => ({
+      ...dict,
+      [type]: getInput(type),
+    }),
+    {}
+  );
+
 const inputDictionary = {
-  text: TextInput,
   "label-holder": LabelHolder,
   "text-holder": TextHolder,
+  ...dynaGenerate(["text", "textarea", "password", "date", "select"]),
+  "multi-select": MultiSelectInput,
   number: NumberInput,
   switch: SwitchInput,
   image: ImageInput,
   "multi-image": MultiImageInput,
   "price-table": PriceTable,
   editor: EditorField,
-  select: SelectInput,
-  "multi-select": MultiSelectInput,
-  textarea: TextareaInput,
-  password: PasswordInput,
-  date: DateInput,
-  checkbox:CheckBoxInput
+  checkbox: CheckBoxInput,
 };
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
