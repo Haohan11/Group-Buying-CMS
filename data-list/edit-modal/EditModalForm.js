@@ -157,7 +157,10 @@ const ValidateInputField = ({
                 }}
               />
             ) : (
-              <div className="form-select form-select-solid text-gray-500">
+              <div
+                onClick={() => formik.setFieldTouched(name, true)}
+                className="form-select form-select-solid text-gray-500"
+              >
                 目前沒有資料
               </div>
             )}
@@ -249,6 +252,7 @@ const ImageInput = (props) => {
         <label
           className="position-relative h-100 w-100 bg-gray-200 rounded-3 cursor-pointer overflow-hidden flex-center text-gray-500"
           style={props.imagestyle || { minHeight: "100px" }}
+          onClick={() => hoistFormik.get().setFieldTouched(props.name, true)}
           htmlFor={`image_${props.name}`}
         >
           請選擇照片
@@ -778,7 +782,7 @@ const EditModalForm = () => {
             type="submit"
             className="btn btn-primary"
             data-kt-users-modal-action="submit"
-            disabled={formik.isSubmitting || !formik.isValid || !formik.touched}
+            disabled={formik.isSubmitting}
           >
             <span className="indicator-label">確認</span>
             {formik.isSubmitting && (

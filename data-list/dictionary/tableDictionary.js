@@ -24,7 +24,7 @@ import {
  *
  *  createInitor (Data control):
  *    Use for initalize formik data from preload data (not adapt yet) in create mode.
- * 
+ *
  *  editAdaptor (Data control):
  *    Use for adapt data for formik initialValue in edit mode.
  */
@@ -33,8 +33,7 @@ const selectAdaptor = (data) =>
   Array.isArray(data)
     ? data.map(({ id, name }) => ({ label: name, value: `${id}` }))
     : [];
-const selectInitializer = (data) => `${data?.[0]?.id}`;
-const multiSelectInitializer = (data) => [data?.[0]?.value];
+const selectInitializer = (data) => data?.[0]?.id ? `${data[0].id}` : null;
 
 export const fullData = {
   "stock-management": {
@@ -125,11 +124,13 @@ export const fullData = {
           type: "select",
           label: "商品品牌",
           name: "stock_brand_id",
+          required: true,
         },
         {
           type: "select",
           label: "商品類別",
           name: "stock_category_id",
+          required: true,
         },
       ],
       [
@@ -137,11 +138,13 @@ export const fullData = {
           type: "select",
           label: "記帳分類",
           name: "accounting_id",
+          required: true,
         },
         {
           type: "select",
           label: "供應商",
           name: "supplier_id",
+          required: true,
         },
       ],
       [
@@ -275,6 +278,10 @@ export const fullData = {
         test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
         message: "請提供價錢",
       }),
+      stock_brand_id: Yup.string().required("此欄位必填"),
+      stock_category_id: Yup.string().required("此欄位必填"),
+      accounting_id: Yup.string().required("此欄位必填"),
+      supplier_id: Yup.string().required("此欄位必填"),
     }),
     formField: {
       cover_image: null,
@@ -317,6 +324,7 @@ export const fullData = {
             )
           : {};
 
+      /** adapt image path in introduction and save original path to persist */
       const introduction_image_persist = [];
       const introduction =
         typeof data.introduction === "string"
@@ -884,6 +892,7 @@ export const fullData = {
         label: "標籤名稱",
         required: true,
         name: "name",
+        col: 6,
       },
       {
         type: "textarea",
