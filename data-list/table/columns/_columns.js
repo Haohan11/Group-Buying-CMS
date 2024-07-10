@@ -647,6 +647,7 @@ export const memberRoleColumns = [
     accessor: "create_time",
   },
 ];
+
 export const memberManagementColumns = [
   {
     Header: (props) => (
@@ -830,6 +831,7 @@ export const memberManagementColumns = [
     accessor: "create_time",
   },
 ];
+
 export const memberTagColumns = [
   {
     Header: (props) => (
@@ -1019,6 +1021,50 @@ export const inventoryTransferColumns = [
       />
     ),
     accessor: "transfer_number",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="備註"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "description",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="創建時間"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "create_time",
+  },
+];
+
+export const orderCategoryColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="類別名稱"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "name",
   },
   {
     Header: (props) => (

@@ -25,6 +25,11 @@ export const readDataRequest = async (
   token,
   { page, size, keyword, sort, item, isEnable }
 ) => {
+  if (!getTableUrl())
+    return !!console.warn(
+      `No 'fetchUrl' provided for readDataRequest. Check '${currentTable.get()}' in TableDictionary.`
+    );
+
   const URL = `${BASEURL}/${getTableUrl()}?page=${page}&size=${size}&keyword=${keyword}&sort=${sort}&item=${item}${
     isEnable === undefined || isEnable === ""
       ? ""

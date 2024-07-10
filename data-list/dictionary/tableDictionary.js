@@ -14,6 +14,7 @@ import {
   memberTagColumns,
   inventoryManagementColumns,
   inventoryTransferColumns,
+  orderCategoryColumns,
 } from "../table/columns/_columns";
 
 /** Usage of tableDictionary:
@@ -33,7 +34,7 @@ const selectAdaptor = (data) =>
   Array.isArray(data)
     ? data.map(({ id, name }) => ({ label: name, value: `${id}` }))
     : [];
-const selectInitializer = (data) => data?.[0]?.id ? `${data[0].id}` : null;
+const selectInitializer = (data) => (data?.[0]?.id ? `${data[0].id}` : null);
 
 export const fullData = {
   "stock-management": {
@@ -349,6 +350,7 @@ export const fullData = {
     pageTitle: "商品品牌維護",
     searchPlaceholder: "品牌",
     createHeaderText: "品牌資料",
+    editHeaderText: "品牌資料",
     column: stockBrandColumns,
     inputList: [
       {
@@ -380,6 +382,7 @@ export const fullData = {
     pageTitle: "商品類別維護",
     searchPlaceholder: "類別",
     createHeaderText: "類別資料",
+    editHeaderText: "類別資料",
     column: stockCategoryColumns,
     inputList: [
       [
@@ -1276,6 +1279,35 @@ export const fullData = {
       transfer_employee: "",
       description: "",
       save: false,
+    },
+  },
+  "order-category": {
+    pageTitle: "訂單類別維護",
+    searchPlaceholder: "訂單類別",
+    createHeaderText: "訂單類別",
+    editHeaderText: "訂單類別",
+    column: orderCategoryColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "標籤名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "order-category",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
     },
   },
 };
