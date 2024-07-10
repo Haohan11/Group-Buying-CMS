@@ -330,7 +330,6 @@ export const fullData = {
 
       return {
         ...data,
-        supplier_id: `${data.supplier_id}`,
         stock_image_preview,
         stock_image_persist,
         introduction,
