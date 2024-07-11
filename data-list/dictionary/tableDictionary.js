@@ -810,7 +810,7 @@ export const fullData = {
         createInitor: selectInitializer,
       },
     ],
-    // fetchUrl: "",
+    fetchUrl: "member-management",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
       account: Yup.string().required("此欄位必填"),
