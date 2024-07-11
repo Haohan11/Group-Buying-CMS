@@ -12,6 +12,7 @@ import {
   memberRoleColumns,
   memberManagementColumns,
   memberTagColumns,
+  memberPaymentColumns,
   inventoryManagementColumns,
   inventoryTransferColumns,
   orderCategoryColumns,
@@ -568,7 +569,7 @@ export const fullData = {
     preLoad: [
       {
         name: "payment_id",
-        fetchUrl: "payment",
+        fetchUrl: "supplier-payment",
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
       },
@@ -676,21 +677,37 @@ export const fullData = {
     editHeaderText: "會員",
     column: memberManagementColumns,
     inputList: [
-      {
-        type: "select",
-        label: "狀態",
-        required: true,
-        name: "status",
-      },
       [
         {
-          type: "text",
-          label: "會員名稱",
+          type: "select",
+          label: "狀態",
           required: true,
-          name: "name",
+          name: "status_id",
+          col: 4,
           props: {
-            placeholder: "輸入會員姓名",
+            options: [
+              {
+                label: "申請中",
+                value: "applying",
+              },
+              {
+                label: "已啟用",
+                value: "enabled",
+              },
+              {
+                label: "已停用",
+                value: "disabled",
+              },
+            ],
+            defaultValue: {
+              label: "申請中",
+              value: "applying",
+            },
           },
+        },
+        {
+          type: "text-holder",
+          col: 2,
         },
         {
           type: "text",
@@ -702,16 +719,26 @@ export const fullData = {
           },
         },
       ],
-      {
-        type: "date",
-        label: "會員生日",
-        required: false,
-        name: "birthday",
-        col: 6,
-        props: {
-          placeholder: "輸入會員生日",
+      [
+        {
+          type: "text",
+          label: "會員名稱",
+          required: true,
+          name: "name",
+          props: {
+            placeholder: "輸入會員姓名",
+          },
         },
-      },
+        {
+          type: "date",
+          label: "會員生日",
+          required: false,
+          name: "birthday",
+          props: {
+            placeholder: "輸入會員生日",
+          },
+        },
+      ],
       [
         {
           type: "text",
@@ -737,13 +764,13 @@ export const fullData = {
           type: "select",
           label: "會員等級",
           required: true,
-          name: "grade",
+          name: "member_grade_id",
         },
         {
           type: "select",
           label: "會員身分別",
           required: true,
-          name: "identity",
+          name: "member_role_id",
         },
       ],
       [
@@ -788,13 +815,29 @@ export const fullData = {
           type: "select",
           label: "付款方式",
           required: false,
-          name: "payment",
+          name: "payment_id",
         },
         {
           type: "select",
           label: "發貨條件",
           required: true,
           name: "shipping_condition",
+          props: {
+            options: [
+              {
+                label: "先付款後取貨",
+                value: "prepaid",
+              },
+              {
+                label: "先取貨後付款",
+                value: "postpaid",
+              },
+            ],
+            defaultValue: {
+              label: "先付款後取貨",
+              value: "prepaid",
+            },
+          }
         },
       ],
       {
@@ -813,13 +856,26 @@ export const fullData = {
         name: "description",
       },
     ],
-    // preLoad: [
-    //   {
-    //     name: "status",
-    //     fetchUrl: "",
-    //     adaptor: selectAdaptor,
-    //     createInitor: selectInitializer,
-    //   },
+    preLoad: [
+      {
+        name: "member_grade_id",
+        fetchUrl: "member-grade",
+        adaptor: selectAdaptor,
+        createInitor: selectInitializer,
+      },
+      {
+        name: "member_role_id",
+        fetchUrl: "member-role",
+        adaptor: selectAdaptor,
+        createInitor: selectInitializer,
+      },
+      {
+        name: "payment_id",
+        fetchUrl: "member-payment",
+        adaptor: selectAdaptor,
+        createInitor: selectInitializer,
+      },
+    ],
     //   {
     //     name: "grade",
     //     fetchUrl: "",
@@ -904,6 +960,35 @@ export const fullData = {
       },
     ],
     fetchUrl: "member-tag",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
+    },
+  },
+  "member-payment": {
+    pageTitle: "會員付款方式",
+    searchPlaceholder: "付款方式",
+    createHeaderText: "會員付款方式",
+    editHeaderText: "會員付款方式",
+    column: memberPaymentColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "付款方式名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "member-payment",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
     }),

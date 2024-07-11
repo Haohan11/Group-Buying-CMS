@@ -876,6 +876,50 @@ export const memberTagColumns = [
   },
 ];
 
+export const memberPaymentColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="付款方式名稱"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "name",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="備註"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "description",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="創建時間"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "create_time",
+  },
+];
+
 export const inventoryManagementColumns = [
   {
     Header: (props) => (
