@@ -5,3 +5,4 @@
 ## Style: 
 
  - Use custom style in /_metronic/assets/sass/components/_variables.custom.scss
+ - Modify layout style in /_metronic/assets/sass/layout/_variables.custom.scss
