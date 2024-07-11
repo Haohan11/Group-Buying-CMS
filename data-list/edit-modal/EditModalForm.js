@@ -120,7 +120,7 @@ const ValidateInputField = ({
           required={required}
           text={label}
           htmlFor={`input_${name}`}
-          className={clsx(labelclassname, "cursor-pointer")}
+          className={clsx(labelclassname, !readonly && "cursor-pointer")}
         />
       )}
       {{
@@ -137,7 +137,7 @@ const ValidateInputField = ({
                 placeholder={placeholder ?? "請選擇或輸入關鍵字"}
                 options={options ?? hoistPreLoadData.get()[name]}
                 defaultValue={
-                  defaultValue ??
+                  options ? defaultValue :
                   (isMulti
                     ? hoistPreLoadData
                         .get()
