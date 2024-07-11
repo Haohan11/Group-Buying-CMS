@@ -27,7 +27,7 @@ export const readDataRequest = async (
 ) => {
   if (!getTableUrl())
     return !!console.warn(
-      `No 'fetchUrl' provided for readDataRequest. Check '${currentTable.get()}' in TableDictionary.`
+      `No 'fetchUrl' provided for readDataRequest. Check '${currentTable.get()}' in tableDictionary.`
     );
 
   const URL = `${BASEURL}/${getTableUrl()}?page=${page}&size=${size}&keyword=${keyword}&sort=${sort}&item=${item}${
