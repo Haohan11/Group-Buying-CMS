@@ -104,6 +104,7 @@ const ValidateInputField = ({
   defaultValue,
   onChange,
   onBlur,
+  options, // only apply for select
 }) =>
   holder ? (
     <>
@@ -125,17 +126,19 @@ const ValidateInputField = ({
       {{
         select: (
           <>
-            {formik.values[name] &&
-            hoistPreLoadData.get()?.[name]?.length > 0 ? (
+            {options ||
+            (formik.values[name] &&
+              hoistPreLoadData.get()?.[name]?.length > 0) ? (
               <Select
                 {...{ name, isMulti }}
                 inputId={`input_${name}`}
                 className="react-select-styled react-select-solid border border-gray-100 rounded"
                 classNamePrefix="react-select"
-                placeholder="請選擇或輸入關鍵字"
-                options={hoistPreLoadData.get()[name]}
+                placeholder={placeholder ?? "請選擇或輸入關鍵字"}
+                options={options ?? hoistPreLoadData.get()[name]}
                 defaultValue={
-                  isMulti
+                  defaultValue ??
+                  (isMulti
                     ? hoistPreLoadData
                         .get()
                         [name].filter((option) =>
@@ -145,14 +148,14 @@ const ValidateInputField = ({
                         .get()
                         [name].find(
                           (option) => option.value === formik.values[name]
-                        )
+                        ))
                 }
-                onChange={(options) => {
+                onChange={(items) => {
                   formik.setFieldValue(
                     name,
-                    Array.isArray(options)
-                      ? options.map((option) => option.value)
-                      : options.value
+                    Array.isArray(items)
+                      ? items.map((item) => item.value)
+                      : items.value
                   );
                 }}
               />
