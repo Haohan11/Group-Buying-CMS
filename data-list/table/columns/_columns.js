@@ -560,7 +560,7 @@ export const supplierColumns = [
   },
 ];
 
-export const memberGradeColumns = [
+export const memberLevelColumns = [
   {
     Header: (props) => (
       <UserCustomHeader
@@ -718,7 +718,7 @@ export const memberManagementColumns = [
         className="min-w-125px"
       />
     ),
-    accessor: "grade",
+    accessor: "level",
   },
   {
     Header: (props) => (

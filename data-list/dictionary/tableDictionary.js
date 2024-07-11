@@ -8,7 +8,7 @@ import {
   stockCategoryColumns,
   stockAccountsColumns,
   supplierColumns,
-  memberGradeColumns,
+  memberLevelColumns,
   memberRoleColumns,
   memberManagementColumns,
   memberPaymentColumns,
@@ -183,7 +183,7 @@ export const fullData = {
       {
         type: "price-table",
         label: "會員等級定價",
-        name: "grade_price",
+        name: "level_price",
         required: true,
       },
       {
@@ -223,8 +223,8 @@ export const fullData = {
         createInitor: selectInitializer,
       },
       {
-        name: "grade_price",
-        fetchUrl: "member-grade",
+        name: "level_price",
+        fetchUrl: "member-level",
         adaptor: (data) =>
           data.map(({ name, id }) => ({
             name,
@@ -272,7 +272,7 @@ export const fullData = {
         .typeError("只能輸入數字")
         .required("此欄位必填"),
       preorder_count: Yup.number().typeError("只能輸入數字"),
-      grade_price: Yup.mixed().test({
+      level_price: Yup.mixed().test({
         test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
         message: "請提供價錢",
       }),
@@ -306,7 +306,7 @@ export const fullData = {
       price: "",
       preorder_count: 0,
       purchase_price: "",
-      grade_price: null,
+      level_price: null,
       role_price: null,
       introduction: "",
       description: "",
@@ -612,64 +612,6 @@ export const fullData = {
       contact_person: "",
     },
   },
-  "member-grade": {
-    pageTitle: "會員等級",
-    searchPlaceholder: "會員等級",
-    createHeaderText: "會員等級",
-    editHeaderText: "會員等級",
-    column: memberGradeColumns,
-    inputList: [
-      {
-        type: "text",
-        label: "等級名稱",
-        required: true,
-        name: "name",
-        col: 6,
-      },
-      {
-        type: "textarea",
-        label: "備註",
-        name: "description",
-      },
-    ],
-    fetchUrl: "member-grade",
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required("此欄位必填"),
-    }),
-    formField: {
-      name: "",
-      description: "",
-    },
-  },
-  "member-role": {
-    pageTitle: "會員角色",
-    searchPlaceholder: "會員角色",
-    createHeaderText: "會員角色",
-    editHeaderText: "會員角色",
-    column: memberRoleColumns,
-    inputList: [
-      {
-        type: "text",
-        label: "角色名稱",
-        required: true,
-        name: "name",
-        col: 6,
-      },
-      {
-        type: "textarea",
-        label: "備註",
-        name: "description",
-      },
-    ],
-    fetchUrl: "member-role",
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required("此欄位必填"),
-    }),
-    formField: {
-      name: "",
-      description: "",
-    },
-  },
   "member-management": {
     pageTitle: "會員",
     searchPlaceholder: "會員",
@@ -677,7 +619,6 @@ export const fullData = {
     editHeaderText: "會員",
     column: memberManagementColumns,
     inputList: [
-      [
         {
           type: "select",
           label: "狀態",
@@ -705,20 +646,6 @@ export const fullData = {
             },
           },
         },
-        {
-          type: "text-holder",
-          col: 2,
-        },
-        {
-          type: "text",
-          label: "會員編號",
-          required: false,
-          name: "code",
-          props: {
-            readonly: true,
-          },
-        },
-      ],
       [
         {
           type: "text",
@@ -730,12 +657,13 @@ export const fullData = {
           },
         },
         {
-          type: "date",
-          label: "會員生日",
+          type: "text",
+          label: "會員編號",
           required: false,
-          name: "birthday",
+          name: "code",
           props: {
-            placeholder: "輸入會員生日",
+            readonly: true,
+            placeholder: "新增後自動產生",
           },
         },
       ],
@@ -764,7 +692,7 @@ export const fullData = {
           type: "select",
           label: "會員等級",
           required: true,
-          name: "member_grade_id",
+          name: "member_level_id",
         },
         {
           type: "select",
@@ -821,7 +749,7 @@ export const fullData = {
           type: "select",
           label: "發貨條件",
           required: true,
-          name: "shipping_condition",
+          name: "shipping_condition_id",
           props: {
             options: [
               {
@@ -858,8 +786,8 @@ export const fullData = {
     ],
     preLoad: [
       {
-        name: "member_grade_id",
-        fetchUrl: "member-grade",
+        name: "member_level_id",
+        fetchUrl: "member-level",
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
       },
@@ -882,37 +810,6 @@ export const fullData = {
         createInitor: selectInitializer,
       },
     ],
-    //   {
-    //     name: "grade",
-    //     fetchUrl: "",
-    //     adaptor: selectAdaptor,
-    //     createInitor: selectInitializer,
-    //   },
-    //   {
-    //     name: "identity",
-    //     fetchUrl: "",
-    //     adaptor: selectAdaptor,
-    //     createInitor: selectInitializer,
-    //   },
-    //   {
-    //     name: "shipping_method",
-    //     fetchUrl: "",
-    //     adaptor: selectAdaptor,
-    //     createInitor: selectInitializer,
-    //   },
-    //   {
-    //     name: "payment",
-    //     fetchUrl: "",
-    //     adaptor: selectAdaptor,
-    //     createInitor: selectInitializer,
-    //   },
-    //   {
-    //     name: "shipping_condition",
-    //     fetchUrl: "",
-    //     adaptor: selectAdaptor,
-    //     createInitor: selectInitializer,
-    //   },
-    // ],
     // fetchUrl: "",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
@@ -933,7 +830,7 @@ export const fullData = {
       account: "",
       password: "",
       birthday: "",
-      grade: null,
+      level: null,
       identity: null,
       phone: "",
       shipping_method: null,
@@ -942,6 +839,64 @@ export const fullData = {
       payment: null,
       shipping_condition: null,
       address: "",
+      description: "",
+    },
+  },
+  "member-level": {
+    pageTitle: "會員等級",
+    searchPlaceholder: "會員等級",
+    createHeaderText: "會員等級",
+    editHeaderText: "會員等級",
+    column: memberLevelColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "等級名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "member-level",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
+    },
+  },
+  "member-role": {
+    pageTitle: "會員角色",
+    searchPlaceholder: "會員角色",
+    createHeaderText: "會員角色",
+    editHeaderText: "會員角色",
+    column: memberRoleColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "角色名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "member-role",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
       description: "",
     },
   },
@@ -1149,8 +1104,8 @@ export const fullData = {
     //     createInitor: selectInitializer,
     //   },
     //   {
-    //     name: "grade_price",
-    //     fetchUrl: "member-grade",
+    //     name: "level_price",
+    //     fetchUrl: "member-level",
     //     adaptor: (data) =>
     //       data.map(({ name, id }) => ({
     //         name,
@@ -1324,8 +1279,8 @@ export const fullData = {
     //     createInitor: selectInitializer,
     //   },
     //   {
-    //     name: "grade_price",
-    //     fetchUrl: "member-grade",
+    //     name: "level_price",
+    //     fetchUrl: "member-level",
     //     adaptor: (data) =>
     //       data.map(({ name, id }) => ({
     //         name,
