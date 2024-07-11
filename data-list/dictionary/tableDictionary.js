@@ -11,8 +11,8 @@ import {
   memberGradeColumns,
   memberRoleColumns,
   memberManagementColumns,
-  memberTagColumns,
   memberPaymentColumns,
+  memberShippingColumns,
   inventoryManagementColumns,
   inventoryTransferColumns,
   orderCategoryColumns,
@@ -787,7 +787,7 @@ export const fullData = {
           type: "select",
           label: "出貨方式",
           required: true,
-          name: "shipping_method",
+          name: "shipping_id",
         },
       ],
       [
@@ -875,6 +875,12 @@ export const fullData = {
         adaptor: selectAdaptor,
         createInitor: selectInitializer,
       },
+      {
+        name: "shipping_id",
+        fetchUrl: "member-shipping",
+        adaptor: selectAdaptor,
+        createInitor: selectInitializer,
+      },
     ],
     //   {
     //     name: "grade",
@@ -939,35 +945,6 @@ export const fullData = {
       description: "",
     },
   },
-  "member-tag": {
-    pageTitle: "會員標籤",
-    searchPlaceholder: "會員標籤",
-    createHeaderText: "會員標籤",
-    editHeaderText: "會員標籤",
-    column: memberTagColumns,
-    inputList: [
-      {
-        type: "text",
-        label: "標籤名稱",
-        required: true,
-        name: "name",
-        col: 6,
-      },
-      {
-        type: "textarea",
-        label: "備註",
-        name: "description",
-      },
-    ],
-    fetchUrl: "member-tag",
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required("此欄位必填"),
-    }),
-    formField: {
-      name: "",
-      description: "",
-    },
-  },
   "member-payment": {
     pageTitle: "會員付款方式",
     searchPlaceholder: "付款方式",
@@ -989,6 +966,35 @@ export const fullData = {
       },
     ],
     fetchUrl: "member-payment",
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("此欄位必填"),
+    }),
+    formField: {
+      name: "",
+      description: "",
+    },
+  },
+  "member-shipping": {
+    pageTitle: "會員出貨方式",
+    searchPlaceholder: "出貨方式",
+    createHeaderText: "會員出貨方式",
+    editHeaderText: "會員出貨方式",
+    column: memberShippingColumns,
+    inputList: [
+      {
+        type: "text",
+        label: "出貨方式名稱",
+        required: true,
+        name: "name",
+        col: 6,
+      },
+      {
+        type: "textarea",
+        label: "備註",
+        name: "description",
+      },
+    ],
+    fetchUrl: "member-shipping",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
     }),

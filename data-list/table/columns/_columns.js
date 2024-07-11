@@ -832,7 +832,7 @@ export const memberManagementColumns = [
   },
 ];
 
-export const memberTagColumns = [
+export const memberPaymentColumns = [
   {
     Header: (props) => (
       <UserCustomHeader
@@ -848,7 +848,7 @@ export const memberTagColumns = [
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="標籤名稱"
+        title="付款方式名稱"
         className="min-w-125px"
       />
     ),
@@ -876,7 +876,7 @@ export const memberTagColumns = [
   },
 ];
 
-export const memberPaymentColumns = [
+export const memberShippingColumns = [
   {
     Header: (props) => (
       <UserCustomHeader
@@ -892,7 +892,7 @@ export const memberPaymentColumns = [
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="付款方式名稱"
+        title="出貨方式名稱"
         className="min-w-125px"
       />
     ),
