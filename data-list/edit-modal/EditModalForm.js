@@ -137,8 +137,11 @@ const ValidateInputField = ({
                 placeholder={placeholder ?? "請選擇或輸入關鍵字"}
                 options={options ?? hoistPreLoadData.get()[name]}
                 defaultValue={
-                  options ? defaultValue :
-                  (isMulti
+                  options
+                    ? options.filter(
+                        (option) => option.value === formik.values[name]
+                      ) || defaultValue
+                    : isMulti
                     ? hoistPreLoadData
                         .get()
                         [name].filter((option) =>
@@ -148,7 +151,7 @@ const ValidateInputField = ({
                         .get()
                         [name].find(
                           (option) => option.value === formik.values[name]
-                        ))
+                        )
                 }
                 onChange={(items) => {
                   formik.setFieldValue(
@@ -621,8 +624,8 @@ const EditModalForm = () => {
   const { setItemIdForUpdate, itemIdForUpdate } = useListView();
 
   const currentMode = (() => {
+    if (itemIdForUpdate) return "edit";
     if (itemIdForUpdate === null) return "create";
-    if (!isNaN(parseInt(itemIdForUpdate))) return "edit";
     return "close";
   })();
 
@@ -689,10 +692,8 @@ const EditModalForm = () => {
     },
   });
   hoistFormik.set(formik);
-  // console.log(
-  //   "introduction_image_persist",
-  //   formik.values["introduction_image_persist"]
-  // );
+  formik.values["_currentMode"] = currentMode;
+  // console.log("===== formik ======", formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
 
@@ -768,6 +769,8 @@ const EditModalForm = () => {
         >
           {createRowColTree(fields)}
         </div>
+
+        {/* {void (formik.values["_currentMode"] = currentMode)} */}
 
         {/* begin::Actions */}
         <div className="text-center pt-15">

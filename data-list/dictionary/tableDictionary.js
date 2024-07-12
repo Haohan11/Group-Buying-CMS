@@ -619,6 +619,7 @@ export const fullData = {
     editHeaderText: "會員",
     column: memberManagementColumns,
     inputList: [
+      [
         {
           type: "select",
           label: "狀態",
@@ -646,6 +647,18 @@ export const fullData = {
             },
           },
         },
+        { type: "text-holder", col: 2 },
+        {
+          type: "text",
+          label: "會員編號",
+          required: false,
+          name: "code",
+          props: {
+            readonly: true,
+            placeholder: "新增後自動產生",
+          },
+        },
+      ],
       [
         {
           type: "text",
@@ -658,12 +671,10 @@ export const fullData = {
         },
         {
           type: "text",
-          label: "會員編號",
-          required: false,
-          name: "code",
+          label: "電子郵件",
+          name: "email",
           props: {
-            readonly: true,
-            placeholder: "新增後自動產生",
+            placeholder: "輸入電子郵件",
           },
         },
       ],
@@ -721,20 +732,20 @@ export const fullData = {
       [
         {
           type: "text",
-          label: "統一編號",
-          required: false,
-          name: "uniform_number",
-          props: {
-            placeholder: "輸入統一編號",
-          },
-        },
-        {
-          type: "text",
           label: "公司抬頭",
           required: false,
           name: "company_title",
           props: {
             placeholder: "輸入公司抬頭",
+          },
+        },
+        {
+          type: "text",
+          label: "統一編號",
+          required: false,
+          name: "uniform_number",
+          props: {
+            placeholder: "輸入統一編號",
           },
         },
       ],
@@ -765,7 +776,7 @@ export const fullData = {
               label: "先付款後取貨",
               value: "prepaid",
             },
-          }
+          },
         },
       ],
       {
@@ -814,7 +825,12 @@ export const fullData = {
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
       account: Yup.string().required("此欄位必填"),
-      password: Yup.string().min(4, "至少 4 個字").required("此欄位必填"),
+      password: Yup.string().when("_currentMode", {
+        is: "create",
+        then: () => Yup.string().min(4, "至少 4 個字").required("此欄位必填"),
+        otherwise: () => Yup.string().min(4, "至少 4 個字"),
+      }),
+      email: Yup.string().email("電子郵件格式錯誤").nullable(),
       phone: Yup.string()
         .min(8, "電話格式錯誤")
         .max(10, "電話格式錯誤")
@@ -824,22 +840,24 @@ export const fullData = {
       address: Yup.string().required("此欄位必填"),
     }),
     formField: {
-      status: null,
+      status_id: "applying",
       name: "",
       code: "",
       account: "",
       password: "",
-      birthday: "",
-      level: null,
-      identity: null,
+      birthdate: undefined,
+      email: undefined,
+      member_level_id: null,
+      member_role_id: null,
       phone: "",
-      shipping_method: null,
+      shipping_id: null,
       uniform_number: "",
       company_title: "",
+      payment_id: null,
       payment: null,
-      shipping_condition: null,
-      address: "",
-      description: "",
+      shipping_condition_id: "prepaid",
+      address: undefined,
+      description: undefined,
     },
   },
   "member-level": {

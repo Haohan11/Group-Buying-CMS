@@ -704,21 +704,11 @@ export const memberManagementColumns = [
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
-        title="會員密碼"
-        className="min-w-125px"
-      />
-    ),
-    accessor: "password",
-  },
-  {
-    Header: (props) => (
-      <UserCustomHeader
-        tableProps={props}
         title="會員等級"
         className="min-w-125px"
       />
     ),
-    accessor: "level",
+    accessor: "member_level",
   },
   {
     Header: (props) => (
@@ -728,7 +718,7 @@ export const memberManagementColumns = [
         className="min-w-125px"
       />
     ),
-    accessor: "identity",
+    accessor: "member_role",
   },
   {
     Header: (props) => (
@@ -768,7 +758,7 @@ export const memberManagementColumns = [
         className="min-w-125px"
       />
     ),
-    accessor: "shipping_method",
+    accessor: "member_shipping",
   },
   {
     Header: (props) => (
@@ -798,7 +788,7 @@ export const memberManagementColumns = [
         className="min-w-125px"
       />
     ),
-    accessor: "birthday",
+    accessor: "birthdate",
   },
   {
     Header: (props) => (
