@@ -42,7 +42,16 @@ import {
   regularReadData,
 } from "../core/request";
 
-const { inputList, formField, validationSchema, preLoad, editAdaptor } = dict;
+const {
+  inputList,
+  formField,
+  validationSchema,
+  preLoad,
+  editAdaptor,
+  submitAdaptor,
+  hideSubmitField,
+  hidePromptField,
+} = dict;
 
 const hoistFormik = {
   formik: null,
@@ -76,13 +85,9 @@ const InputLabel = ({ required, text, className, holder, ...props }) =>
   ) : (
     <label
       {...props}
-      className={clsx(
-        "fw-bold fs-6 mb-2",
-        {
-          required,
-        },
-        className
-      )}
+      className={clsx(className, "fw-bold fs-6 mb-2", {
+        required,
+      })}
     >
       {text}
     </label>
@@ -102,6 +107,7 @@ const ValidateInputField = ({
   isMulti = false, // only apply for select
   holder,
   defaultValue,
+  onClick,
   onChange,
   onBlur,
   options, // only apply for select
@@ -120,14 +126,28 @@ const ValidateInputField = ({
           required={required}
           text={label}
           htmlFor={`input_${name}`}
-          className={clsx(labelclassname, !readonly && "cursor-pointer")}
+          className={clsx(
+            labelclassname,
+            !readonly && type !== "plain" && "cursor-pointer"
+          )}
         />
       )}
       {{
+        plain: (
+          <p
+            className={clsx(
+              inputclassname,
+              "form-control mb-3 mb-lg-0 border-secondary"
+            )}
+            {...(typeof onClick === "function" && { onClick })}
+          >
+            {hoistFormik.get().values?.[name] ?? "沒有資料"}
+          </p>
+        ),
         select: (
           <>
             {options ||
-            (formik.values[name] &&
+            (formik.values?.[name] &&
               hoistPreLoadData.get()?.[name]?.length > 0) ? (
               <Select
                 {...{ name, isMulti }}
@@ -568,8 +588,107 @@ const EditorField = (props) => {
   );
 };
 
+const mockOrderData = [
+  {
+    id: 1,
+    name: "Ryan",
+    phone: "0912345678",
+    address: "台北市",
+    price: 100,
+    stockList: [
+      {
+        id: 1,
+        code: "TT3456",
+        name: "Apple",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "顆",
+        ori_price: 100,
+        price: 100,
+        quantity: 20,
+        total: 200,
+      },
+      {
+        id: 2,
+        code: "TT9876",
+        name: "護手霜",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "箱",
+        ori_price: 620,
+        price: "",
+        quantity: 2,
+        total: 1240,
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Emily",
+    phone: "0987654321",
+    address: "台中市",
+    price: 3000,
+    stockList: [
+      {
+        id: 1,
+        code: "TT3456",
+        name: "唇膏",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "支",
+        ori_price: 100,
+        price: 100,
+        quantity: 20,
+        total: 200,
+      },
+      {
+        id: 2,
+        code: "TT9876",
+        name: "護手霜",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "箱",
+        ori_price: 620,
+        price: "",
+        quantity: 2,
+        total: 1240,
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "Sam",
+    phone: "0912345678",
+    address: "台南市",
+    price: 100,
+  },
+];
+
+const orderList = mockOrderData.reduce((list, item) => {
+}, {});
+
+const OrderList = (props) => {
+  return (
+    <Row className="g-0">
+      {[
+        { colName: "項次", key: "id" },
+        { colName: "收件人", key: "name" },
+        { colName: "收件人電話", key: "phone" },
+        { colName: "收件人地址", key: "address" },
+        { colName: "小記", key: "price" },
+      ].map(({ colName }, index) => (
+        <Col
+          sm={"auto"}
+          key={index}
+          className="border border-gray-300 flex-grow-1"
+        >
+          <div className="bg-gray-500 text-white text-center p-2">
+            {colName}
+          </div>
+        </Col>
+      ))}
+    </Row>
+  );
+};
+
 const getInput = (type) => (props) => ValidateInputField({ ...props, type });
-const dynaGenerate = (arr) =>
+const generateInputs = (arr) =>
   arr.reduce(
     (dict, type) => ({
       ...dict,
@@ -578,10 +697,56 @@ const dynaGenerate = (arr) =>
     {}
   );
 
+const SubmitField = ({
+  onCancel,
+  submitText,
+  cancelText,
+  reverse,
+  className,
+}) => (
+  <div
+    className={clsx(
+      className ?? ["flex-center", reverse && "flex-row-reverse"]
+    )}
+  >
+    <button
+      type="reset"
+      {...(typeof onCancel === "function" && { onClick: onCancel })}
+      className="btn btn-secondary mx-2"
+      data-kt-users-modal-action="cancel"
+      disabled={hoistFormik.get().isSubmitting}
+    >
+      {cancelText || "取消"}
+    </button>
+
+    <button
+      type="submit"
+      className="btn btn-primary mx-2"
+      data-kt-users-modal-action="submit"
+      disabled={hoistFormik.get().isSubmitting}
+    >
+      <span className="indicator-label">{submitText || "確認"}</span>
+      {hoistFormik.get().isSubmitting && (
+        <span className="indicator-progress">
+          Please wait...{" "}
+          <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
+        </span>
+      )}
+    </button>
+  </div>
+);
+
 const inputDictionary = {
   "label-holder": LabelHolder,
   "text-holder": TextHolder,
-  ...dynaGenerate(["text", "textarea", "password", "date", "select"]),
+  ...generateInputs([
+    "text",
+    "textarea",
+    "password",
+    "date",
+    "select",
+    "plain",
+  ]),
   "multi-select": MultiSelectInput,
   number: NumberInput,
   switch: SwitchInput,
@@ -590,25 +755,34 @@ const inputDictionary = {
   "price-table": PriceTable,
   editor: EditorField,
   checkbox: CheckBoxInput,
+  "order-list": OrderList,
+  /** "submit-field" will be automatically append when editForm rendered */
 };
+
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
     return (
       <Row className="mb-5 g-6" key={groupIndex}>
         {toArray(group).map((input, inputIndex) => {
           if (Array.isArray(input))
-            return <Col key={inputIndex}>{createRowColTree(input)}</Col>;
+            return (
+              <Col sm={input.col} key={inputIndex} className={input.className}>
+                {createRowColTree(input)}
+              </Col>
+            );
           const Input = inputDictionary[input.type];
-          if (!Input) return false;
+          if (!Input && !input.node) return false;
 
           return (
-            <Col sm={input.col} key={inputIndex} className="">
-              <Input
-                name={input.name}
-                label={input.label}
-                required={input.required}
-                {...input.props}
-              />
+            <Col sm={input.col} key={inputIndex} className={input.className}>
+              {input.node ?? (
+                <Input
+                  name={input.name}
+                  label={input.label}
+                  required={input.required}
+                  {...input.props}
+                />
+              )}
             </Col>
           );
         })}
@@ -635,12 +809,20 @@ const EditModalForm = () => {
   const tableName = currentTable.get();
   const fields =
     inputList?.[tableName] || (!console.warn("No input list provided.") && []);
-  const preLoadList = preLoad[tableName] || [];
+  const preLoadList = preLoad?.[tableName] || [];
+  const showSubmitField = !hideSubmitField?.[tableName];
+  const showPromptField = !hidePromptField?.[tableName];
+
   const { tableData, preLoadData, setPreLoadData } = useTableData();
 
   const [initialValues, setInitialValues] = useState(
     (() => {
-      if (createMode) return formField[tableName];
+      if (createMode)
+        return (
+          formField?.[tableName] ||
+          console.warn("No form field provided.") ||
+          {}
+        );
 
       const currentData = tableData.find((data) => data.id === itemIdForUpdate);
 
@@ -665,10 +847,15 @@ const EditModalForm = () => {
     enableReinitialize: true,
     validationSchema: validationSchema[tableName],
     onSubmit: async (values) => {
+      const submitData =
+        typeof submitAdaptor[tableName] === "function"
+          ? submitAdaptor[tableName](values, currentMode)
+          : values;
+
       await {
         async create() {
-          if (testMode) return console.log("Create Test: ", values);
-          await createDataRequest(token, values);
+          if (testMode) return console.log("Create Test: ", submitData);
+          await createDataRequest(token, submitData);
           setPopupSet({
             message: "新增成功",
             icon: "/icon/check-circle.svg",
@@ -676,9 +863,9 @@ const EditModalForm = () => {
           handleShowModal("popup");
         },
         async edit() {
-          if (testMode) return console.log("Edit Test: ", values);
+          if (testMode) return console.log("Edit Test: ", submitData);
           await updateDataRequest(token, {
-            ...values,
+            ...submitData,
             id: itemIdForUpdate,
           });
           setPopupSet({
@@ -692,10 +879,14 @@ const EditModalForm = () => {
     },
   });
   hoistFormik.set(formik);
-  formik.values["_currentMode"] = currentMode;
+  formik.values?.["_currentMode"] &&
+    (formik.values["_currentMode"] = currentMode);
   // console.log("===== formik ======", formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
+  inputDictionary["submit-field"] ??= (props) => (
+    <SubmitField onCancel={closeModal} {...props} />
+  );
 
   /**
    * handle preLoad data
@@ -750,13 +941,15 @@ const EditModalForm = () => {
         onSubmit={formik.handleSubmit}
         noValidate
       >
-        <div className="mb-7 d-flex">
-          <div className="bg-secondary px-5 py-2 border rounded-1">
-            <span className="">注意 :</span>
-            <span className="text-danger  px-3">*</span>
-            <span className="">為必填欄位</span>
+        {showPromptField && (
+          <div className="mb-7 d-flex">
+            <div className="bg-secondary px-5 py-2 border rounded-1">
+              <span className="">注意 :</span>
+              <span className="text-danger  px-3">*</span>
+              <span className="">為必填欄位</span>
+            </div>
           </div>
-        </div>
+        )}
         <div
           className="d-flex flex-column scroll-y-auto pt-3"
           id="kt_modal_add_user_scroll"
@@ -770,56 +963,32 @@ const EditModalForm = () => {
           {createRowColTree(fields)}
         </div>
 
-        {/* {void (formik.values["_currentMode"] = currentMode)} */}
-
-        {/* begin::Actions */}
-        <div className="text-center pt-15">
-          <button
-            type="reset"
-            onClick={() => closeModal()}
-            className="btn btn-secondary me-3"
-            data-kt-users-modal-action="cancel"
-            disabled={formik.isSubmitting}
-          >
-            取消
-          </button>
-
-          <button
-            type="submit"
-            className="btn btn-primary"
-            data-kt-users-modal-action="submit"
-            disabled={formik.isSubmitting}
-          >
-            <span className="indicator-label">確認</span>
-            {formik.isSubmitting && (
-              <span className="indicator-progress">
-                Please wait...{" "}
-                <span className="spinner-border spinner-border-sm align-middle ms-2"></span>
-              </span>
-            )}
-          </button>
-          {/*新增 和 編輯完成*/}
-          <ModalWrapper
-            key="popup"
-            show={isModalOpen("popup")}
-            size="lg"
-            onHide={() => {
-              router.push(router.asPath.split("?")[0]);
-              closeModal();
-            }}
-          >
-            <PopUp
-              imageSrc={popupSet.icon}
-              title={popupSet.message}
-              confirmOnClick={() => {
-                router.push(router.asPath.split("?")[0]);
-                closeModal();
-              }}
-            />
-          </ModalWrapper>
-        </div>
-        {/* end::Actions */}
+        {showSubmitField && (
+          <div className="mt-12">
+            <SubmitField onCancel={closeModal} />
+          </div>
+        )}
       </form>
+
+      {/* popup modal */}
+      <ModalWrapper
+        key="popup"
+        show={isModalOpen("popup")}
+        size="lg"
+        onHide={() => {
+          router.push(router.asPath.split("?")[0]);
+          closeModal();
+        }}
+      >
+        <PopUp
+          imageSrc={popupSet.icon}
+          title={popupSet.message}
+          confirmOnClick={() => {
+            router.push(router.asPath.split("?")[0]);
+            closeModal();
+          }}
+        />
+      </ModalWrapper>
     </>
   );
 };

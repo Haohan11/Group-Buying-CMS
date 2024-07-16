@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { transImageUrl } from "@/tool/helper";
+import { addClassName, transImageUrl } from "@/tool/helper";
 
 import {
   placeHolderColumns,
@@ -29,6 +29,12 @@ import {
  *
  *  editAdaptor (Data control):
  *    Use for adapt data for formik initialValue in edit mode.
+ *
+ *  submitAdaptor (Data control):
+ *    Use for adapt data before submit.
+ *    @param {Object} data
+ *    @param {String} currentMode
+ *    @returns {Object}
  */
 
 const selectAdaptor = (data) =>
@@ -271,6 +277,9 @@ export const fullData = {
       purchase_price: Yup.number()
         .typeError("只能輸入數字")
         .required("此欄位必填"),
+        // stock_image
+        // stock_image_preview
+        // stock_image_persist
       preorder_count: Yup.number().typeError("只能輸入數字"),
       level_price: Yup.mixed().test({
         test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
@@ -649,14 +658,9 @@ export const fullData = {
         },
         { type: "text-holder", col: 2 },
         {
-          type: "text",
+          type: "plain",
           label: "會員編號",
-          required: false,
           name: "code",
-          props: {
-            readonly: true,
-            placeholder: "新增後自動產生",
-          },
         },
       ],
       [
@@ -714,7 +718,7 @@ export const fullData = {
       ],
       [
         {
-          type: "text",
+          type: "number",
           label: "聯絡電話",
           required: true,
           name: "phone",
@@ -825,6 +829,7 @@ export const fullData = {
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
       account: Yup.string().required("此欄位必填"),
+      status_id: Yup.string().required("此欄位必填"),
       password: Yup.string().when("_currentMode", {
         is: "create",
         then: () => Yup.string().min(4, "至少 4 個字").required("此欄位必填"),
@@ -842,11 +847,10 @@ export const fullData = {
     formField: {
       status_id: "applying",
       name: "",
-      code: "",
+      code: "新增後自動產生",
       account: "",
       password: "",
-      birthdate: undefined,
-      email: undefined,
+      email: "",
       member_level_id: null,
       member_role_id: null,
       phone: "",
@@ -856,9 +860,17 @@ export const fullData = {
       payment_id: null,
       payment: null,
       shipping_condition_id: "prepaid",
-      address: undefined,
-      description: undefined,
+      address: "",
+      description: "",
     },
+    submitAdaptor: (data) => ({
+      ...data,
+      email: data.email || null,
+      company_title: data.company_title || null,
+      uniform_number: data.uniform_number || null,
+      address: data.address || null,
+      description: data.description || null,
+    }),
   },
   "member-level": {
     pageTitle: "會員等級",
@@ -890,10 +902,10 @@ export const fullData = {
     },
   },
   "member-role": {
-    pageTitle: "會員角色",
-    searchPlaceholder: "會員角色",
-    createHeaderText: "會員角色",
-    editHeaderText: "會員角色",
+    pageTitle: "會員身分別",
+    searchPlaceholder: "會員身分別",
+    createHeaderText: "會員身分別",
+    editHeaderText: "會員身分別",
     column: memberRoleColumns,
     inputList: [
       {
@@ -1345,6 +1357,134 @@ export const fullData = {
       save: false,
     },
   },
+  "order-management": {
+    pageTitle: "訂單作業",
+    searchPlaceholder: "訂單作業",
+    createHeaderText: "訂單作業",
+    editHeaderText: "訂單作業",
+    column: memberManagementColumns,
+    hideSubmitField: true,
+    hidePromptField: true,
+    inputList: [
+      [
+        {
+          type: "plain",
+          label: "訂單編號 :",
+          name: "code",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+        {
+          type: "plain",
+          label: "訂單日期 :",
+          name: "date",
+          col: 4,
+          className: "d-flex align-items-center justify-content-center",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+      ],
+      [
+        {
+          type: "plain",
+          label: "訂單狀態 :",
+          name: "status",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+        {
+          type: "plain",
+          label: "付款方式 :",
+          name: "payment",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+      ],
+      [
+        {
+          type: "plain",
+          label: "櫃單 :",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+        {
+          type: "plain",
+          label: "出貨方式 :",
+          name: "delivery",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+      ],
+      [
+        {
+          type: "plain",
+          label: "會員名稱 :",
+          name: "member_name",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+        {
+          type: "plain",
+          label: "會員編號 :",
+          name: "member_code",
+          col: 4,
+          className: "d-flex align-items-center justify-content-between",
+          props: {
+            labelclassname: "min-w-80px mt-2",
+            inputclassname: "d-inline",
+          },
+        },
+        {
+          type: "submit-field",
+          props: {
+            submitText: "儲存",
+            className: "text-end"
+          }
+        },
+      ],
+      {
+        node: <div className="w-100 border border-secondary mt-2"></div>
+      },
+      {
+        type: "order-list"
+      }
+    ],
+    formField: {
+      member_name: "菜潭雅",
+      code: "T123456",
+      member_code: "MB123456",
+      status: "處理中",
+      payment: "現金",
+      delivery: "宅配",
+      date: "2022-01-01",
+    },
+  },
   "order-category": {
     pageTitle: "訂單類別維護",
     searchPlaceholder: "訂單類別",
@@ -1379,7 +1519,7 @@ export const fullData = {
 const ArrangeWithProperty = Object.entries(fullData).reduce(
   (tableDict, [table, content]) => {
     Object.entries(content).reduce((dict, [key, value]) => {
-      dict[key] === undefined && (dict[key] = {});
+      dict[key] ??= {};
       dict[key][table] = value;
       return dict;
     }, tableDict);

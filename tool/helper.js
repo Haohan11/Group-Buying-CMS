@@ -27,28 +27,19 @@ export const transImageUrl = (path) =>
 export const onlyInputNumbers = (event) => {
   if (
     /^\d$/.test(event.key) ||
-    event.key === "Backspace" ||
-    event.key === "Delete" ||
-    event.key === "Escape" ||
-    event.key === "Tab" ||
-    event.key === "ArrowLeft" ||
-    event.key === "ArrowRight" ||
-    event.key === "Home" ||
-    event.key === "End" ||
+    ["Backspace",
+    "Delete",
+    "Escape",
+    "Tab",
+    "ArrowLeft",
+    "ArrowRight",
+    "Home",
+    "End"].includes(event.key) ||
     (event.ctrlKey && ["a", "x", "c", "v"].includes(event.key))
   )
     return;
   event.preventDefault();
 };
-
-export const loopObject = (obj, callback) =>
-  Object.entries(obj).reduce(
-    (dict, [key, value]) => ({
-      ...dict,
-      [key]: callback(value),
-    }),
-    {}
-  );
 
 export const checkArray = (arr) => Array.isArray(arr) && arr.length > 0;
 

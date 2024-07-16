@@ -65,6 +65,30 @@ textarea:focus-visible {
   border-color: transparent !important;
 }
 
+.w-fit {
+  width: fit-content !important;
+}
+
+.min-w-fit {
+  min-width: fit-content !important;
+}
+
+.max-w-fit {
+  max-width: fit-content !important;
+}
+
+.h-fit {
+  height: fit-content !important;
+}
+
+.min-h-fit {
+  min-height: fit-content !important;
+}
+
+.max-h-fit {
+  max-height: fit-content !important;
+}
+
 // input[type="range"] {
 //   -webkit-appearance: none;
 //   overflow: hidden;
