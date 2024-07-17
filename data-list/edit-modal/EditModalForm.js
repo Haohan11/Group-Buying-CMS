@@ -105,6 +105,7 @@ const ValidateInputField = ({
   readonly = false,
   onlynumber = false,
   isMulti = false, // only apply for select
+  isDisabled,
   holder,
   defaultValue,
   onClick,
@@ -150,9 +151,12 @@ const ValidateInputField = ({
             (formik.values?.[name] &&
               hoistPreLoadData.get()?.[name]?.length > 0) ? (
               <Select
-                {...{ name, isMulti }}
+                {...{ name, isMulti, isDisabled }}
                 inputId={`input_${name}`}
-                className="react-select-styled react-select-solid border border-gray-100 rounded"
+                className={clsx(
+                  "react-select-styled react-select-solid border border-gray-100 rounded",
+                  inputclassname
+                )}
                 classNamePrefix="react-select"
                 placeholder={placeholder ?? "請選擇或輸入關鍵字"}
                 options={options ?? hoistPreLoadData.get()[name]}
@@ -173,14 +177,17 @@ const ValidateInputField = ({
                           (option) => option.value === formik.values[name]
                         )
                 }
-                onChange={(items) => {
-                  formik.setFieldValue(
-                    name,
-                    Array.isArray(items)
-                      ? items.map((item) => item.value)
-                      : items.value
-                  );
-                }}
+                onChange={
+                  onChange ??
+                  ((items) => {
+                    formik.setFieldValue(
+                      name,
+                      Array.isArray(items)
+                        ? items.map((item) => item.value)
+                        : items.value
+                    );
+                  })
+                }
               />
             ) : (
               <div
@@ -202,7 +209,7 @@ const ValidateInputField = ({
         ),
       }[type] ?? (
         <input
-          {...formik.getFieldProps(name)}
+          {...(!readonly && formik.getFieldProps(name))}
           id={`input_${name}`}
           placeholder={placeholder}
           className={clsx(
@@ -660,8 +667,7 @@ const mockOrderData = [
   },
 ];
 
-const orderList = mockOrderData.reduce((list, item) => {
-}, {});
+const orderList = mockOrderData.reduce((list, item) => {}, {});
 
 const OrderList = (props) => {
   return (
@@ -696,6 +702,10 @@ const generateInputs = (arr) =>
     }),
     {}
   );
+
+const Button = ({ type = "button", onClick, text, className, variant = "primary" }) => (
+  <button {...{ type, onClick }} className={clsx("btn", className, `btn-${variant}`)}>{text}</button>
+);
 
 const SubmitField = ({
   onCancel,
@@ -736,6 +746,79 @@ const SubmitField = ({
   </div>
 );
 
+const OrderMember = (props) =>
+  getInput("select")({
+    ...props,
+    onChange: (item) => {
+      hoistFormik.get().setFieldValue(props.name, item.value);
+      const memberData = hoistPreLoadData
+        .get()
+        [props.name].find((member) => `${member.id}` === item.value);
+
+      const data = {
+        ...hoistFormik.get().values,
+        [props.name]: item.value,
+        member_code: memberData.code,
+        payment: memberData.payment,
+      };
+
+      hoistFormik.get().setValues(data);
+    },
+  });
+
+const OrderStockList = (props) => {
+  const stockData = hoistPreLoadData.get()?.[props.name];
+
+  return (
+    <div>
+      <div className="d-flex overflow-x-auto bg-gray-200 p-8 rounded-2">
+        {checkArray(stockData) ? (
+          stockData.map(({ id, name, code, price, cover_image }) => (
+            <div
+              key={id}
+              className="d-flex bg-gray-100 p-2 pe-4 me-6 cursor-pointer shadow-sm rounded-4"
+            >
+              <div
+                className="position-relative rounded-3 me-3 overflow-hidden"
+                style={{ height: "100px", width: "100px" }}
+              >
+                <Image
+                  sizes="100px"
+                  fill
+                  className="position-relative object-fit-cover"
+                  src={cover_image}
+                  alt={`${name} stock image`}
+                />
+              </div>
+              <div className="fs-5 align-content-center">
+                <div>
+                  <span>商品編號 : </span>
+                  <span>{code}</span>
+                </div>
+                <div>
+                  <span>商品名稱 : </span>
+                  <span>{name}</span>
+                </div>
+                <div>
+                  <span>商品單價 : </span>
+                  <span>{price}</span>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div
+            className="text-center text-gray-500 my-5"
+            style={{ alignContent: "center" }}
+          >
+            目前沒有商品資料
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const inputDictionary = {
   "label-holder": LabelHolder,
   "text-holder": TextHolder,
@@ -756,6 +839,9 @@ const inputDictionary = {
   editor: EditorField,
   checkbox: CheckBoxInput,
   "order-list": OrderList,
+  "order-member": OrderMember,
+  "order-stock-list": OrderStockList,
+  button: Button,
   /** "submit-field" will be automatically append when editForm rendered */
 };
 
@@ -905,9 +991,21 @@ const EditModalForm = () => {
 
           const rawData = await (async () => {
             if (preLoadData[name]) return preLoadData[name];
+            if (preLoadData[fetchUrl]) {
+              setPreLoadData((pre) => ({
+                ...pre,
+                [name]: res.data,
+              }));
+              return preLoadData[fetchUrl];
+            }
+
             const res = await regularReadData(token, fetchUrl);
             if (!res || !res.data) return false;
-            setPreLoadData((pre) => ({ ...pre, [name]: res.data }));
+            setPreLoadData((pre) => ({
+              ...pre,
+              [name]: res.data,
+              [fetchUrl]: res.data,
+            }));
             return res.data;
           })();
           if (!rawData) return;

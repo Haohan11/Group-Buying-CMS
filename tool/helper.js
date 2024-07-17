@@ -27,14 +27,16 @@ export const transImageUrl = (path) =>
 export const onlyInputNumbers = (event) => {
   if (
     /^\d$/.test(event.key) ||
-    ["Backspace",
-    "Delete",
-    "Escape",
-    "Tab",
-    "ArrowLeft",
-    "ArrowRight",
-    "Home",
-    "End"].includes(event.key) ||
+    [
+      "Backspace",
+      "Delete",
+      "Escape",
+      "Tab",
+      "ArrowLeft",
+      "ArrowRight",
+      "Home",
+      "End",
+    ].includes(event.key) ||
     (event.ctrlKey && ["a", "x", "c", "v"].includes(event.key))
   )
     return;
@@ -44,3 +46,11 @@ export const onlyInputNumbers = (event) => {
 export const checkArray = (arr) => Array.isArray(arr) && arr.length > 0;
 
 export const toArray = (target) => (Array.isArray(target) ? target : [target]);
+
+export const getCurrentTime = () => {
+  const date = new Date();
+
+  return `${date.getFullYear()}-${
+    date.getMonth() + 1
+  }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+};

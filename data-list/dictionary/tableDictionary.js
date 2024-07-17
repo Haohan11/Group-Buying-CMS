@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { addClassName, transImageUrl } from "@/tool/helper";
+import { getCurrentTime, transImageUrl } from "@/tool/helper";
 
 import {
   placeHolderColumns,
@@ -19,6 +19,9 @@ import {
 } from "../table/columns/_columns";
 
 /** Usage of tableDictionary:
+ *
+ *  preload (Data control):
+ *    Fetch the required data, and will cached by use `name` and `fetchUrl` as key.
  *
  *  adaptor (UI render):
  *    Use for preload data adapt,
@@ -277,9 +280,9 @@ export const fullData = {
       purchase_price: Yup.number()
         .typeError("只能輸入數字")
         .required("此欄位必填"),
-        // stock_image
-        // stock_image_preview
-        // stock_image_persist
+      // stock_image
+      // stock_image_preview
+      // stock_image_persist
       preorder_count: Yup.number().typeError("只能輸入數字"),
       level_price: Yup.mixed().test({
         test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
@@ -1386,7 +1389,7 @@ export const fullData = {
           className: "d-flex align-items-center justify-content-center",
           props: {
             labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
+            inputclassname: "d-inline text-nowrap",
           },
         },
       ],
@@ -1426,27 +1429,45 @@ export const fullData = {
           },
         },
         {
-          type: "plain",
+          type: "select",
           label: "出貨方式 :",
           name: "delivery",
           col: 4,
           className: "d-flex align-items-center justify-content-between",
           props: {
+            options: [
+              {
+                label: "板出",
+                value: "board",
+              },
+              {
+                label: "宅配",
+                value: "home",
+              },
+            ],
             labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
+            inputclassname: "w-100",
+          },
+        },
+        {
+          type: "button",
+          className: "text-end me-2",
+          props: {
+            className: "px-19",
+            text: "拆單",
           },
         },
       ],
       [
         {
-          type: "plain",
+          type: "order-member",
           label: "會員名稱 :",
           name: "member_name",
           col: 4,
           className: "d-flex align-items-center justify-content-between",
           props: {
             labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
+            inputclassname: "w-100",
           },
         },
         {
@@ -1464,25 +1485,56 @@ export const fullData = {
           type: "submit-field",
           props: {
             submitText: "儲存",
-            className: "text-end"
-          }
+            className: "text-end",
+          },
         },
       ],
       {
-        node: <div className="w-100 border border-secondary mt-2"></div>
+        node: <div className="w-100 border border-secondary mt-2"></div>,
       },
       {
-        type: "order-list"
-      }
+        name: "stock",
+        type: "order-stock-list",
+      },
+      {
+        type: "order-list",
+      },
+    ],
+    preLoad: [
+      {
+        name: "member_name",
+        fetchUrl: "member-management?enable=",
+        adaptor: (data) =>
+          data.map((item) => ({ ...item, label: item.name, value: item.id })),
+        createInitor: selectInitializer,
+      },
+      {
+        name: "member_code",
+        fetchUrl: "member-management?enable=",
+        createInitor: (data) => data[0].code,
+      },
+      {
+        name: "payment",
+        fetchUrl: "member-management?enable=",
+        createInitor: (data) => data[0].payment,
+      },
+      {
+        name: "stock",
+        fetchUrl: "stock",
+        adaptor: (data) =>
+          data.map((stock) => ({
+            ...stock,
+            cover_image: transImageUrl(stock.cover_image),
+          })),
+      },
     ],
     formField: {
-      member_name: "菜潭雅",
-      code: "T123456",
-      member_code: "MB123456",
+      code: "系統自動產生",
       status: "處理中",
-      payment: "現金",
-      delivery: "宅配",
-      date: "2022-01-01",
+      delivery: "board",
+      get date() {
+        return getCurrentTime();
+      },
     },
   },
   "order-category": {

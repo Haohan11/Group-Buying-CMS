@@ -7,7 +7,7 @@ import { ToggleComponent } from '../../../assets/ts/components'
 
 const SidebarLogo = (props) => {
   const { config } = useLayout()
-  const toggleRef = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef(null)
 
   const appSidebarDefaultMinimizeDesktopEnabled =
     config?.app?.sidebar?.default?.minimize?.desktop?.enabled
