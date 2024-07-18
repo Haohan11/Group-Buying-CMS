@@ -102,7 +102,7 @@ export function HeaderWrapper() {
                 <Header />
               </div>
             )}
-          <Navbar />
+          {/* <Navbar /> */}
         </div>
       </div>
     </div>

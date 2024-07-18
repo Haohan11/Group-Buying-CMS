@@ -46,7 +46,7 @@ const selectAdaptor = (data) =>
     : [];
 const selectInitializer = (data) => (data?.[0]?.id ? `${data[0].id}` : null);
 
-export const fullData = {
+export const dictionary = {
   "stock-management": {
     pageTitle: "商品維護",
     searchPlaceholder: "商品",
@@ -1389,7 +1389,7 @@ export const fullData = {
           className: "d-flex align-items-center justify-content-center",
           props: {
             labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline text-nowrap",
+            inputclassname: "d-inline text-nowrap overflow-hidden",
           },
         },
       ],
@@ -1557,7 +1557,7 @@ export const fullData = {
         name: "description",
       },
     ],
-    fetchUrl: "order-category",
+    fetchUrl: "sale-type",
     validationSchema: Yup.object().shape({
       name: Yup.string().required("此欄位必填"),
     }),
@@ -1568,7 +1568,7 @@ export const fullData = {
   },
 };
 
-const ArrangeWithProperty = Object.entries(fullData).reduce(
+const ArrangeWithProperty = Object.entries(dictionary).reduce(
   (tableDict, [table, content]) => {
     Object.entries(content).reduce((dict, [key, value]) => {
       dict[key] ??= {};

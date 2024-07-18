@@ -595,104 +595,6 @@ const EditorField = (props) => {
   );
 };
 
-const mockOrderData = [
-  {
-    id: 1,
-    name: "Ryan",
-    phone: "0912345678",
-    address: "台北市",
-    price: 100,
-    stockList: [
-      {
-        id: 1,
-        code: "TT3456",
-        name: "Apple",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "顆",
-        ori_price: 100,
-        price: 100,
-        quantity: 20,
-        total: 200,
-      },
-      {
-        id: 2,
-        code: "TT9876",
-        name: "護手霜",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "箱",
-        ori_price: 620,
-        price: "",
-        quantity: 2,
-        total: 1240,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Emily",
-    phone: "0987654321",
-    address: "台中市",
-    price: 3000,
-    stockList: [
-      {
-        id: 1,
-        code: "TT3456",
-        name: "唇膏",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "支",
-        ori_price: 100,
-        price: 100,
-        quantity: 20,
-        total: 200,
-      },
-      {
-        id: 2,
-        code: "TT9876",
-        name: "護手霜",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "箱",
-        ori_price: 620,
-        price: "",
-        quantity: 2,
-        total: 1240,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Sam",
-    phone: "0912345678",
-    address: "台南市",
-    price: 100,
-  },
-];
-
-const orderList = mockOrderData.reduce((list, item) => {}, {});
-
-const OrderList = (props) => {
-  return (
-    <Row className="g-0">
-      {[
-        { colName: "項次", key: "id" },
-        { colName: "收件人", key: "name" },
-        { colName: "收件人電話", key: "phone" },
-        { colName: "收件人地址", key: "address" },
-        { colName: "小記", key: "price" },
-      ].map(({ colName }, index) => (
-        <Col
-          sm={"auto"}
-          key={index}
-          className="border border-gray-300 flex-grow-1"
-        >
-          <div className="bg-gray-500 text-white text-center p-2">
-            {colName}
-          </div>
-        </Col>
-      ))}
-    </Row>
-  );
-};
-
 const getInput = (type) => (props) => ValidateInputField({ ...props, type });
 const generateInputs = (arr) =>
   arr.reduce(
@@ -703,8 +605,19 @@ const generateInputs = (arr) =>
     {}
   );
 
-const Button = ({ type = "button", onClick, text, className, variant = "primary" }) => (
-  <button {...{ type, onClick }} className={clsx("btn", className, `btn-${variant}`)}>{text}</button>
+const Button = ({
+  type = "button",
+  onClick,
+  text,
+  className,
+  variant = "primary",
+}) => (
+  <button
+    {...{ type, onClick }}
+    className={clsx("btn", className, `btn-${variant}`)}
+  >
+    {text}
+  </button>
 );
 
 const SubmitField = ({
@@ -816,6 +729,115 @@ const OrderStockList = (props) => {
         )}
       </div>
     </div>
+  );
+};
+
+const mockOrderData = [
+  {
+    id: 1,
+    name: "Ryan",
+    phone: "0912345678",
+    address: "台北市",
+    price: 100,
+    stockList: [
+      {
+        id: 1,
+        code: "TT3456",
+        name: "Apple",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "顆",
+        ori_price: 100,
+        price: 100,
+        quantity: 20,
+        total: 200,
+      },
+      {
+        id: 2,
+        code: "TT9876",
+        name: "護手霜",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "箱",
+        ori_price: 620,
+        price: "",
+        quantity: 2,
+        total: 1240,
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: "Emily",
+    phone: "0987654321",
+    address: "台中市",
+    price: 3000,
+    stockList: [
+      {
+        id: 1,
+        code: "TT3456",
+        name: "唇膏",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "支",
+        ori_price: 100,
+        price: 100,
+        quantity: 20,
+        total: 200,
+      },
+      {
+        id: 2,
+        code: "TT9876",
+        name: "護手霜",
+        image: "https://picsum.photos/id/237/200/300",
+        specification: "箱",
+        ori_price: 620,
+        price: "",
+        quantity: 2,
+        total: 1240,
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: "Sam",
+    phone: "0912345678",
+    address: "台南市",
+    price: 100,
+  },
+];
+
+const OrderList = (props) => {
+  const colDict = [
+    { colName: "項次", key: "id", col: 1 },
+    { colName: "收件人", key: "name", col: 3, inputType: "text" },
+    { colName: "收件人電話", key: "phone", col: 2 },
+    { colName: "收件人地址", key: "address", col: 4 },
+    { colName: "小記", key: "price", col: 2 },
+  ];
+
+  return (
+    <>
+      <Row className="g-0">
+        {colDict.map(({ col, colName, key }) => (
+          <Col sm={col} key={key} className="border border-gray-300">
+            <div className="bg-gray-500 text-white text-center p-2">
+              {colName}
+            </div>
+          </Col>
+        ))}
+      </Row>
+      {mockOrderData.map((item) => (
+        <Row key={item.id} className="g-0">
+          {colDict.map(({ key, col, inputType }) => (
+            <Col sm={col} key={key} className="p-2 border flex-center">
+              {inputType ? (
+                getInput(inputType)({name: `member_name_${item.id}`})
+              ) : (
+                <div className="">{item[key]}</div>
+              )}
+            </Col>
+          ))}
+        </Row>
+      ))}
+    </>
   );
 };
 

@@ -89,6 +89,10 @@ textarea:focus-visible {
   max-height: fit-content !important;
 }
 
+.text-overflow-ellipsis {
+  text-overflow: ellipsis;
+}
+
 // input[type="range"] {
 //   -webkit-appearance: none;
 //   overflow: hidden;
