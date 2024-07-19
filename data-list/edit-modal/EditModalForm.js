@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, Fragment } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -207,28 +207,29 @@ const ValidateInputField = ({
             style={{ minHeight: "120px" }}
           ></textarea>
         ),
-      }[type] ?? (
-        <input
-          {...(!readonly && formik.getFieldProps(name))}
-          id={`input_${name}`}
-          placeholder={placeholder}
-          className={clsx(
-            "form-control form-control-solid mb-3 mb-lg-0",
-            { "is-invalid": formik?.touched[name] && formik?.errors[name] },
-            { "is-valid": formik?.touched[name] && !formik?.errors[name] },
-            inputclassname
-          )}
-          defaultValue={defaultValue}
-          type={type}
-          autoComplete="off"
-          {...(onlynumber && {
-            onKeyDown: onlyInputNumbers,
-          })}
-          {...(typeof onChange === "function" && { onChange })}
-          {...(typeof onBlur === "function" && { onBlur })}
-          disabled={readonly || formik?.isSubmitting}
-        />
-      )}
+      }[type] ??
+        (["text", "password"].includes(type) && (
+          <input
+            {...(!readonly && name !== "_stop" && formik.getFieldProps(name))}
+            id={`input_${name}`}
+            placeholder={placeholder}
+            className={clsx(
+              "form-control form-control-solid mb-3 mb-lg-0",
+              { "is-invalid": formik?.touched[name] && formik?.errors[name] },
+              { "is-valid": formik?.touched[name] && !formik?.errors[name] },
+              inputclassname
+            )}
+            defaultValue={defaultValue}
+            type={type}
+            autoComplete="off"
+            {...(onlynumber && {
+              onKeyDown: onlyInputNumbers,
+            })}
+            {...(typeof onChange === "function" && { onChange })}
+            {...(typeof onBlur === "function" && { onBlur })}
+            disabled={readonly || formik?.isSubmitting}
+          />
+        ))}
       {formik?.touched[name] && formik?.errors[name] && (
         <div className="fv-plugins-message-container">
           <div className="fv-help-block">
@@ -635,7 +636,7 @@ const SubmitField = ({
     <button
       type="reset"
       {...(typeof onCancel === "function" && { onClick: onCancel })}
-      className="btn btn-secondary mx-2"
+      className={clsx("btn btn-secondary", `m${reverse ? "s" : "e"}-2`)}
       data-kt-users-modal-action="cancel"
       disabled={hoistFormik.get().isSubmitting}
     >
@@ -644,7 +645,7 @@ const SubmitField = ({
 
     <button
       type="submit"
-      className="btn btn-primary mx-2"
+      className={clsx("btn btn-primary", `m${reverse ? "e" : "s"}-2`)}
       data-kt-users-modal-action="submit"
       disabled={hoistFormik.get().isSubmitting}
     >
@@ -659,7 +660,7 @@ const SubmitField = ({
   </div>
 );
 
-const OrderMember = (props) =>
+const SaleMember = (props) =>
   getInput("select")({
     ...props,
     onChange: (item) => {
@@ -679,42 +680,60 @@ const OrderMember = (props) =>
     },
   });
 
-const OrderStockList = (props) => {
+const SaleStockList = (props) => {
   const stockData = hoistPreLoadData.get()?.[props.name];
 
   return (
     <div>
       <div className="d-flex overflow-x-auto bg-gray-200 p-8 rounded-2">
         {checkArray(stockData) ? (
-          stockData.map(({ id, name, code, price, cover_image }) => (
+          stockData.map((stock) => (
             <div
-              key={id}
+              key={stock.id}
               className="d-flex bg-gray-100 p-2 pe-4 me-6 cursor-pointer shadow-sm rounded-4"
+              onClick={() => {
+                if (!props.storeTarget) return;
+                const prev = hoistFormik.get().values[props.storeTarget];
+
+                hoistFormik.get().setFieldValue(
+                  props.storeTarget,
+                  prev.map((item) => {
+                    if (!checkArray(item.stockList))
+                      return { ...item, stockList: [stock] };
+                    return {
+                      ...item,
+                      ...(item.stockList.findIndex(
+                        (stockItem) => stockItem.id === stock.id
+                      ) === -1 && { stockList: [...item.stockList, stock] }),
+                    };
+                  })
+                );
+              }}
             >
               <div
                 className="position-relative rounded-3 me-3 overflow-hidden"
-                style={{ height: "100px", width: "100px" }}
+                style={{ height: "85px", width: "85px" }}
               >
                 <Image
-                  sizes="100px"
+                  sizes="85px"
                   fill
                   className="position-relative object-fit-cover"
-                  src={cover_image}
-                  alt={`${name} stock image`}
+                  src={stock.cover_image}
+                  alt={`${stock.name} stock image`}
                 />
               </div>
-              <div className="fs-5 align-content-center">
+              <div className="fs-5 align-content-center text-nowrap">
                 <div>
                   <span>商品編號 : </span>
-                  <span>{code}</span>
+                  <span>{stock.code}</span>
                 </div>
                 <div>
                   <span>商品名稱 : </span>
-                  <span>{name}</span>
+                  <span>{stock.name}</span>
                 </div>
                 <div>
                   <span>商品單價 : </span>
-                  <span>{price}</span>
+                  <span>{stock.price}</span>
                 </div>
               </div>
             </div>
@@ -732,85 +751,25 @@ const OrderStockList = (props) => {
   );
 };
 
-const mockOrderData = [
-  {
-    id: 1,
-    name: "Ryan",
-    phone: "0912345678",
-    address: "台北市",
-    price: 100,
-    stockList: [
-      {
-        id: 1,
-        code: "TT3456",
-        name: "Apple",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "顆",
-        ori_price: 100,
-        price: 100,
-        quantity: 20,
-        total: 200,
-      },
-      {
-        id: 2,
-        code: "TT9876",
-        name: "護手霜",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "箱",
-        ori_price: 620,
-        price: "",
-        quantity: 2,
-        total: 1240,
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Emily",
-    phone: "0987654321",
-    address: "台中市",
-    price: 3000,
-    stockList: [
-      {
-        id: 1,
-        code: "TT3456",
-        name: "唇膏",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "支",
-        ori_price: 100,
-        price: 100,
-        quantity: 20,
-        total: 200,
-      },
-      {
-        id: 2,
-        code: "TT9876",
-        name: "護手霜",
-        image: "https://picsum.photos/id/237/200/300",
-        specification: "箱",
-        ori_price: 620,
-        price: "",
-        quantity: 2,
-        total: 1240,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Sam",
-    phone: "0912345678",
-    address: "台南市",
-    price: 100,
-  },
-];
-
-const OrderList = (props) => {
+const SalePersonList = (props) => {
   const colDict = [
     { colName: "項次", key: "id", col: 1 },
-    { colName: "收件人", key: "name", col: 3, inputType: "text" },
-    { colName: "收件人電話", key: "phone", col: 2 },
-    { colName: "收件人地址", key: "address", col: 4 },
+    { colName: "收件人", key: "name", col: 2, inputType: "text" },
+    { colName: "收件人電話", key: "phone", col: 3, inputType: "text" },
+    { colName: "收件人地址", key: "address", col: 4, inputType: "text" },
     { colName: "小記", key: "price", col: 2 },
+  ];
+
+  const stockColDict = [
+    { colName: "移除", key: "", col: 1, inputType: "remove" },
+    { colName: "商品圖片", key: "cover_image", col: 2, inputType: "image" },
+    { colName: "商品編號", key: "code", col: 2 },
+    { colName: "商品名稱", key: "name", col: 2 },
+    { colName: "規格", key: "specification", col: 1 },
+    { colName: "單價", key: "price", col: 1 },
+    { colName: "變價", col: 1, inputType: "text" },
+    { colName: "數量", col: 1 },
+    { colName: "小記", col: 1 },
   ];
 
   return (
@@ -824,19 +783,108 @@ const OrderList = (props) => {
           </Col>
         ))}
       </Row>
-      {mockOrderData.map((item) => (
-        <Row key={item.id} className="g-0">
-          {colDict.map(({ key, col, inputType }) => (
-            <Col sm={col} key={key} className="p-2 border flex-center">
-              {inputType ? (
-                getInput(inputType)({name: `member_name_${item.id}`})
-              ) : (
-                <div className="">{item[key]}</div>
-              )}
-            </Col>
-          ))}
-        </Row>
-      ))}
+      {checkArray(hoistFormik.get().values[props.name]) &&
+        hoistFormik.get().values[props.name].map((item, index) => (
+          <Fragment key={item.id ?? index}>
+            <Row className="g-0">
+              {colDict.map(({ key, col, inputType }, index) => (
+                <Col
+                  sm={col}
+                  key={key}
+                  className={`p-2 border flex-center ${
+                    index !== 0 && "border-start-0"
+                  }`}
+                >
+                  {inputType ? (
+                    getInput(inputType)({
+                      name: "_stop",
+                      defaultValue: item[key],
+                      onChange: ({ target: { value } }) => {
+                        const prevList = hoistFormik.get().values[props.name];
+                        hoistFormik.get().setFieldValue(
+                          props.name,
+                          prevList.map((prevItem) =>
+                            prevItem.id === item.id
+                              ? { ...prevItem, [key]: value }
+                              : prevItem
+                          )
+                        );
+                      },
+                    })
+                  ) : (
+                    <div className="">{item[key]}</div>
+                  )}
+                </Col>
+              ))}
+            </Row>
+            <Row className="g-0">
+              {stockColDict.map(({ colName, col }, index) => (
+                <Col sm={col} key={index} className="border border-gray-300">
+                  <div className="bg-primary text-white text-center p-2">
+                    {colName}
+                  </div>
+                </Col>
+              ))}
+            </Row>
+            {checkArray(item.stockList) &&
+              item.stockList.map((stock) => (
+                <Row className="g-0" key={stock.id}>
+                  {stockColDict.map(({ key, col, inputType }, index) => (
+                    <Col
+                      sm={col}
+                      key={key}
+                      className={`border flex-center ${
+                        index !== 0 && "border-start-0"
+                      }`}
+                    >
+                      {{
+                        image: (
+                          <div className="rounded-3 overflow-hidden">
+                            <Image
+                              width={75}
+                              height={75}
+                              src={stock[key]}
+                              alt={"stock cover image"}
+                            />
+                          </div>
+                        ),
+                        text: (
+                          <div className="py-2 px-1">
+                            {getInput(inputType)({
+                              name: `_stop`,
+                              defaultValue: stock["price"],
+                            })}
+                          </div>
+                        ),
+                        remove: (
+                          <div
+                            className="w-25px h-25px rounded-circle flex-center cursor-pointer bg-danger fs-1 bi bi-x text-white"
+                            onClick={() => {
+                              const prevList =
+                                hoistFormik.get().values[props.name];
+                              hoistFormik.get().setFieldValue(
+                                props.name,
+                                prevList.map((personRow) =>
+                                  personRow.id !== item.id
+                                    ? personRow
+                                    : {
+                                        ...personRow,
+                                        stockList: personRow.stockList.filter(
+                                          (s) => s.id !== stock.id
+                                        ),
+                                      }
+                                )
+                              );
+                            }}
+                          ></div>
+                        ),
+                      }[inputType] ?? <div className="p-2">{stock[key]}</div>}
+                    </Col>
+                  ))}
+                </Row>
+              ))}
+          </Fragment>
+        ))}
     </>
   );
 };
@@ -860,9 +908,9 @@ const inputDictionary = {
   "price-table": PriceTable,
   editor: EditorField,
   checkbox: CheckBoxInput,
-  "order-list": OrderList,
-  "order-member": OrderMember,
-  "order-stock-list": OrderStockList,
+  "sale-person-list": SalePersonList,
+  "sale-member": SaleMember,
+  "sale-stock-list": SaleStockList,
   button: Button,
   /** "submit-field" will be automatically append when editForm rendered */
 };
@@ -870,7 +918,7 @@ const inputDictionary = {
 const createRowColTree = (arr) =>
   arr.map((group, groupIndex) => {
     return (
-      <Row className="mb-5 g-6" key={groupIndex}>
+      <Row className={group.className ?? "mb-5 g-6"} key={groupIndex}>
         {toArray(group).map((input, inputIndex) => {
           if (Array.isArray(input))
             return (
@@ -989,7 +1037,7 @@ const EditModalForm = () => {
   hoistFormik.set(formik);
   formik.values?.["_currentMode"] &&
     (formik.values["_currentMode"] = currentMode);
-  // console.log("===== formik ======", formik);
+  // console.log("===== formik ======", formik.values);
 
   const closeModal = () => setItemIdForUpdate(undefined);
   inputDictionary["submit-field"] ??= (props) => (

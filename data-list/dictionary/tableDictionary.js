@@ -1368,138 +1368,149 @@ export const dictionary = {
     column: memberManagementColumns,
     hideSubmitField: true,
     hidePromptField: true,
-    inputList: [
-      [
+    inputList: (() => {
+      const labelclassname = "min-w-80px mt-2";
+      const inputclassname = "";
+      const colClassName = "d-flex align-items-center justify-content-between";
+      return [
+        [
+          {
+            type: "plain",
+            label: "訂單編號 :",
+            name: "code",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname,
+            },
+          },
+          {
+            type: "plain",
+            label: "訂單日期 :",
+            name: "date",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname,
+            },
+          },
+        ],
+        [
+          {
+            type: "plain",
+            label: "訂單狀態 :",
+            name: "status",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname,
+            },
+          },
+          {
+            type: "plain",
+            label: "付款方式 :",
+            name: "payment",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname,
+            },
+          },
+        ],
+        [
+          {
+            type: "plain",
+            label: "櫃單 :",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname,
+            },
+          },
+          {
+            type: "select",
+            label: "出貨方式 :",
+            name: "delivery",
+            className: colClassName,
+            props: {
+              options: [
+                {
+                  label: "板出",
+                  value: "board",
+                },
+                {
+                  label: "宅配",
+                  value: "home",
+                },
+              ],
+              labelclassname,
+              inputclassname: `w-100`,
+            },
+          },
+        ],
+        [
+          {
+            type: "sale-member",
+            label: "會員名稱 :",
+            name: "member_name",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname: `w-100`,
+            },
+          },
+          {
+            type: "plain",
+            label: "會員編號 :",
+            name: "member_code",
+            className: colClassName,
+            props: {
+              labelclassname,
+              inputclassname,
+            },
+          },
+        ],
+        // {
+        //   className: "test",
+        //   node: <div className="w-100 border border-secondary mb-5"></div>,
+        // },
         {
-          type: "plain",
-          label: "訂單編號 :",
-          name: "code",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
+          name: "stock",
+          type: "sale-stock-list",
           props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
+            storeTarget: "person_list",
           },
         },
         {
-          type: "plain",
-          label: "訂單日期 :",
-          name: "date",
-          col: 4,
-          className: "d-flex align-items-center justify-content-center",
-          props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline text-nowrap overflow-hidden",
-          },
+          name: "person_list",
+          type: "sale-person-list",
         },
-      ],
-      [
-        {
-          type: "plain",
-          label: "訂單狀態 :",
-          name: "status",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
-          props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
-          },
-        },
-        {
-          type: "plain",
-          label: "付款方式 :",
-          name: "payment",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
-          props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
-          },
-        },
-      ],
-      [
-        {
-          type: "plain",
-          label: "櫃單 :",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
-          props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
-          },
-        },
-        {
-          type: "select",
-          label: "出貨方式 :",
-          name: "delivery",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
-          props: {
-            options: [
-              {
-                label: "板出",
-                value: "board",
+        Object.defineProperty(
+          [
+            {
+              type: "button",
+              className: "p-0 me-4",
+              props: {
+                text: "拆單",
               },
-              {
-                label: "宅配",
-                value: "home",
+              col: "auto"
+            },
+            {
+              type: "submit-field",
+              className: "g-0",
+              props: {
+                submitText: "儲存",
               },
-            ],
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "w-100",
-          },
-        },
-        {
-          type: "button",
-          className: "text-end me-2",
-          props: {
-            className: "px-19",
-            text: "拆單",
-          },
-        },
-      ],
-      [
-        {
-          type: "order-member",
-          label: "會員名稱 :",
-          name: "member_name",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
-          props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "w-100",
-          },
-        },
-        {
-          type: "plain",
-          label: "會員編號 :",
-          name: "member_code",
-          col: 4,
-          className: "d-flex align-items-center justify-content-between",
-          props: {
-            labelclassname: "min-w-80px mt-2",
-            inputclassname: "d-inline",
-          },
-        },
-        {
-          type: "submit-field",
-          props: {
-            submitText: "儲存",
-            className: "text-end",
-          },
-        },
-      ],
-      {
-        node: <div className="w-100 border border-secondary mt-2"></div>,
-      },
-      {
-        name: "stock",
-        type: "order-stock-list",
-      },
-      {
-        type: "order-list",
-      },
-    ],
+              col: "auto"
+            },
+          ],
+          "className",
+          {
+            value: "flex-center mt-12",
+          }
+        ),
+      ];
+    })(),
     preLoad: [
       {
         name: "member_name",
@@ -1532,6 +1543,16 @@ export const dictionary = {
       code: "系統自動產生",
       status: "處理中",
       delivery: "board",
+      person_list: [
+        {
+          id: 1,
+          name: "",
+          phone: "",
+          address: "",
+          price: 0,
+          stockList: [],
+        },
+      ],
       get date() {
         return getCurrentTime();
       },
