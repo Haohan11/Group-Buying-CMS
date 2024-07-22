@@ -358,6 +358,10 @@ export const dictionary = {
         introduction_image_persist,
       };
     },
+    submitAdaptor: (data) => ({
+      ...data,
+      preorder_count: data.preorder_count || 0,
+    })
   },
   "stock-brand": {
     pageTitle: "商品品牌維護",
@@ -1470,16 +1474,18 @@ export const dictionary = {
             },
           },
         ],
-        // {
-        //   className: "test",
-        //   node: <div className="w-100 border border-secondary mb-5"></div>,
-        // },
+        {
+          node: <div className="border border-secondary my-2"></div>,
+        },
         {
           name: "stock",
           type: "sale-stock-list",
           props: {
             storeTarget: "person_list",
           },
+        },
+        {
+          node: <div className="border border-secondary my-2"></div>,
         },
         {
           name: "person_list",
@@ -1528,15 +1534,6 @@ export const dictionary = {
         name: "payment",
         fetchUrl: "member-management?enable=",
         createInitor: (data) => data[0].payment,
-      },
-      {
-        name: "stock",
-        fetchUrl: "stock",
-        adaptor: (data) =>
-          data.map((stock) => ({
-            ...stock,
-            cover_image: transImageUrl(stock.cover_image),
-          })),
       },
     ],
     formField: {

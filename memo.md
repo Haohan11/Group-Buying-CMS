@@ -3,15 +3,12 @@
 
 #### filter in DataListToolbar
 #### search in ListHeader
-
-### role permission
-#### front and back entry 
-#### env, account, stock visitable
+#### editModal width in data-list\edit-modal\EditModal.tsx
 
 ### Icon usage:
 
  - with [Bootstrap Icon](https://icons.getbootstrap.com/)
 ```
 <SidebarMenuItemWithSub
-    icon="bi bi-${here just use bootstrap icon name}"
+    icon="bi bi-${use bootstrap icon name here}"
 />
