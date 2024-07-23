@@ -1,3 +1,4 @@
+import { useId } from "react";
 import Image from "next/image";
 
 import clsx from "clsx";
@@ -5,7 +6,12 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { Row, Col, FormCheck } from "react-bootstrap";
 
-import { onlyInputNumbers, transImageUrl, checkArray, toArray } from "@/tool/helper";
+import {
+  onlyInputNumbers,
+  transImageUrl,
+  checkArray,
+  toArray,
+} from "@/tool/helper";
 
 import { hoistFormik, hoistPreLoadData } from "../globalVariable";
 
@@ -37,13 +43,20 @@ export const ValidateInputField = ({
   isMulti = false, // only apply for select
   isDisabled,
   holder,
+  value,
   defaultValue,
   onClick,
   onChange,
   onBlur,
+  noOptionsMessage,
+  formatCreateLabel,
   options, // only apply for select
-}) =>
-  holder ? (
+  creatable,
+  onCreateOption,
+}) => {
+  const uid = useId();
+
+  return holder ? (
     <>
       <InputLabel holder />
       <div className="form-control form-control-solid mb-3 mb-lg-0 bg-transparent holder shadow-none">
@@ -80,45 +93,67 @@ export const ValidateInputField = ({
             {options ||
             (formik.values?.[name] &&
               checkArray(hoistPreLoadData.get()?.[name])) ? (
-              <Select
-                {...{ name, isMulti, isDisabled }}
-                inputId={`input_${name}`}
-                className={clsx(
-                  "react-select-styled react-select-solid border border-gray-100 rounded",
-                  inputclassname
-                )}
-                classNamePrefix="react-select"
-                placeholder={placeholder ?? "請選擇或輸入關鍵字"}
-                options={options ?? hoistPreLoadData.get()[name]}
-                defaultValue={
-                  options
-                    ? options.filter(
-                        (option) => option.value === formik.values[name]
-                      ) || toArray(defaultValue)
-                    : isMulti
-                    ? hoistPreLoadData
-                        .get()
-                        [name].filter((option) =>
-                          formik.values[name].includes(option.value)
-                        )
-                    : hoistPreLoadData
-                        .get()
-                        [name].find(
-                          (option) => option.value === formik.values[name]
-                        )
-                }
-                onChange={
-                  onChange ??
-                  ((items) => {
-                    formik.setFieldValue(
-                      name,
-                      Array.isArray(items)
-                        ? items.map((item) => item.value)
-                        : items.value
-                    );
-                  })
-                }
-              />
+              (() => {
+                const SelectComp = creatable ? CreatableSelect : Select;
+                return (
+                  <SelectComp
+                    {...{ name, isMulti, isDisabled, value }}
+                    inputId={`input_${name}`}
+                    className={clsx(
+                      "react-select-styled react-select-solid border border-gray-100 rounded",
+                      inputclassname
+                    )}
+                    classNamePrefix="react-select"
+                    placeholder={placeholder ?? "請選擇或輸入關鍵字"}
+                    noOptionsMessage={noOptionsMessage ?? (() => "目前沒有資料")}
+                    options={options ?? hoistPreLoadData.get()[name]}
+                    {...(creatable && {
+                      onCreateOption:
+                        onCreateOption ??
+                        ((inputString) => {
+                          hoistPreLoadData.set([
+                            ...hoistPreLoadData.get()[name],
+                            {
+                              label: inputString,
+                              value: `new_${uid}`,
+                            },
+                          ]);
+                        }),
+                      formatCreateLabel:
+                        formatCreateLabel ??
+                        ((inputString) => `新增 ${inputString}`),
+                    })}
+                    defaultValue={
+                      options
+                        ? options.filter(
+                            (option) => option.value === formik.values[name]
+                          ) || toArray(defaultValue)
+                        : isMulti
+                        ? hoistPreLoadData
+                            .get()
+                            [name].filter((option) =>
+                              formik.values[name].includes(option.value)
+                            )
+                        : hoistPreLoadData
+                            .get()
+                            [name].find(
+                              (option) => option.value === formik.values[name]
+                            )
+                    }
+                    onChange={
+                      onChange ??
+                      ((items) => {
+                        formik.setFieldValue(
+                          name,
+                          Array.isArray(items)
+                            ? items.map((item) => item.value)
+                            : items.value
+                        );
+                      })
+                    }
+                  />
+                );
+              })()
             ) : (
               <div
                 onClick={() => formik.setFieldTouched(name, true)}
@@ -169,6 +204,7 @@ export const ValidateInputField = ({
       )}
     </>
   );
+};
 
 export const LabelHolder = () => InputLabel({ holder: true });
 export const TextHolder = () => ValidateInputField({ holder: true });

@@ -1542,7 +1542,7 @@ export const dictionary = {
       delivery: "board",
       person_list: [
         {
-          id: 1,
+          id: "_new",
           name: "",
           phone: "",
           address: "",

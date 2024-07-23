@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useEffect, useContext, useId } from "react";
 import {
   Row,
   Col,
@@ -14,6 +14,7 @@ import { getInput, NumberInput } from "./input";
 
 import { checkArray } from "@/tool/helper";
 import { hoistFormik } from "../globalVariable";
+import { placeHolderColumns } from "@/data-list/table/columns/_columns";
 
 const FoldButton = ({ eventKey }) => {
   const fold = useAccordionButton(eventKey, (event) => {
@@ -36,25 +37,29 @@ const borderColor = "border-gray-300";
 
 const colDict = [
   { colName: "項次", key: "id", col: 1, inputType: "fold" },
-  { colName: "收件人", key: "name", col: 2, inputType: "text" },
+  { colName: "收件人", key: "name", col: 2, inputType: "personName" },
   { colName: "收件人電話", key: "phone", col: 3, inputType: "text" },
   { colName: "收件人地址", key: "address", col: 5, inputType: "text" },
   { colName: "小計", key: "price", col: 1 },
 ];
 
-  const stockColDict = [
-    { colName: "項次", key: "id", col: 1, inputType: "remove" },
-    { colName: "商品圖片", key: "cover_image", col: 2, inputType: "image" },
-    { colName: "商品編號", key: "code", col: 2 },
-    { colName: "商品名稱", key: "name", col: 2 },
-    { colName: "規格", key: "specification", col: 1 },
-    { colName: "單價", key: "price", col: 1 },
-    { colName: "變價", col: 1, inputType: "price" },
-    { colName: "數量", col: 1, inputType: "qty" },
-    { colName: "小計", col: 1 },
-  ];
+const stockColDict = [
+  { colName: "項次", key: "id", col: 1, inputType: "remove" },
+  { colName: "商品圖片", key: "cover_image", col: 2, inputType: "image" },
+  { colName: "商品編號", key: "code", col: 2 },
+  { colName: "商品名稱", key: "name", col: 2 },
+  { colName: "規格", key: "specification", col: 1 },
+  { colName: "單價", key: "price", col: 1 },
+  { colName: "變價", col: 1, inputType: "price" },
+  { colName: "數量", col: 1, inputType: "qty" },
+  { colName: "小計", col: 1 },
+];
 
 const SalePersonList = (props) => {
+  const [personList, setPersonList] = useState([]);
+  const [person, setPerson] = useState();
+  const uid = useId();
+
   return (
     <>
       <Row className="g-0">
@@ -89,7 +94,7 @@ const SalePersonList = (props) => {
                   )}
                 >
                   {{
-                    text: getInput(inputType)({
+                    text: getInput("text")({
                       name: "_stop",
                       defaultValue: item[key],
                       onChange: ({ target: { value } }) => {
@@ -104,10 +109,38 @@ const SalePersonList = (props) => {
                         );
                       },
                     }),
+                    personName: getInput("select")({
+                      inputclassname: "w-100",
+                      placeholder: "輸入名稱",
+                      creatable: true,
+                      options: personList,
+                      value: person,
+                      formatCreateLabel: (inputString) => `新增 \u00a0${inputString}\u00a0 收件人`,
+                      onCreateOption: (inputString) => {
+                        const newPerson = { label: inputString, value: `new_${uid}` }
+                        setPersonList((prev) => [
+                          ...prev,
+                          newPerson,
+                        ]);
+
+                        setPerson(newPerson);
+                      },
+                      onChange: (option) => {
+                        const prevList = hoistFormik.get().values[props.name];
+                        hoistFormik.get().setFieldValue(
+                          props.name,
+                          prevList.map((prevItem) =>
+                            prevItem.id === item.id
+                              ? { ...prevItem, [key]: option.value }
+                              : prevItem
+                          )
+                        );
+                      },
+                    }),
                     fold: (
                       <div className="w-100 d-flex justify-content-around align-items-center flex-wrap">
                         <FoldButton />
-                        <span>{item[key]}</span>
+                        <span>{item[key] ?? index + 1}</span>
                       </div>
                     ),
                   }[inputType] ?? <div className="">{item[key]}</div>}
