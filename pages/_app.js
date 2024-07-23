@@ -15,6 +15,7 @@ import { MetronicI18nProvider } from "@/_metronic/i18n/Metronici18n";
 import { LayoutProvider } from "@/_metronic/layout/core";
 
 import ScreenLoad from "@/components/loading/ScreenLoad";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 // need { MasterInit } to get sidebar work, but it require to control ther document node, so use dynamic import with no ssr
 const DynamicMasterInit = dynamic(
@@ -43,8 +44,8 @@ export default function App({
     Component.getLayout ?? ((page) => <DynamicWrapper>{page}</DynamicWrapper>);
 
   return getLayout(
-    <SessionProvider session={session}>
-      <>
+    <ErrorBoundary>
+      <SessionProvider session={session}>
         <Head>
           <title>YouCanBuy</title>
         </Head>
@@ -56,7 +57,7 @@ export default function App({
             </LayoutProvider>
           </MetronicI18nProvider>
         </Detector>
-      </>
-    </SessionProvider>
+      </SessionProvider>
+    </ErrorBoundary>
   );
 }

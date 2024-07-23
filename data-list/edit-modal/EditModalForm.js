@@ -49,14 +49,14 @@ import SaleStockList from "./components/SaleStockList";
 import SalePersonList from "./components/SalePersonList";
 
 const {
-  inputList,
-  formField,
-  validationSchema,
-  preLoad,
-  editAdaptor,
-  submitAdaptor,
-  hideSubmitField,
-  hidePromptField,
+  inputList = {},
+  formField = {},
+  validationSchema = {},
+  preLoad = {},
+  editAdaptor = {},
+  submitAdaptor = {},
+  hideSubmitField = {},
+  hidePromptField = {},
 } = dict;
 
 const SubmitField = ({
@@ -125,35 +125,45 @@ const inputDictionary = {
 };
 
 const createRowColTree = (arr) =>
-  arr.map((group, groupIndex) => {
-    return (
-      <Row className={group.className ?? "mb-5 g-6"} key={groupIndex}>
-        {toArray(group).map((input, inputIndex) => {
-          if (Array.isArray(input))
-            return (
-              <Col sm={input.col} key={inputIndex} className={input.className}>
-                {createRowColTree(input)}
-              </Col>
-            );
-          const Input = inputDictionary[input.type];
-          if (!Input && !input.node) return false;
+  !Array.isArray(arr)
+    ? console.warn("`createRowColTree` must receive an array.")
+    : arr.map((group, groupIndex) => {
+        return (
+          <Row className={group.className ?? "mb-5 g-6"} key={groupIndex}>
+            {toArray(group).map((input, inputIndex) => {
+              if (Array.isArray(input))
+                return (
+                  <Col
+                    sm={input.col}
+                    key={inputIndex}
+                    className={input.className}
+                  >
+                    {createRowColTree(input)}
+                  </Col>
+                );
+              const Input = inputDictionary[input.type];
+              if (!Input && !input.node) return false;
 
-          return (
-            <Col sm={input.col} key={inputIndex} className={input.className}>
-              {input.node ?? (
-                <Input
-                  name={input.name}
-                  label={input.label}
-                  required={input.required}
-                  {...input.props}
-                />
-              )}
-            </Col>
-          );
-        })}
-      </Row>
-    );
-  });
+              return (
+                <Col
+                  sm={input.col}
+                  key={inputIndex}
+                  className={input.className}
+                >
+                  {input.node ?? (
+                    <Input
+                      name={input.name}
+                      label={input.label}
+                      required={input.required}
+                      {...input.props}
+                    />
+                  )}
+                </Col>
+              );
+            })}
+          </Row>
+        );
+      });
 
 const EditModalForm = () => {
   const { data, status } = useSession();
