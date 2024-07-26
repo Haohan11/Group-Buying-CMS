@@ -1364,7 +1364,7 @@ export const dictionary = {
       save: false,
     },
   },
-  "order-management": {
+  "sale-management": {
     pageTitle: "訂單作業",
     searchPlaceholder: "訂單作業",
     createHeaderText: "訂單作業",
@@ -1456,7 +1456,7 @@ export const dictionary = {
           {
             type: "sale-member",
             label: "會員名稱 :",
-            name: "member_name",
+            name: "member_id",
             className: colClassName,
             props: {
               labelclassname,
@@ -1517,9 +1517,10 @@ export const dictionary = {
         ),
       ];
     })(),
+    fetchUrl: "sale-management",
     preLoad: [
       {
-        name: "member_name",
+        name: "member_id",
         fetchUrl: "member-management?enable=",
         adaptor: (data) =>
           data.map((item) => ({ ...item, label: item.name, value: item.id })),
@@ -1542,11 +1543,11 @@ export const dictionary = {
       delivery: "board",
       person_list: [
         {
-          id: "_new",
-          name: "",
-          phone: "",
-          address: "",
-          price: 0,
+          // id: "_new",
+          // name: "",
+          // phone: "",
+          // address: "",
+          // price: 0,
           stockList: [],
         },
       ],
@@ -1555,7 +1556,7 @@ export const dictionary = {
       },
     },
   },
-  "order-category": {
+  "sale-type": {
     pageTitle: "訂單類別維護",
     searchPlaceholder: "訂單類別",
     createHeaderText: "訂單類別",

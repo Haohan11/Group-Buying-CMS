@@ -25,6 +25,17 @@ export const transImageUrl = (path) =>
     : "";
 
 export const onlyInputNumbers = (event) => {
+  if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+    event.preventDefault();
+
+    ({
+      ArrowUp: () => event.target.value++,
+      ArrowDown: () => event.target.value = Math.max(--event.target.value, 0),
+    })[event.key]();
+
+    return;
+  }
+
   if (
     /^\d$/.test(event.key) ||
     [

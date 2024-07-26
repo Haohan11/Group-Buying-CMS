@@ -1,4 +1,3 @@
-import { useId } from "react";
 import Image from "next/image";
 
 import clsx from "clsx";
@@ -40,7 +39,7 @@ export const ValidateInputField = ({
   type = "text",
   readonly = false,
   onlynumber = false,
-  isMulti = false, // only apply for select
+  isMulti = false,
   isDisabled,
   holder,
   value,
@@ -50,12 +49,10 @@ export const ValidateInputField = ({
   onBlur,
   noOptionsMessage,
   formatCreateLabel,
-  options, // only apply for select
+  options,
   creatable,
   onCreateOption,
 }) => {
-  const uid = useId();
-
   return holder ? (
     <>
       <InputLabel holder />
@@ -98,14 +95,16 @@ export const ValidateInputField = ({
                 return (
                   <SelectComp
                     {...{ name, isMulti, isDisabled, value }}
-                    inputId={`input_${name}`}
+                    {...(name && { inputId: `input_${name}` })}
                     className={clsx(
                       "react-select-styled react-select-solid border border-gray-100 rounded",
                       inputclassname
                     )}
                     classNamePrefix="react-select"
                     placeholder={placeholder ?? "請選擇或輸入關鍵字"}
-                    noOptionsMessage={noOptionsMessage ?? (() => "目前沒有資料")}
+                    noOptionsMessage={
+                      noOptionsMessage ?? (() => "目前沒有資料")
+                    }
                     options={options ?? hoistPreLoadData.get()[name]}
                     {...(creatable && {
                       onCreateOption:
@@ -115,7 +114,7 @@ export const ValidateInputField = ({
                             ...hoistPreLoadData.get()[name],
                             {
                               label: inputString,
-                              value: `new_${uid}`,
+                              value: `new_${uidRef.current.id}`,
                             },
                           ]);
                         }),
@@ -124,10 +123,10 @@ export const ValidateInputField = ({
                         ((inputString) => `新增 ${inputString}`),
                     })}
                     defaultValue={
-                      options
-                        ? options.filter(
+                      Array.isArray(options)
+                        ? options.find(
                             (option) => option.value === formik.values[name]
-                          ) || toArray(defaultValue)
+                          ) ||toArray(defaultValue)
                         : isMulti
                         ? hoistPreLoadData
                             .get()
@@ -166,8 +165,10 @@ export const ValidateInputField = ({
         ),
         textarea: (
           <textarea
-            {...formik.getFieldProps(name)}
-            id={`input_${name}`}
+            {...(name && {
+              ...formik.getFieldProps(name),
+              id: `input_${name}`,
+            })}
             className="border border-1 border-gray-200 form-control form-control-solid"
             style={{ minHeight: "120px" }}
           ></textarea>
@@ -175,8 +176,8 @@ export const ValidateInputField = ({
       }[type] ??
         (["text", "password"].includes(type) && (
           <input
-            {...(!readonly && name !== "_stop" && formik.getFieldProps(name))}
-            id={`input_${name}`}
+            {...(!readonly && name && formik.getFieldProps(name))}
+            {...(name && { id: `input_${name}` })}
             placeholder={placeholder}
             className={clsx(
               "form-control form-control-solid mb-3 mb-lg-0",
@@ -228,12 +229,13 @@ export const SwitchInput = (props) => (
     </Col>
     <Col sm={"auto"} className={`${!props.inline && "text-center"}`}>
       <FormCheck
-        {...hoistFormik.get().getFieldProps(props.name)}
         inline
         type="switch"
         defaultChecked={hoistFormik.get().getFieldProps(props.name).value}
-        id={`switch_${props.name}`}
-        name={props.name}
+        {...(props.name && {
+          id: `switch_${props.name}`,
+          ...hoistFormik.get().getFieldProps(props.name)
+        })}
       />
     </Col>
   </Row>
@@ -412,14 +414,15 @@ export const MultiImageInput = (props) => {
 
 export const Button = ({
   type = "button",
-  onClick,
   text,
   className,
   variant = "primary",
+  ...props
 }) => (
   <button
-    {...{ type, onClick }}
+    type={type}
     className={clsx("btn", className, `btn-${variant}`)}
+    {...props}
   >
     {text}
   </button>

@@ -124,6 +124,10 @@ const CUDataRequest = (action) => {
     }
 
     try {
+      console.log(
+        `${actionDict[action].logMessage} submit data:`,
+        Object.fromEntries(formData.entries())
+      );
       const res = await fetch(URL, {
         method: actionDict[action].method,
         headers: {
