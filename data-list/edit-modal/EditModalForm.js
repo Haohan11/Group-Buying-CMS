@@ -47,6 +47,7 @@ import EditorField from "./components/EditorField";
 import SaleMember from "./components/SaleMember";
 import SaleStockList from "./components/SaleStockList";
 import SalePersonList from "./components/SalePersonList";
+import SaleSeparate from "./components/SaleSeparate";
 
 const {
   inputList = {},
@@ -120,6 +121,7 @@ const inputDictionary = {
   "sale-person-list": SalePersonList,
   "sale-member": SaleMember,
   "sale-stock-list": SaleStockList,
+  "sale-separate": SaleSeparate,
   button: Button,
   /** "submit-field" will be automatically append when editForm rendered */
 };
@@ -256,7 +258,7 @@ const EditModalForm = () => {
   hoistFormik.set(formik);
   formik.values?.["_currentMode"] &&
     (formik.values["_currentMode"] = currentMode);
-  // console.log("===== formik ======", formik.values);
+  // console.log("===== formik ======", formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
   inputDictionary["submit-field"] = (props) => (

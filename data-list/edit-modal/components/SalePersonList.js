@@ -298,6 +298,7 @@ const SalePersonList = (props) => {
             </Accordion.Collapse>
           </Accordion>
         ))}
+        {hoistFormik.get().status?.separate && <div>新增收件人</div>}
     </>
   );
 };

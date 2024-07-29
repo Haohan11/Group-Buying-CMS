@@ -1494,11 +1494,8 @@ export const dictionary = {
         Object.defineProperty(
           [
             {
-              type: "button",
+              type: "sale-separate",
               className: "p-0 me-4",
-              props: {
-                text: "拆單",
-              },
               col: "auto"
             },
             {
@@ -1529,12 +1526,12 @@ export const dictionary = {
       {
         name: "member_code",
         fetchUrl: "member-management?enable=",
-        createInitor: (data) => data[0].code,
+        createInitor: (data) => data[0]?.code || "沒有資料",
       },
       {
         name: "payment",
         fetchUrl: "member-management?enable=",
-        createInitor: (data) => data[0].payment,
+        createInitor: (data) => data[0]?.payment || "沒有資料",
       },
     ],
     formField: {
