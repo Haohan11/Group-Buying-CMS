@@ -1496,7 +1496,10 @@ export const dictionary = {
             {
               type: "sale-separate",
               className: "p-0 me-4",
-              col: "auto"
+              col: "auto",
+              props: {
+                target: "person_list",
+              }
             },
             {
               type: "submit-field",
@@ -1540,12 +1543,8 @@ export const dictionary = {
       delivery: "board",
       person_list: [
         {
-          // id: "_new",
-          // name: "",
-          // phone: "",
-          // address: "",
-          // price: 0,
-          stockList: [],
+          id: "_",
+          main_reciever: true,
         },
       ],
       get date() {

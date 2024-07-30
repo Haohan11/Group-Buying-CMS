@@ -54,37 +54,65 @@ const stockColDict = [
   { colName: "小計", col: 1 },
 ];
 
+const mainReceiverKey = "_set_main_reciever";
+const mainReceiverOption = {
+  label: "設定為主收件人",
+  value: mainReceiverKey,
+};
+
 const SalePersonList = (props) => {
-  const [personList, setPersonList] = useState([]);
-  const uidRef = useRef({
-    count: 0,
-    get id() {
-      return this.count++;
-    },
-  });
+  const [receiverList, setReceiverList] = useState([]);
+
+  /* options and persons unique id */
+  const [oidRef, pidRef] = [(id) => `new_${id}`, (id) => `_${id}`].map(
+    (adaptor) =>
+      useRef({
+        count: 0,
+        get id() {
+          const id = this.count++;
+          return adaptor(id);
+        },
+      })
+  );
 
   return (
     <>
       <Row className="g-0">
-        {colDict.map(({ col, colName, key }, index) => (
+        {colDict.map(({ col, colName, key }, rt_index) => (
           <Col
             sm={col}
-            key={index}
+            key={key}
             className={clsx("border", borderColor, {
-              "border-start-0": index !== 0,
+              "border-start-0": rt_index !== 0,
             })}
           >
-            <div className="bg-gray-500 text-white text-center p-2">
+            <div className="bg-gray-500 text-white text-center px-2 py-4">
               {colName}
             </div>
           </Col>
         ))}
       </Row>
       {checkArray(hoistFormik.get().values?.[props.name]) &&
-        hoistFormik.get().values[props.name].map((item, index) => (
-          <Accordion key={item.id ?? index}>
-            <Row className="g-0">
-              {colDict.map(({ key, col, inputType }, index) => (
+        hoistFormik.get().values[props.name].map((item) => (
+          <Accordion key={item.id}>
+            <Row
+              className={clsx(
+                "g-0",
+                item.main_reciever && "ribbon ribbon-end ribbon-clip"
+              )}
+              style={{
+                boxShadow: item.main_reciever
+                  ? "var(--bs-danger) 0px 0px 0px 2px"
+                  : "none",
+              }}
+            >
+              {item.main_reciever && (
+                <div className="fs-8 bg-danger w-auto ribbon-label top-0 py-1">
+                  主收件人
+                  <span className="ribbon-inner"></span>
+                </div>
+              )}
+              {colDict.map(({ key, col, inputType }, rc_index) => (
                 <Col
                   sm={col}
                   key={key}
@@ -92,7 +120,7 @@ const SalePersonList = (props) => {
                     "p-2 border border-top-0 flex-center",
                     borderColor,
                     {
-                      "border-start-0": index !== 0,
+                      "border-start-0": rc_index !== 0,
                     }
                   )}
                 >
@@ -131,19 +159,22 @@ const SalePersonList = (props) => {
                       inputclassname: "w-100",
                       placeholder: "輸入名稱",
                       creatable: true,
-                      options: personList,
-                      ...(item[key] && {
-                        defaultValue: { label: item[key], value: item.id },
-                      }),
+                      options: [
+                        ...(item[key] ? [mainReceiverOption] : []),
+                        ...receiverList,
+                      ],
+                      value: item[key]
+                        ? { label: item[key], value: item.id }
+                        : null,
                       formatCreateLabel: (inputString) =>
                         `新增 \u00a0${inputString}\u00a0 收件人`,
                       onCreateOption: (inputString) => {
-                        const newId = `new_${uidRef.current.id}`;
+                        const newId = oidRef.current.id;
                         const newPerson = {
                           label: inputString,
                           value: newId,
                         };
-                        setPersonList((prev) => [newPerson, ...prev]);
+                        setReceiverList((prev) => [newPerson, ...prev]);
 
                         const prevList = hoistFormik.get().values[props.name];
                         hoistFormik.get().setFieldValue(
@@ -157,23 +188,35 @@ const SalePersonList = (props) => {
                       },
                       onChange: (option) => {
                         const prevList = hoistFormik.get().values[props.name];
-                        if (
+
+                        if (option.value === mainReceiverKey) {
+                          return hoistFormik.get().setFieldValue(
+                            props.name,
+                            prevList.map((prevItem) => ({
+                              ...prevItem,
+                              main_reciever: prevItem.id === item.id,
+                            }))
+                          );
+                        }
+
+                        const isDuplicated =
                           prevList.findIndex(
                             (target) => target.id === option.value
-                          ) !== -1
-                        )
-                          return;
+                          ) !== -1;
+
                         hoistFormik.get().setFieldValue(
                           props.name,
-                          prevList.map((prevItem) =>
-                            prevItem.id === item.id
-                              ? {
-                                  ...prevItem,
-                                  [key]: option.label,
-                                  id: option.value,
-                                }
-                              : prevItem
-                          )
+                          isDuplicated
+                            ? prevList
+                            : prevList.map((prevItem) =>
+                                prevItem.id === item.id
+                                  ? {
+                                      ...prevItem,
+                                      [key]: option.label,
+                                      id: option.value,
+                                    }
+                                  : prevItem
+                              )
                         );
                       },
                     }),
@@ -182,7 +225,9 @@ const SalePersonList = (props) => {
                         <div className="mx-1">
                           <FoldButton />
                         </div>
-                        <span className="mx-1">{item[key] ?? index + 1}</span>
+                        <span className="mx-1 mw-100 text-nowrap overflow-hidden text-overflow-ellipsis">
+                          {item[key]}
+                        </span>
                       </div>
                     ),
                   }[inputType] ?? <div className="">{item[key]}</div>}
@@ -192,12 +237,12 @@ const SalePersonList = (props) => {
             <Accordion.Collapse>
               <>
                 <Row className="g-0">
-                  {stockColDict.map(({ colName, col }, index) => (
+                  {stockColDict.map(({ colName, col }, st_index) => (
                     <Col
                       sm={col}
-                      key={index}
+                      key={st_index}
                       className={clsx("border border-top-0", borderColor, {
-                        "border-start-0": index !== 0,
+                        "border-start-0": st_index !== 0,
                       })}
                     >
                       <div className="bg-primary text-white text-center p-2">
@@ -209,15 +254,15 @@ const SalePersonList = (props) => {
                 {checkArray(item.stockList) ? (
                   item.stockList.map((stock) => (
                     <Row className="g-0 bg-light-primary" key={stock.id}>
-                      {stockColDict.map(({ key, col, inputType }, index) => (
+                      {stockColDict.map(({ key, col, inputType }, s_index) => (
                         <Col
-                          key={index}
+                          key={s_index}
                           sm={col}
                           className={clsx(
                             "border border-top-0 flex-center",
                             borderColor,
                             {
-                              "border-start-0": index !== 0,
+                              "border-start-0": s_index !== 0,
                             }
                           )}
                         >
@@ -244,36 +289,36 @@ const SalePersonList = (props) => {
                               <div className="py-2 px-1">
                                 <NumberInput
                                   inputclassname="text-end"
-                                  defaultValue={1}
+                                  defaultValue={stock["qty"] ?? 1}
                                 />
                               </div>
                             ),
                             remove: (
-                              <div className="p-2 w-100">
-                                <div className="w-100 d-flex flex-wrap align-items-center justify-content-around">
-                                  <span
-                                    className="cursor-pointer text-gray-700 fs-2 bi bi-x-circle-fill mx-1"
-                                    onClick={() => {
-                                      const prevList =
-                                        hoistFormik.get().values[props.name];
-                                      hoistFormik.get().setFieldValue(
-                                        props.name,
-                                        prevList.map((personRow) =>
-                                          personRow.id !== item.id
-                                            ? personRow
-                                            : {
-                                                ...personRow,
-                                                stockList:
-                                                  personRow.stockList.filter(
-                                                    (s) => s.id !== stock.id
-                                                  ),
-                                              }
-                                        )
-                                      );
-                                    }}
-                                  ></span>
-                                  <span className="mx-1">{stock[key]}</span>
-                                </div>
+                              <div className="p-2 w-100 d-flex flex-wrap align-items-center justify-content-around">
+                                <span
+                                  className="cursor-pointer text-gray-700 fs-2 bi bi-x-circle-fill mx-1"
+                                  onClick={() => {
+                                    const prevList =
+                                      hoistFormik.get().values[props.name];
+                                    hoistFormik.get().setFieldValue(
+                                      props.name,
+                                      prevList.map((personRow) =>
+                                        personRow.id !== item.id
+                                          ? personRow
+                                          : {
+                                              ...personRow,
+                                              stockList:
+                                                personRow.stockList.filter(
+                                                  (s) => s.id !== stock.id
+                                                ),
+                                            }
+                                      )
+                                    );
+                                  }}
+                                ></span>
+                                <span className="mx-1 mw-100 text-nowrap overflow-hidden text-overflow-ellipsis">
+                                  {stock[key]}
+                                </span>
                               </div>
                             ),
                           }[inputType] ?? (
@@ -298,7 +343,34 @@ const SalePersonList = (props) => {
             </Accordion.Collapse>
           </Accordion>
         ))}
-        {hoistFormik.get().status?.separate && <div>新增收件人</div>}
+      {hoistFormik.get().status?.separate && (
+        <div
+          className="mt-3 py-8 bg-gray-200 rounded-1 flex-center cursor-pointer"
+          onClick={() => {
+            const formik = hoistFormik.get();
+
+            if (
+              !formik ||
+              !formik.values?.[props.name] ||
+              !formik.values?.[props.name]?.[0]?.stockList?.length
+            )
+              return;
+
+            const prev = formik.values[props.name];
+            const stockList = formik.values[props.name][0].stockList.map(
+              (stock) => ({ ...stock, qty: 0 })
+            );
+
+            formik.setFieldValue(props.name, [
+              ...prev,
+              { id: pidRef.current.id, stockList },
+            ]);
+          }}
+        >
+          <span className="fs-1 text-gray-500 bi bi-plus-square-fill me-3"></span>
+          點擊新增收件人
+        </div>
+      )}
     </>
   );
 };
