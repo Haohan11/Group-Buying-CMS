@@ -23,10 +23,10 @@ const SidebarMenuItem = ({
     <div className="menu-item">
       <Link
         href={to}
-        className={clsx(
-          `menu-link without-sub`,
-          { active: isActive }
-        )}
+        className={clsx(`menu-link without-sub`, {
+          active: isActive,
+          "pe-none": isActive,
+        })}
       >
         {hasBullet && (
           <span className="menu-bullet">
