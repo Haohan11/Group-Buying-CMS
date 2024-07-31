@@ -412,12 +412,12 @@ const SalePersonList = (props) => {
                 ) : (
                   <div
                     className={clsx(
-                      "p-4 text-center text-gray-500 border border-top-0",
+                      "p-6 text-center bg-light text-gray-500 border border-top-0",
                       borderColor
                     )}
                     style={{ marginRight: "1px" }}
                   >
-                    沒有商品
+                    尚未添加商品
                   </div>
                 )}
               </>

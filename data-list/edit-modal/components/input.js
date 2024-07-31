@@ -41,6 +41,7 @@ export const ValidateInputField = ({
   onlynumber = false,
   isMulti = false,
   isDisabled,
+  disabled,
   holder,
   value,
   defaultValue,
@@ -194,7 +195,7 @@ export const ValidateInputField = ({
             })}
             {...(typeof onChange === "function" && { onChange })}
             {...(typeof onBlur === "function" && { onBlur })}
-            disabled={readonly || formik?.isSubmitting}
+            disabled={readonly || formik?.isSubmitting || disabled}
           />
         ))}
       {formik?.touched[name] && formik?.errors[name] && (
