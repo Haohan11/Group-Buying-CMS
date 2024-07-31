@@ -179,6 +179,7 @@ const SalePersonList = (props) => {
                     borderColor,
                     {
                       "border-start-0": rc_index !== 0,
+                      "bg-light-danger": person.main_reciever
                     }
                   )}
                 >
