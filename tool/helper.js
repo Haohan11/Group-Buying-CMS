@@ -24,14 +24,15 @@ export const transImageUrl = (path) =>
     ? `${process.env.NEXT_PUBLIC_BACKENDURL}${path.replace(/\\/g, "/")}`
     : "";
 
-export const onlyInputNumbers = (event) => {
+export const onlyInputNumbers = (event, onChange) => {
   if (["ArrowUp", "ArrowDown"].includes(event.key)) {
-    event.preventDefault();
 
     ({
       ArrowUp: () => event.target.value++,
       ArrowDown: () => event.target.value = Math.max(--event.target.value, 0),
     })[event.key]();
+
+    typeof onChange === "function" && onChange(event);
 
     return;
   }
@@ -51,6 +52,7 @@ export const onlyInputNumbers = (event) => {
     (event.ctrlKey && ["a", "x", "c", "v"].includes(event.key))
   )
     return;
+    
   event.preventDefault();
 };
 

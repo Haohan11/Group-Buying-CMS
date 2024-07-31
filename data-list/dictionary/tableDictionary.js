@@ -361,7 +361,7 @@ export const dictionary = {
     submitAdaptor: (data) => ({
       ...data,
       preorder_count: data.preorder_count || 0,
-    })
+    }),
   },
   "stock-brand": {
     pageTitle: "商品品牌維護",
@@ -1499,7 +1499,7 @@ export const dictionary = {
               col: "auto",
               props: {
                 target: "person_list",
-              }
+              },
             },
             {
               type: "submit-field",
@@ -1507,7 +1507,7 @@ export const dictionary = {
               props: {
                 submitText: "儲存",
               },
-              col: "auto"
+              col: "auto",
             },
           ],
           "className",

@@ -185,11 +185,12 @@ export const ValidateInputField = ({
               { "is-valid": formik?.touched[name] && !formik?.errors[name] },
               inputclassname
             )}
+            value={value}
             defaultValue={defaultValue}
             type={type}
             autoComplete="off"
             {...(onlynumber && {
-              onKeyDown: onlyInputNumbers,
+              onKeyDown: (event) => onlyInputNumbers(event, onChange),
             })}
             {...(typeof onChange === "function" && { onChange })}
             {...(typeof onBlur === "function" && { onBlur })}
