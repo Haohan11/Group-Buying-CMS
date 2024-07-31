@@ -34,24 +34,24 @@ const FoldButton = ({ eventKey }) => {
 
 const borderColor = "border-gray-400";
 
-const colDict = [
-  { colName: "項次", key: "id", col: 1, inputType: "fold" },
-  { colName: "收件人", key: "name", col: 2, inputType: "personName" },
-  { colName: "收件人電話", key: "phone", col: 3, inputType: "phone" },
-  { colName: "收件人地址", key: "address", col: 5, inputType: "text" },
-  { colName: "小計", key: "price", col: 1 },
+const personDict = [
+  { col: 1, colName: "項次", key: "id", inputType: "fold" },
+  { col: 2, colName: "收件人", key: "name", inputType: "personName" },
+  { col: 3, colName: "收件人電話", key: "phone", inputType: "phone" },
+  { col: 5, colName: "收件人地址", key: "address", inputType: "text" },
+  { col: 1, colName: "小計", key: "total", inputType: "total" },
 ];
 
 const stockColDict = [
-  { colName: "項次", key: "id", col: 1, inputType: "remove" },
-  { colName: "商品圖片", key: "cover_image", col: 2, inputType: "image" },
-  { colName: "商品編號", key: "code", col: 2 },
-  { colName: "商品名稱", key: "name", col: 2 },
-  { colName: "規格", key: "specification", col: 1 },
-  { colName: "單價", key: "price", col: 1 },
-  { colName: "變價", col: 1, inputType: "price" },
-  { colName: "數量", col: 1, inputType: "qty" },
-  { colName: "小計", col: 1 },
+  { col: 1, colName: "項次", key: "id", inputType: "remove" },
+  { col: 2, colName: "商品圖片", key: "cover_image", inputType: "image" },
+  { col: 2, colName: "商品編號", key: "code" },
+  { col: 2, colName: "商品名稱", key: "name" },
+  { col: 1, colName: "規格", key: "specification" },
+  { col: 1, colName: "單價", key: "unit_price" },
+  { col: 1, colName: "變價", inputType: "price" },
+  { col: 1, colName: "數量", inputType: "qty" },
+  { col: 1, colName: "小計", key: "total", inputType: "total" },
 ];
 
 const mainReceiverKey = "_set_main_reciever";
@@ -60,8 +60,66 @@ const mainReceiverOption = {
   value: mainReceiverKey,
 };
 
+const setSingleStock = ({ personId, stockId, data }) => {
+  const valueName = setSingleStock.valueName;
+  if (!valueName || !hoistFormik.get())
+    return console.warn("`setSingleStock`: Lose formik or valueName.");
+
+  const prev = hoistFormik.get().values[valueName];
+  if (!Array.isArray(prev)) return;
+
+  hoistFormik.get().setFieldValue(
+    valueName,
+    prev.map((person) => {
+      return person.id === personId
+        ? {
+            ...person,
+            stockList: person.stockList.map((prevStock) =>
+              prevStock.id === stockId
+                ? {
+                    ...prevStock,
+                    ...data,
+                  }
+                : prevStock
+            ),
+          }
+        : person;
+    })
+  );
+};
+setSingleStock.init = function (valueName) {
+  this.valueName = valueName;
+};
+
+const setSinglePerson = ({ personId, data }) => {
+  const valueName = setSinglePerson.valueName;
+  if (!valueName || !hoistFormik.get())
+    return console.warn("`setSinglePerson`: Lose formik or valueName.");
+
+  const prevList = hoistFormik.get().values[valueName];
+  if (!Array.isArray(prevList)) return;
+
+  hoistFormik.get().setFieldValue(
+    valueName,
+    prevList.map((prevPerson) =>
+      prevPerson.id === personId
+        ? typeof data === "function"
+          ? data(prevPerson)
+          : { ...prevPerson, ...data }
+        : prevPerson
+    )
+  );
+};
+setSinglePerson.init = function (valueName) {
+  this.valueName = valueName;
+};
+
 const SalePersonList = (props) => {
   const [receiverList, setReceiverList] = useState([]);
+  setSingleStock.init(props.name);
+  setSinglePerson.init(props.name);
+
+  const isSeparate = hoistFormik.get().status?.separate;
 
   /* options and persons unique id */
   const [oidRef, pidRef] = [(id) => `new_${id}`, (id) => `_${id}`].map(
@@ -78,7 +136,7 @@ const SalePersonList = (props) => {
   return (
     <>
       <Row className="g-0">
-        {colDict.map(({ col, colName, key }, rt_index) => (
+        {personDict.map(({ col, colName, key }, rt_index) => (
           <Col
             sm={col}
             key={key}
@@ -93,26 +151,26 @@ const SalePersonList = (props) => {
         ))}
       </Row>
       {checkArray(hoistFormik.get().values?.[props.name]) &&
-        hoistFormik.get().values[props.name].map((item) => (
-          <Accordion key={item.id}>
+        hoistFormik.get().values[props.name].map((person) => (
+          <Accordion key={person.id}>
             <Row
               className={clsx(
                 "g-0",
-                item.main_reciever && "ribbon ribbon-end ribbon-clip"
+                person.main_reciever && "ribbon ribbon-end ribbon-clip"
               )}
               style={{
-                boxShadow: item.main_reciever
+                boxShadow: person.main_reciever
                   ? "var(--bs-danger) 0px 0px 0px 2px"
                   : "none",
               }}
             >
-              {item.main_reciever && (
+              {person.main_reciever && (
                 <div className="fs-8 bg-danger w-auto ribbon-label top-0 py-1">
                   主收件人
                   <span className="ribbon-inner"></span>
                 </div>
               )}
-              {colDict.map(({ key, col, inputType }, rc_index) => (
+              {personDict.map(({ key, col, inputType }, rc_index) => (
                 <Col
                   sm={col}
                   key={key}
@@ -125,46 +183,26 @@ const SalePersonList = (props) => {
                   )}
                 >
                   {{
-                    text: getInput("text")({
-                      defaultValue: item[key],
-                      onChange: ({ target: { value } }) => {
-                        const prevList = hoistFormik.get().values[props.name];
-                        hoistFormik.get().setFieldValue(
-                          props.name,
-                          prevList.map((prevItem) =>
-                            prevItem.id === item.id
-                              ? { ...prevItem, [key]: value }
-                              : prevItem
-                          )
-                        );
-                      },
-                    }),
-                    phone: (
-                      <NumberInput
-                        defaultValue={item[key]}
-                        onChange={({ target: { value } }) => {
-                          const prevList = hoistFormik.get().values[props.name];
-                          hoistFormik.get().setFieldValue(
-                            props.name,
-                            prevList.map((prevItem) =>
-                              prevItem.id === item.id
-                                ? { ...prevItem, phone: value }
-                                : prevItem
-                            )
-                          );
-                        }}
-                      />
+                    fold: (
+                      <div className="w-100 d-flex justify-content-around align-items-center flex-wrap">
+                        <div className="mx-1">
+                          <FoldButton />
+                        </div>
+                        <span className="mx-1 mw-100 text-nowrap overflow-hidden text-overflow-ellipsis">
+                          {person[key]}
+                        </span>
+                      </div>
                     ),
                     personName: getInput("select")({
                       inputclassname: "w-100",
                       placeholder: "輸入名稱",
                       creatable: true,
                       options: [
-                        ...(item[key] ? [mainReceiverOption] : []),
+                        ...(person[key] ? [mainReceiverOption] : []),
                         ...receiverList,
                       ],
-                      value: item[key]
-                        ? { label: item[key], value: item.id }
+                      value: person[key]
+                        ? { label: person[key], value: person.id }
                         : null,
                       formatCreateLabel: (inputString) =>
                         `新增 \u00a0${inputString}\u00a0 收件人`,
@@ -176,15 +214,13 @@ const SalePersonList = (props) => {
                         };
                         setReceiverList((prev) => [newPerson, ...prev]);
 
-                        const prevList = hoistFormik.get().values[props.name];
-                        hoistFormik.get().setFieldValue(
-                          props.name,
-                          prevList.map((prevItem) =>
-                            prevItem.id === item.id
-                              ? { ...prevItem, [key]: inputString, id: newId }
-                              : prevItem
-                          )
-                        );
+                        setSinglePerson({
+                          personId: person.id,
+                          data: {
+                            [key]: inputString,
+                            id: newId,
+                          },
+                        });
                       },
                       onChange: (option) => {
                         const prevList = hoistFormik.get().values[props.name];
@@ -194,7 +230,7 @@ const SalePersonList = (props) => {
                             props.name,
                             prevList.map((prevItem) => ({
                               ...prevItem,
-                              main_reciever: prevItem.id === item.id,
+                              main_reciever: prevItem.id === person.id,
                             }))
                           );
                         }
@@ -204,33 +240,51 @@ const SalePersonList = (props) => {
                             (target) => target.id === option.value
                           ) !== -1;
 
-                        hoistFormik.get().setFieldValue(
-                          props.name,
-                          isDuplicated
-                            ? prevList
-                            : prevList.map((prevItem) =>
-                                prevItem.id === item.id
-                                  ? {
-                                      ...prevItem,
-                                      [key]: option.label,
-                                      id: option.value,
-                                    }
-                                  : prevItem
-                              )
-                        );
+                        !isDuplicated &&
+                          setSinglePerson({
+                            personId: person.id,
+                            data: {
+                              [key]: option.label,
+                              id: option.value,
+                            },
+                          });
                       },
                     }),
-                    fold: (
-                      <div className="w-100 d-flex justify-content-around align-items-center flex-wrap">
-                        <div className="mx-1">
-                          <FoldButton />
-                        </div>
-                        <span className="mx-1 mw-100 text-nowrap overflow-hidden text-overflow-ellipsis">
-                          {item[key]}
-                        </span>
+                    phone: (
+                      <NumberInput
+                        defaultValue={person[key]}
+                        onChange={({ target: { value } }) => {
+                          setSinglePerson({
+                            personId: person.id,
+                            data: {
+                              [key]: value,
+                            },
+                          });
+                        }}
+                      />
+                    ),
+                    text: getInput("text")({
+                      defaultValue: person[key],
+                      onChange: ({ target: { value } }) => {
+                        setSinglePerson({
+                          personId: person.id,
+                          data: {
+                            [key]: value,
+                          },
+                        });
+                      },
+                    }),
+                    total: (
+                      <div>
+                        {checkArray(person?.stockList)
+                          ? person.stockList.reduce(
+                              (total, stock) => total + stock.price * stock.qty,
+                              0
+                            )
+                          : 0}
                       </div>
                     ),
-                  }[inputType] ?? <div className="">{item[key]}</div>}
+                  }[inputType] ?? <div>{person[key]}</div>}
                 </Col>
               ))}
             </Row>
@@ -251,8 +305,8 @@ const SalePersonList = (props) => {
                     </Col>
                   ))}
                 </Row>
-                {checkArray(item.stockList) ? (
-                  item.stockList.map((stock) => (
+                {checkArray(person.stockList) ? (
+                  person.stockList.map((stock) => (
                     <Row className="g-0 bg-light-primary" key={stock.id}>
                       {stockColDict.map(({ key, col, inputType }, s_index) => (
                         <Col
@@ -281,7 +335,16 @@ const SalePersonList = (props) => {
                               <div className="py-2 px-1">
                                 <NumberInput
                                   inputclassname="text-end"
-                                  defaultValue={stock["price"]}
+                                  value={stock["price"]}
+                                  onChange={({ target: { value } }) =>
+                                    setSingleStock({
+                                      personId: person.id,
+                                      stockId: stock.id,
+                                      data: {
+                                        price: value,
+                                      },
+                                    })
+                                  }
                                 />
                               </div>
                             ),
@@ -289,7 +352,16 @@ const SalePersonList = (props) => {
                               <div className="py-2 px-1">
                                 <NumberInput
                                   inputclassname="text-end"
-                                  defaultValue={stock["qty"] ?? 1}
+                                  value={stock["qty"] ?? 0}
+                                  onChange={({ target: { value } }) =>
+                                    setSingleStock({
+                                      personId: person.id,
+                                      stockId: stock.id,
+                                      data: {
+                                        qty: value,
+                                      },
+                                    })
+                                  }
                                 />
                               </div>
                             ),
@@ -298,27 +370,35 @@ const SalePersonList = (props) => {
                                 <span
                                   className="cursor-pointer text-gray-700 fs-2 bi bi-x-circle-fill mx-1"
                                   onClick={() => {
-                                    const prevList =
-                                      hoistFormik.get().values[props.name];
-                                    hoistFormik.get().setFieldValue(
-                                      props.name,
-                                      prevList.map((personRow) =>
-                                        personRow.id !== item.id
-                                          ? personRow
-                                          : {
-                                              ...personRow,
-                                              stockList:
-                                                personRow.stockList.filter(
-                                                  (s) => s.id !== stock.id
-                                                ),
-                                            }
-                                      )
-                                    );
+                                    isSeparate
+                                      ? setSingleStock({
+                                          personId: person.id,
+                                          stockId: stock.id,
+                                          data: {
+                                            qty: 0,
+                                          },
+                                        })
+                                      : setSinglePerson({
+                                          personId: person.id,
+                                          data: (prevPerson) => ({
+                                            ...prevPerson,
+                                            stockList:
+                                              prevPerson.stockList.filter(
+                                                (prevStock) =>
+                                                  prevStock.id !== stock.id
+                                              ),
+                                          }),
+                                        });
                                   }}
                                 ></span>
                                 <span className="mx-1 mw-100 text-nowrap overflow-hidden text-overflow-ellipsis">
                                   {stock[key]}
                                 </span>
+                              </div>
+                            ),
+                            total: (
+                              <div className="p-2">
+                                {stock.price * stock.qty}
                               </div>
                             ),
                           }[inputType] ?? (
@@ -343,7 +423,7 @@ const SalePersonList = (props) => {
             </Accordion.Collapse>
           </Accordion>
         ))}
-      {hoistFormik.get().status?.separate && (
+      {isSeparate && (
         <div
           className="mt-3 py-8 bg-gray-200 rounded-1 flex-center cursor-pointer"
           onClick={() => {

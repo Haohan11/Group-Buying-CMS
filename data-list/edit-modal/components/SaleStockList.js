@@ -37,6 +37,8 @@ const SaleStockList = (props) => {
       if (!res?.data) return;
       const rawData = res.data.map((data) => ({
         ...data,
+        unit_price: data.price,
+        qty: 1,
         cover_image: transImageUrl(data.cover_image),
       }));
 
@@ -55,7 +57,6 @@ const SaleStockList = (props) => {
           className="d-flex align-items-center justify-content-between"
         >
           {getInput("text")({
-            name: "_stop",
             label: "搜尋商品 : ",
             labelclassname: "min-w-80px mt-2",
             placeholder: "輸入關鍵字",
