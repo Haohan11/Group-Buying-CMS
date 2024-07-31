@@ -336,6 +336,7 @@ const SalePersonList = (props) => {
                               <div className="py-2 px-1">
                                 <NumberInput
                                   inputclassname="text-end"
+                                  readonly={isSeparate}
                                   value={stock["price"]}
                                   onChange={({ target: { value } }) =>
                                     setSingleStock({
