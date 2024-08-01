@@ -13,7 +13,10 @@ import { hoistFormik } from "../globalVariable";
 const stockDataCache = new Map();
 
 const SaleStockList = (props) => {
-  if (!hoistFormik.get() || hoistFormik.get().status?.separate) return <></>;
+  if (!hoistFormik.get())
+    return <>{console.warn("`SaleStockList`: Missing formik.")}</>;
+
+  if (hoistFormik.get().values?._separate) return <></>;
 
   const { data } = useSession();
   const token = data?.user?.accessToken;
@@ -52,8 +55,8 @@ const SaleStockList = (props) => {
   useEffect(() => () => stockDataCache.clear(), []);
 
   return (
-    <div>
-      <Row className="mb-4 g-6">
+    <div className="border-bottom border-2 border-secondary pt-4 pb-7 mb-2">
+      <Row className="mb-5">
         <Col
           sm={6}
           className="d-flex align-items-center justify-content-between"
@@ -67,7 +70,7 @@ const SaleStockList = (props) => {
           })}
         </Col>
       </Row>
-      <div className="mt-2 d-flex overflow-x-auto bg-gray-200 p-8 rounded-2 min-h-150px">
+      <div className="d-flex overflow-x-auto bg-gray-200 p-8 rounded-2 min-h-150px">
         {checkArray(stockData) ? (
           stockData.map((stock) => (
             <div
@@ -77,18 +80,23 @@ const SaleStockList = (props) => {
                 if (!props.storeTarget) return;
                 const prev = hoistFormik.get().values[props.storeTarget];
 
+                /** check if the stock is already in the list */
+                if (
+                  checkArray(prev[0]?.stockList) &&
+                  prev[0].stockList.findIndex(
+                    (stockItem) => stockItem.id === stock.id
+                  ) !== -1
+                )
+                  return;
+
                 hoistFormik.get().setFieldValue(
                   props.storeTarget,
-                  prev.map((item) => {
-                    if (!checkArray(item.stockList))
-                      return { ...item, stockList: [stock] };
-                    return {
-                      ...item,
-                      ...(item.stockList.findIndex(
-                        (stockItem) => stockItem.id === stock.id
-                      ) === -1 && { stockList: [...item.stockList, stock] }),
-                    };
-                  })
+                  prev.map((item) => ({
+                    ...item,
+                    stockList: checkArray(item.stockList)
+                      ? [...item.stockList, stock]
+                      : [stock],
+                  }))
                 );
               }}
             >
