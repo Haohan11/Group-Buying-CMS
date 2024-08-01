@@ -1475,7 +1475,8 @@ export const dictionary = {
           },
         ],
         {
-          node: <div className="border border-secondary my-2"></div>,
+          node: <div className="border-bottom border-2 border-secondary my-2"></div>,
+          className: "mb-0",
         },
         {
           name: "stock",
@@ -1483,9 +1484,6 @@ export const dictionary = {
           props: {
             storeTarget: "person_list",
           },
-        },
-        {
-          node: <div className="border border-secondary my-2"></div>,
         },
         {
           name: "person_list",
@@ -1537,6 +1535,28 @@ export const dictionary = {
         createInitor: (data) => data[0]?.payment || "沒有資料",
       },
     ],
+    validationSchema: Yup.object().shape({
+      // Yup.string().when("_currentMode", {
+      //   is: "create",
+      //   then: () => Yup.string().min(4, "至少 4 個字").required("此欄位必填"),
+      //   otherwise: () => Yup.string().min(4, "至少 4 個字"),
+      // }),
+      /**
+       * person_list: Yup.mixed().when("_separate", {
+       *   is: true,
+       *   then: () => Yup.mixed().test({
+       *     test: (data) => {},
+       *     message: "請提供價錢",
+       *   }),
+       })
+       * }),
+       * 
+       */
+      // person_list: Yup.mixed().test({
+      //   test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
+      //   message: "請提供價錢",
+      // }),
+    }),
     formField: {
       code: "系統自動產生",
       status: "處理中",

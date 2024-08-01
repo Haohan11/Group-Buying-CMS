@@ -3,8 +3,8 @@ import { hoistFormik } from "../globalVariable";
 import { checkArray } from "@/tool/helper";
 
 const toggleSeparate = (formik) => {
-  const prevStatus = formik.status?.separate;
-  formik.setStatus({ ...formik.status, separate: !prevStatus });
+  const prevStatus = formik.values._separate;
+  formik.setFieldValue("_separate", !prevStatus);
 };
 
 const mergePerson = (formik, target) => {
@@ -39,7 +39,7 @@ const SaleSeparate = ({ target, ...props }) => {
   if (!hoistFormik.get() || !target)
     return <>{console.warn("`SaleSeparate`: Missing formik or target.")}</>;
 
-  const isSeparate = hoistFormik.get().status?.separate;
+  const isSeparate = hoistFormik.get().values?._separate;
   const hasStock = !!hoistFormik.get().values?.[target]?.[0]?.stockList?.length;
 
   return (
