@@ -47,6 +47,7 @@ export const ValidateInputField = ({
   defaultValue,
   onClick,
   onChange,
+  onKeyDown,
   onBlur,
   noOptionsMessage,
   formatCreateLabel,
@@ -83,7 +84,7 @@ export const ValidateInputField = ({
             )}
             {...(typeof onClick === "function" && { onClick })}
           >
-            {hoistFormik.get().values?.[name] ?? "沒有資料"}
+            {hoistFormik.get().values?.[name] ?? value ?? "沒有資料"}
           </p>
         ),
         select: (
@@ -98,8 +99,9 @@ export const ValidateInputField = ({
                     {...{ name, isMulti, isDisabled, value }}
                     {...(name && { inputId: `input_${name}` })}
                     className={clsx(
-                      "react-select-styled react-select-solid border border-gray-100 rounded",
-                      inputclassname
+                      "react-select-styled react-select-solid rounded",
+                      !inputclassname.includes("border") && "border border-gray-100",
+                      inputclassname,
                     )}
                     classNamePrefix="react-select"
                     placeholder={placeholder ?? "請選擇或輸入關鍵字"}
@@ -127,7 +129,7 @@ export const ValidateInputField = ({
                       Array.isArray(options)
                         ? options.find(
                             (option) => option.value === formik.values[name]
-                          ) ||toArray(defaultValue)
+                          ) || toArray(defaultValue)
                         : isMulti
                         ? hoistPreLoadData
                             .get()
@@ -191,10 +193,11 @@ export const ValidateInputField = ({
             type={type}
             autoComplete="off"
             {...(onlynumber && {
-              onKeyDown: (event) => onlyInputNumbers(event, onChange),
+              onKeyDown: (event) => onlyInputNumbers(event),
             })}
             {...(typeof onChange === "function" && { onChange })}
             {...(typeof onBlur === "function" && { onBlur })}
+            {...(typeof onKeyDown === "function" && { onKeyDown })}
             disabled={readonly || formik?.isSubmitting || disabled}
           />
         ))}
@@ -218,6 +221,31 @@ export const CheckBoxInput = (props) =>
 export const NumberInput = (props) =>
   ValidateInputField({ ...props, onlynumber: true });
 
+export const InteractNumber = ({ max, min, onChange, ...props }) => {
+  const ceil = max ?? Number.MAX_SAFE_INTEGER;
+  const floor = min ?? 0;
+
+  return ValidateInputField({
+    ...props,
+    onChange,
+    onKeyDown: (event) => {
+      if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+        ({
+          ArrowUp: () =>
+            (event.target.value = Math.min(++event.target.value, ceil)),
+          ArrowDown: () =>
+            (event.target.value = Math.max(--event.target.value, floor)),
+        })[event.key]();
+
+        typeof onChange === "function" && onChange(event);
+
+        return;
+      }
+      onlyInputNumbers(event);
+    },
+  });
+};
+
 export const MultiSelectInput = (props) =>
   ValidateInputField({ ...props, type: "select", isMulti: true });
 
@@ -236,7 +264,7 @@ export const SwitchInput = (props) => (
         defaultChecked={hoistFormik.get().getFieldProps(props.name).value}
         {...(props.name && {
           id: `switch_${props.name}`,
-          ...hoistFormik.get().getFieldProps(props.name)
+          ...hoistFormik.get().getFieldProps(props.name),
         })}
       />
     </Col>
