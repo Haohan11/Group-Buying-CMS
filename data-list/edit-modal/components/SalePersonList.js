@@ -159,13 +159,14 @@ const SalePersonList = (props) => {
         if (!this?._qtyKeeper)
           return console.warn("`set_qtyKeeper`: Missing _qtyKeeper.");
 
-        this._qtyKeeper.set(id, this._qtyKeeper.get(id) + (+delta));
+        this._qtyKeeper.set(id, this._qtyKeeper.get(id) + +delta);
+      },
+      _qtyValid(id) {
+        return (
+          !this?._qtyKeeper || this._qtyKeeper.get(id) <= this._qtyLimit.get(id)
+        );
       },
     });
-  })();
-
-  const qtyValid = (() => {
-    console.log(totalFieldRef.current)
   })();
 
   const [receiverList, setReceiverList] = useState([]);
@@ -488,20 +489,32 @@ const SalePersonList = (props) => {
                                     <div className="w-100 py-2 px-1">
                                       {isTotalField ? (
                                         getInput("plain")({
-                                          value: stock.qty,
+                                          value: (stock.qty =
+                                            totalFieldRef.current?._qtyKeeper?.get(
+                                              stock.id
+                                            ) ?? stock.qty),
                                           inputclassname: "text-center",
                                         })
                                       ) : (
                                         <InteractNumber
-                                          inputclassname="text-end"
-                                          disabled={isTotalField}
+                                          inputclassname={clsx(
+                                            "text-end",
+                                            false &&
+                                              isSeparate &&
+                                              (totalFieldRef.current?._qtyValid(
+                                                stock.id
+                                              )
+                                                ? "border-success"
+                                                : "border-danger")
+                                          )}
                                           value={stock["qty"] ?? 0}
                                           onChange={({ target: { value } }) => {
-
-                                            totalFieldRef.current?.set_qtyKeeper?.({
-                                              id: stock.id,
-                                              delta: (+value) - (+stock["qty"]),
-                                            });
+                                            totalFieldRef.current?.set_qtyKeeper?.(
+                                              {
+                                                id: stock.id,
+                                                delta: +value - +stock["qty"],
+                                              }
+                                            );
 
                                             setSingleStock({
                                               personId: person.id,
@@ -522,13 +535,22 @@ const SalePersonList = (props) => {
                                           className="cursor-pointer text-gray-700 fs-2 bi bi-x-circle-fill mx-1"
                                           onClick={() => {
                                             isSeparate
-                                              ? setSingleStock({
-                                                  personId: person.id,
-                                                  stockId: stock.id,
-                                                  data: {
-                                                    qty: 0,
-                                                  },
-                                                })
+                                              ? (() => {
+                                                  totalFieldRef.current?.set_qtyKeeper?.(
+                                                    {
+                                                      id: stock.id,
+                                                      delta: -1 * +stock["qty"],
+                                                    }
+                                                  );
+
+                                                  setSingleStock({
+                                                    personId: person.id,
+                                                    stockId: stock.id,
+                                                    data: {
+                                                      qty: 0,
+                                                    },
+                                                  });
+                                                })()
                                               : setSinglePerson({
                                                   personId: person.id,
                                                   data: (prevPerson) => ({
