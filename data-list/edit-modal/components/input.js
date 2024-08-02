@@ -179,6 +179,7 @@ export const ValidateInputField = ({
       }[type] ??
         (["text", "password"].includes(type) && (
           <input
+            value={value}
             {...(!readonly && name && formik.getFieldProps(name))}
             {...(name && { id: `input_${name}` })}
             placeholder={placeholder}
@@ -188,7 +189,6 @@ export const ValidateInputField = ({
               { "is-valid": formik?.touched[name] && !formik?.errors[name] },
               inputclassname
             )}
-            value={value}
             defaultValue={defaultValue}
             type={type}
             autoComplete="off"

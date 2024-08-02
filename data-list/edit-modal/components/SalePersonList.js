@@ -121,9 +121,11 @@ const SalePersonList = (props) => {
   const personList = hoistFormik.get().values?.[props.name];
   const isSeparate = hoistFormik.get().values?._separate;
 
+  /** `totalField` will mock as a person data append to `personList`,
+   *  and use `totalFieldKey` for identification.
+   *  Check personList render logic below */
   const totalFieldRef = useRef(null);
-  const totalFieldKey =
-    "_all"; /** Use for identify total field in personList */
+  const totalFieldKey = "_all";
   const totalField = (() => {
     const tRef = totalFieldRef;
     if (!isSeparate) return (tRef.current = null);
