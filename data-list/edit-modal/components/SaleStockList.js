@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Row, Col } from "react-bootstrap";
@@ -24,7 +24,7 @@ const SaleStockList = (props) => {
   const [stockData, setStockData] = useState([]);
   const [keyword, setKeyword] = useState("");
 
-  const debouncedKeyword = useDebounce(keyword, 150);
+  const debouncedKeyword = useDebounce(keyword, 200);
 
   useEffect(() => {
     if (debouncedKeyword === undefined || !token) return;
@@ -52,7 +52,7 @@ const SaleStockList = (props) => {
     })();
   }, [debouncedKeyword]);
 
-  useEffect(() => () => stockDataCache.clear(), []);
+  useEffect(() => stockDataCache.clear.bind(stockDataCache), []);
 
   return (
     <div className="border-bottom border-2 border-secondary pt-4 pb-7 mb-2">

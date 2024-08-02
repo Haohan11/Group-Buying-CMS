@@ -122,7 +122,8 @@ const SalePersonList = (props) => {
   const isSeparate = hoistFormik.get().values?._separate;
 
   const totalFieldRef = useRef(null);
-  const totalFieldKey = "_all"; /** Use for identify total field in personList */
+  const totalFieldKey =
+    "_all"; /** Use for identify total field in personList */
   const totalField = (() => {
     const tRef = totalFieldRef;
     if (!isSeparate) return (tRef.current = null);
@@ -133,18 +134,38 @@ const SalePersonList = (props) => {
      *  personList should alway not empty in normal flow. */
     if (!checkArray(personList)) return { id: totalFieldKey, stockList: [] };
 
-    const { id: deprecated, ...personProps } =
-      personList.find((person) => person.main_reciever) ?? personList[0];
+    const {
+      id: deprecated,
+      stockList,
+      ...personProps
+    } = personList.find((person) => person.main_reciever) ?? personList[0];
 
     return (tRef.current = {
       id: totalFieldKey,
+      stockList,
       ...personProps,
+      ...(checkArray(stockList) &&
+        (() => {
+          const totalMap = stockList.reduce(
+            (keeper, stock) => keeper.set(stock.id, +stock.qty),
+            new Map()
+          );
+          return {
+            _qtyLimit: totalMap,
+            _qtyKeeper: new Map(totalMap),
+          };
+        })()),
+      set_qtyKeeper({ id, delta }) {
+        if (!this?._qtyKeeper)
+          return console.warn("`set_qtyKeeper`: Missing _qtyKeeper.");
+
+        this._qtyKeeper.set(id, this._qtyKeeper.get(id) + (+delta));
+      },
     });
   })();
 
-  
   const qtyValid = (() => {
-    
+    console.log(totalFieldRef.current)
   })();
 
   const [receiverList, setReceiverList] = useState([]);
@@ -475,12 +496,18 @@ const SalePersonList = (props) => {
                                           inputclassname="text-end"
                                           disabled={isTotalField}
                                           value={stock["qty"] ?? 0}
-                                          onChange={(event) => {
+                                          onChange={({ target: { value } }) => {
+
+                                            totalFieldRef.current?.set_qtyKeeper?.({
+                                              id: stock.id,
+                                              delta: (+value) - (+stock["qty"]),
+                                            });
+
                                             setSingleStock({
                                               personId: person.id,
                                               stockId: stock.id,
                                               data: {
-                                                qty: event.target.value,
+                                                qty: value,
                                               },
                                             });
                                           }}

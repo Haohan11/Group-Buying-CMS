@@ -208,6 +208,11 @@ export const dictionary = {
       },
       {
         type: "textarea",
+        label: "簡介",
+        name: "short_desc",
+      },
+      {
+        type: "textarea",
         label: "備註",
         name: "description",
       },
@@ -321,6 +326,7 @@ export const dictionary = {
       level_price: null,
       role_price: null,
       introduction: "",
+      short_desc: "",
       description: "",
     },
     editAdaptor: (data) => {
