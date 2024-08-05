@@ -24,6 +24,11 @@ export const transImageUrl = (path) =>
     ? `${process.env.NEXT_PUBLIC_BACKENDURL}${path.replace(/\\/g, "/")}`
     : "";
 
+export const replaceBackendUrl = (path, replacement) =>
+  path && path?.replace
+    ? path.replaceAll(process.env.NEXT_PUBLIC_BACKENDURL, replacement)
+    : "";
+
 export const onlyInputNumbers = (event) => {
   if (
     /^\d$/.test(event.key) ||

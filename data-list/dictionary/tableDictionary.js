@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { getCurrentTime, transImageUrl } from "@/tool/helper";
+import { getCurrentTime, transImageUrl, replaceBackendUrl } from "@/tool/helper";
 
 import {
   placeHolderColumns,
@@ -366,6 +366,7 @@ export const dictionary = {
     },
     submitAdaptor: (data) => ({
       ...data,
+      introduction: replaceBackendUrl(data.introduction, "path:").replaceAll("/", "\\"),
       preorder_count: data.preorder_count || 0,
     }),
   },
