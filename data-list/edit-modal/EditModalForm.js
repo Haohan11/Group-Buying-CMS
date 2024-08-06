@@ -14,7 +14,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = false;
+const testMode = true;
 
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";

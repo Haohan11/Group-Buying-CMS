@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, Fragment } from "react";
 import {
   Row,
   Col,
@@ -14,6 +14,21 @@ import { getInput, NumberInput, InteractNumber } from "./input";
 
 import { checkArray } from "@/tool/helper";
 import { hoistFormik } from "../globalVariable";
+
+const getFetchReceiverUrl = (keyword) => {
+  if (
+    !process.env.NEXT_PUBLIC_BACKENDURL ||
+    !hoistFormik.get()?.values?.["member_id"] ||
+    !keyword
+  )
+    return !!console.warn(
+      "`SalePersonList`: Failed to get fetch receiver url."
+    );
+
+  return `${process.env.NEXT_PUBLIC_BACKENDURL}/receiver/${
+    hoistFormik.get().values["member_id"]
+  }?keyword=${keyword}`;
+};
 
 const FoldButton = ({ eventKey }) => {
   const fold = useAccordionButton(eventKey, (event) => {
@@ -171,6 +186,10 @@ const SalePersonList = (props) => {
     });
   })();
 
+  /** For person name keyword debounce */
+  const newReceiverRef = useRef([]);
+  const timeoutRef = useRef(null);
+
   const [receiverList, setReceiverList] = useState([]);
   setSingleStock.init(props.name);
   setSinglePerson.init(props.name);
@@ -268,13 +287,41 @@ const SalePersonList = (props) => {
                               : null,
                             formatCreateLabel: (inputString) =>
                               `新增 \u00a0${inputString}\u00a0 收件人`,
+                            onInputChange: (keyword) => {
+                              if (timeoutRef.current)
+                                clearTimeout(timeoutRef.current);
+                              if (!keyword)
+                                return setReceiverList(newReceiverRef.current);
+
+                              timeoutRef.current = setTimeout(async () => {
+                                try {
+                                  const url = getFetchReceiverUrl(keyword);
+                                  if (!url) return;
+
+                                  const res = await fetch(url);
+                                  const { data: rawData } = await res.json();
+                                  const data = rawData.map((data) => ({
+                                    label: data.name,
+                                    value: data.id,
+                                    personData: data,
+                                  }));
+                                  const newReceiver =
+                                    newReceiverRef.current.filter(({ label }) =>
+                                      label.includes(keyword)
+                                    );
+                                  setReceiverList([...newReceiver, ...data]);
+                                } catch (error) {
+                                  console.warn(error);
+                                }
+                              }, 300);
+                            },
                             onCreateOption: (inputString) => {
                               const newId = oidRef.current.id;
                               const newPerson = {
                                 label: inputString,
                                 value: newId,
                               };
-                              setReceiverList((prev) => [newPerson, ...prev]);
+                              newReceiverRef.current.unshift(newPerson);
 
                               setSinglePerson({
                                 personId: person.id,
@@ -309,6 +356,9 @@ const SalePersonList = (props) => {
                                   data: {
                                     [key]: option.label,
                                     id: option.value,
+                                    phone: option.personData?.phone ?? "",
+                                    address:
+                                      option.personData?.contact_address ?? "",
                                   },
                                 });
                             },
@@ -385,7 +435,10 @@ const SalePersonList = (props) => {
 
                           formik.setFieldValue(props.name, [
                             ...prev,
-                            { id: pidRef.current.id, stockList },
+                            {
+                              id: pidRef.current.id,
+                              stockList: [...stockList],
+                            },
                           ]);
                         }}
                       >
@@ -395,10 +448,10 @@ const SalePersonList = (props) => {
                     )}
                     {isTotalField && (
                       <>
-                        <div className="mt-3 border-2 border-top border-dashed"></div>
+                        <div className="mt-5 border-2 border-top border-dashed"></div>
                         <div
                           className={clsx(
-                            "mt-3 py-3 text-white text-center border bg-gray-500 ls-5",
+                            "mt-5 py-3 text-white text-center border bg-gray-500 ls-5",
                             borderColor
                           )}
                           style={{ marginRight: "1px" }}
@@ -491,10 +544,10 @@ const SalePersonList = (props) => {
                                     <div className="w-100 py-2 px-1">
                                       {isTotalField ? (
                                         getInput("plain")({
-                                          value: (stock.qty =
+                                          value:
                                             totalFieldRef.current?._qtyKeeper?.get(
                                               stock.id
-                                            ) ?? stock.qty),
+                                            ) ?? stock.qty,
                                           inputclassname: "text-center",
                                         })
                                       ) : (

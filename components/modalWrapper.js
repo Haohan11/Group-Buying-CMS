@@ -1,23 +1,30 @@
-
-import { Modal } from 'react-bootstrap';
+import { Modal } from "react-bootstrap";
 
 const ModalWrapper = (props) => {
-  const { show, onHide, size=null,  headerTitle=null, footerTitle=null, children, isTranslated }=props
-  
+  const {
+    show,
+    onHide,
+    size = null,
+    headerTitle = null,
+    footerTitle = null,
+    children,
+    isTranslated,
+  } = props;
+
   return (
-    <Modal 
+    <Modal
       {...props}
-      show={show} 
+      show={show}
       onHide={onHide}
       // backdrop={props.disableBackdropClose ? 'static' : true}
       size={size}
       aria-labelledby="contained-modal-title-vcenter"
       className="scroll"
-      style={{position:'absolute',zIndex:'9999'}}
+      style={{ position: "absolute", zIndex: "9999" }}
       centered
     >
       {/* 有headerTitle才顯示這塊 */}
-      { headerTitle && (
+      {headerTitle && (
         <Modal.Header closeButton>
           <Modal.Title>{headerTitle}</Modal.Title>
         </Modal.Header>
@@ -32,12 +39,7 @@ const ModalWrapper = (props) => {
       </Modal.Body>
 
       {/* 有footerTitle才顯示這塊 */}
-      { footerTitle && (
-        <Modal.Footer>
-          {footerTitle}
-        </Modal.Footer>
-      )}
-      
+      {footerTitle && <Modal.Footer>{footerTitle}</Modal.Footer>}
     </Modal>
   );
 };

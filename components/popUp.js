@@ -39,7 +39,10 @@ const PopUp = ({
           </Col>
         )}
         <Col xs={4}>
-          <Button className="btn btn-primary fs-5 w-100" onClick={confirmOnClick}>
+          <Button
+            className="btn btn-primary fs-5 w-100"
+            onClick={confirmOnClick}
+          >
             確認
           </Button>
         </Col>

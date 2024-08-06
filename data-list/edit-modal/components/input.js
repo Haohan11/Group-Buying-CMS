@@ -49,11 +49,12 @@ export const ValidateInputField = ({
   onChange,
   onKeyDown,
   onBlur,
-  noOptionsMessage,
-  formatCreateLabel,
+  onInputChange, // select
+  noOptionsMessage, // select
+  formatCreateLabel, // creatable select
   options,
-  creatable,
-  onCreateOption,
+  creatable, // creatable select
+  onCreateOption, // creatable select
 }) => {
   return holder ? (
     <>
@@ -96,7 +97,7 @@ export const ValidateInputField = ({
                 const SelectComp = creatable ? CreatableSelect : Select;
                 return (
                   <SelectComp
-                    {...{ name, isMulti, isDisabled, value }}
+                    {...{ name, isMulti, isDisabled, value, onInputChange }}
                     {...(name && { inputId: `input_${name}` })}
                     className={clsx(
                       "react-select-styled react-select-solid rounded",
