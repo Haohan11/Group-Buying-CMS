@@ -366,7 +366,7 @@ export const dictionary = {
     },
     submitAdaptor: (data) => ({
       ...data,
-      introduction: replaceBackendUrl(data.introduction, "path:").replaceAll("/", "\\"),
+      introduction: replaceBackendUrl(data.introduction, "path:"),
       preorder_count: data.preorder_count || 0,
     }),
   },
