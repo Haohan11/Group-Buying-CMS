@@ -101,9 +101,17 @@ export const ValidateInputField = ({
                     {...(name && { inputId: `input_${name}` })}
                     className={clsx(
                       "react-select-styled react-select-solid rounded",
-                      !inputclassname.includes("border") && "border border-gray-100",
-                      inputclassname,
+                      !inputclassname.includes("border") &&
+                        "border border-gray-100",
+                      inputclassname
                     )}
+                    theme={(theme) => ({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        primary: 'var(--bs-gray-200)'
+                      }
+                    })}
                     classNamePrefix="react-select"
                     placeholder={placeholder ?? "請選擇或輸入關鍵字"}
                     noOptionsMessage={
@@ -183,15 +191,13 @@ export const ValidateInputField = ({
             value={value}
             {...(!readonly && name && formik.getFieldProps(name))}
             {...(name && { id: `input_${name}` })}
-            placeholder={placeholder}
+            {...{ placeholder, defaultValue, type }}
             className={clsx(
               "form-control form-control-solid mb-3 mb-lg-0",
               { "is-invalid": formik?.touched[name] && formik?.errors[name] },
               { "is-valid": formik?.touched[name] && !formik?.errors[name] },
               inputclassname
             )}
-            defaultValue={defaultValue}
-            type={type}
             autoComplete="off"
             {...(onlynumber && {
               onKeyDown: (event) => onlyInputNumbers(event),
