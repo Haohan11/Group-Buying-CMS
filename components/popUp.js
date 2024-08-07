@@ -10,6 +10,7 @@ const PopUp = ({
   describe = "",
   describeClass,
   denyOnClick,
+  denyText,
   confirmOnClick,
 }) => {
   return (
@@ -34,7 +35,7 @@ const PopUp = ({
               className="btn btn-danger fs-5 w-100 text-white"
               onClick={denyOnClick}
             >
-              返回
+              {denyText ?? "返回"}
             </button>
           </Col>
         )}
