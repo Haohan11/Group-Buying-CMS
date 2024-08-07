@@ -29,7 +29,7 @@ const SaleStockList = (props) => {
   useEffect(() => {
     if (debouncedKeyword === undefined || !token) return;
 
-    const fetchUrl = `stock?page=1&size=5${
+    const fetchUrl = `stock-backend?page=1&size=5${
       keyword === "" ? "" : `&keyword=${keyword}`
     }`;
     (async () => {

@@ -265,7 +265,7 @@ export const dictionary = {
         createInitor: selectInitializer,
       },
     ],
-    fetchUrl: "stock",
+    fetchUrl: "stock-backend",
     validationSchema: Yup.object().shape({
       name: Yup.string()
         .min(2, "至少 2 個字")
@@ -877,6 +877,14 @@ export const dictionary = {
       address: "",
       description: "",
     },
+    editAdaptor: (data) => ({
+      ...data,
+      email: data.email ?? "",
+      company_title: data.company_title ?? "",
+      uniform_number: data.uniform_number ?? "",
+      address: data.address ?? "",
+      description: data.description ?? "",
+    }),
     submitAdaptor: (data) => ({
       ...data,
       email: data.email || null,
