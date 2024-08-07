@@ -71,8 +71,27 @@ const stockColDict = [
 
 const mainReceiverKey = "_set_main_reciever";
 const mainReceiverOption = {
-  label: "設定為主收件人",
+  label: (
+    <span className="text-danger">
+      <span className="fs-5 bi bi-check2-square me-2"></span>
+      設定主收件人
+    </span>
+  ),
   value: mainReceiverKey,
+};
+
+const removeReceiverKey = "_remove_receiver";
+const removeReceiverOption = {
+  label: (
+    <span className="text-black">
+      <span
+        className="fs-5 bi bi-person-dash-fill
+ me-2"
+      ></span>
+      移除此收件人
+    </span>
+  ),
+  value: removeReceiverKey,
 };
 
 const setSingleStock = ({ personId, stockId, data }) => {
@@ -272,15 +291,20 @@ const SalePersonList = (props) => {
                             </div>
                           ),
                           personName: getInput("select")({
-                            placeholder: "輸入名稱",
+                            placeholder: "搜尋 / 新增",
                             inputclassname: clsx(
                               "w-100 border",
                               person[key] ? "border-success" : "border-danger"
                             ),
                             creatable: true,
                             options: [
-                              ...(person[key] ? [mainReceiverOption] : []),
+                              ...(person[key] && !person.main_reciever
+                                ? [mainReceiverOption]
+                                : []),
                               ...receiverList,
+                              ...(person.main_reciever
+                                ? []
+                                : [removeReceiverOption]),
                             ],
                             value: person[key]
                               ? { label: person[key], value: person.id }
@@ -342,6 +366,15 @@ const SalePersonList = (props) => {
                                     ...prevItem,
                                     main_reciever: prevItem.id === person.id,
                                   }))
+                                );
+                              }
+
+                              if (option.value === removeReceiverKey) {
+                                return hoistFormik.get().setFieldValue(
+                                  props.name,
+                                  prevList.filter(
+                                    (prevItem) => prevItem.id !== person.id
+                                  )
                                 );
                               }
 
@@ -547,7 +580,7 @@ const SalePersonList = (props) => {
                                           value:
                                             totalFieldRef.current?._qtyKeeper?.get(
                                               stock.id
-                                            ) ?? stock.qty,
+                                            ),
                                           inputclassname: "text-center",
                                         })
                                       ) : (
@@ -628,7 +661,12 @@ const SalePersonList = (props) => {
                                   ),
                                   total: (
                                     <div className="p-2">
-                                      {stock.price * stock.qty}
+                                      {stock.price *
+                                        (isTotalField
+                                          ? totalFieldRef.current?._qtyKeeper?.get(
+                                              stock.id
+                                            )
+                                          : stock.qty)}
                                     </div>
                                   ),
                                 }[inputType] ?? (
