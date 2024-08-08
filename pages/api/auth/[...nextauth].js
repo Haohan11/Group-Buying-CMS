@@ -24,7 +24,7 @@ export const authOptions = {
           password: credentials.password,
         };
         // console.log('env:',process.env);
-        const res = await fetch(process.env.NEXT_PUBLIC_BACKENDURL + "/login", {
+        const res = await fetch(process.env.NEXT_PUBLIC_BACKENDURL + "/login-back", {
           method: "POST",
           body: JSON.stringify(payload),
           headers: {
