@@ -1496,6 +1496,7 @@ export const dictionary = {
         {
           name: "stock",
           type: "sale-stock-list",
+          useFormikKey: "member_id",
           props: {
             storeTarget: "person_list",
           },

@@ -21,17 +21,20 @@ const SaleStockList = (props) => {
   const { data } = useSession();
   const token = data?.user?.accessToken;
 
+  const memberId = hoistFormik.get().values?.["member_id"];
+
   const [stockData, setStockData] = useState([]);
   const [keyword, setKeyword] = useState("");
 
   const debouncedKeyword = useDebounce(keyword, 200);
 
   useEffect(() => {
-    if (debouncedKeyword === undefined || !token) return;
+    if (debouncedKeyword === undefined || !token || !memberId) return;
 
-    const fetchUrl = `stock-backend?page=1&size=5${
+    const fetchUrl = `stock/${memberId}?page=1&size=5${
       keyword === "" ? "" : `&keyword=${keyword}`
     }`;
+
     (async () => {
       if (stockDataCache.has(keyword)) {
         setStockData(stockDataCache.get(keyword));
@@ -50,7 +53,7 @@ const SaleStockList = (props) => {
       stockDataCache.set(keyword, rawData);
       setStockData(rawData);
     })();
-  }, [debouncedKeyword]);
+  }, [debouncedKeyword, memberId]);
 
   useEffect(() => stockDataCache.clear.bind(stockDataCache), []);
 

@@ -154,6 +154,10 @@ const createRowColTree = (arr) =>
                 >
                   {input.node ?? (
                     <Input
+                      key={
+                        input.key ??
+                        hoistFormik.get().values[input.useFormikKey]
+                      }
                       name={input.name}
                       label={input.label}
                       required={input.required}
