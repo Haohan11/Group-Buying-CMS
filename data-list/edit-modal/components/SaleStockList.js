@@ -47,7 +47,7 @@ const SaleStockList = (props) => {
         ...data,
         unit_price: data.price,
         qty: 1,
-        cover_image: transImageUrl(data.cover_image),
+        cover_image: data.cover_image,
       }));
 
       stockDataCache.set(keyword, rawData);
@@ -111,7 +111,7 @@ const SaleStockList = (props) => {
                   sizes="85px"
                   fill
                   className="position-relative object-fit-cover"
-                  src={stock.cover_image}
+                  src={transImageUrl(stock.cover_image)}
                   alt={`${stock.name} stock image`}
                 />
               </div>

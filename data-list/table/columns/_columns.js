@@ -1121,3 +1121,57 @@ export const orderCategoryColumns = [
     accessor: "create_time",
   },
 ];
+
+export const saleColumns = [
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="操作"
+        className="text-start min-w-100px"
+      />
+    ),
+    id: "actions",
+    Cell: ({ ...props }) => <ActionsCell id={props.data[props.row.index].id} />,
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員名稱"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "member_name",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="會員編號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "member_code",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="訂單編號"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "code",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
+        title="訂單日期"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "sale_date",
+  },
+];

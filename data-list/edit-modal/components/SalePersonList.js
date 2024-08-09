@@ -12,7 +12,7 @@ import Image from "next/image";
 
 import { getInput, NumberInput, InteractNumber } from "./input";
 
-import { checkArray } from "@/tool/helper";
+import { checkArray, transImageUrl } from "@/tool/helper";
 import { hoistFormik } from "../globalVariable";
 
 const getFetchReceiverUrl = (keyword) => {
@@ -214,7 +214,7 @@ const SalePersonList = (props) => {
   setSinglePerson.init(props.name);
 
   /* options and persons unique id */
-  const [oidRef, pidRef] = [(id) => `new_${id}`, (id) => `_${id}`].map(
+  const [oidRef, pidRef] = [(id) => `_new${id}`, (id) => `_${id}`].map(
     (adaptor) =>
       useRef({
         count: 0,
@@ -543,7 +543,7 @@ const SalePersonList = (props) => {
                                       <Image
                                         width={70}
                                         height={70}
-                                        src={stock[key]}
+                                        src={transImageUrl(stock[key])}
                                         alt={"stock cover image"}
                                       />
                                     </div>

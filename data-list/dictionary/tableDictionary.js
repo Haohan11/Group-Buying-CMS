@@ -16,6 +16,7 @@ import {
   inventoryManagementColumns,
   inventoryTransferColumns,
   orderCategoryColumns,
+  saleColumns,
 } from "../table/columns/_columns";
 
 /** Usage of tableDictionary:
@@ -1384,7 +1385,7 @@ export const dictionary = {
     searchPlaceholder: "訂單作業",
     createHeaderText: "訂單作業",
     editHeaderText: "訂單作業",
-    column: memberManagementColumns,
+    column: saleColumns,
     hideSubmitField: true,
     hidePromptField: true,
     inputList: (() => {
@@ -1406,7 +1407,7 @@ export const dictionary = {
           {
             type: "plain",
             label: "訂單日期 :",
-            name: "date",
+            name: "sale_date",
             className: colClassName,
             props: {
               labelclassname,
@@ -1577,13 +1578,15 @@ export const dictionary = {
       code: "系統自動產生",
       status: "處理中",
       delivery: "board",
+      member_id: null,
+      member_code: null,
       person_list: [
         {
           id: "_",
           main_reciever: true,
         },
       ],
-      get date() {
+      get sale_date() {
         return getCurrentTime();
       },
     },
