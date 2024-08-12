@@ -19,7 +19,7 @@ const testMode = false;
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
 import { useModals } from "@/tool/hooks";
-import { toArray } from "@/tool/helper";
+import { toArray, checkArray } from "@/tool/helper";
 
 import {
   createDataRequest,
@@ -276,7 +276,7 @@ const EditModalForm = () => {
    */
   useEffect(() => {
     (async () => {
-      if (preLoadList.length === 0) return;
+      if (!checkArray(preLoadList) || !token) return;
       await Promise.all(
         preLoadList.map(async ({ name, fetchUrl, adaptor, createInitor }) => {
           if (!name || !fetchUrl)
@@ -322,7 +322,7 @@ const EditModalForm = () => {
         })
       );
     })();
-  }, []);
+  }, [token]);
 
   return (
     <>

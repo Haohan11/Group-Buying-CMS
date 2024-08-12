@@ -24,8 +24,8 @@ const SaleStockList = (props) => {
   const memberId = hoistFormik.get().values?.["member_id"];
 
   const [stockData, setStockData] = useState([]);
-  const [keyword, setKeyword] = useState("");
 
+  const [keyword, setKeyword] = useState("");
   const debouncedKeyword = useDebounce(keyword, 200);
 
   useEffect(() => {

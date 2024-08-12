@@ -1533,25 +1533,6 @@ export const dictionary = {
       ];
     })(),
     fetchUrl: "sale-management",
-    preLoad: [
-      {
-        name: "member_id",
-        fetchUrl: "member-management?enable=",
-        adaptor: (data) =>
-          data.map((item) => ({ ...item, label: item.name, value: item.id })),
-        createInitor: selectInitializer,
-      },
-      {
-        name: "member_code",
-        fetchUrl: "member-management?enable=",
-        createInitor: (data) => data[0]?.code || "沒有資料",
-      },
-      {
-        name: "payment",
-        fetchUrl: "member-management?enable=",
-        createInitor: (data) => data[0]?.payment || "沒有資料",
-      },
-    ],
     validationSchema: Yup.object().shape({
       // Yup.string().when("_currentMode", {
       //   is: "create",
@@ -1580,6 +1561,7 @@ export const dictionary = {
       delivery: "board",
       member_id: null,
       member_code: null,
+      member_name: null,
       person_list: [
         {
           id: "_",

@@ -1,52 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
+import { useSession } from "next-auth/react";
 
 import ModalWrapper from "@/components/modalWrapper";
 import PopUp from "@/components/popUp";
 
 import { useModals } from "@/tool/hooks";
+import { useDebounce } from "@/_metronic/helpers";
 
+import { regularReadData } from "@/data-list/core/request";
 import { getInput } from "./input";
 import { hoistFormik, hoistPreLoadData } from "../globalVariable";
 
+const Select = getInput("select");
+
+const getMemberUrl = (keyword) =>
+  `member-management?enable=&size=5${keyword ? `&keyword=${keyword}` : ""}`;
+
+const optionAdaptor = (list, option = { labelKey: "name", valueKey: "id" }) =>
+  list.map((item) => ({
+    ...item,
+    label: item[option.labelKey],
+    value: `${item[option.valueKey]}`,
+  }));
+
+const memberCache = new Map();
+
 const SaleMember = (props) => {
+  const { data, status } = useSession();
+  const token = data?.user?.accessToken;
+
   const { handleShowModal, handleCloseModal, isModalOpen } = useModals();
   const [popupSet, setPopupSet] = useState({ message: "", icon: "" });
 
+  const [keyword, setKeyword] = useState("");
+  const debouncedKeyword = useDebounce(keyword, 200);
+
+  const [memberOption, setMemberOption] = useState([]);
+
+  useEffect(() => {
+    if (!token) return;
+    const url = getMemberUrl(debouncedKeyword);
+
+    (async () => {
+      if (memberCache.has(url))
+        return setMemberOption(memberCache.get(url));
+
+      const res = await regularReadData(token, url);
+      if (!res || !Array.isArray(res.data))
+        return console.warn("Fail to fetch member data.");
+
+      const options = optionAdaptor(res.data);
+
+      setMemberOption(options);
+      memberCache.set(url, options);
+
+      !hoistFormik.get().values[props.name] &&
+        hoistFormik.get().setValues({
+          ...hoistFormik.get().values,
+          member_name: options[0].name,
+          [props.name]: options[0].value,
+          member_code: options[0].code,
+          payment: options[0].payment,
+        });
+    })();
+  }, [token, debouncedKeyword]);
+
+  useEffect(() => memberCache.clear.bind(memberCache), []);
+
   return (
     <>
-      {getInput("select")({
-        ...props,
-        value: (() => {
-          if (!hoistPreLoadData.get()?.[props.name]) return null;
-          const member = hoistPreLoadData.get()[props.name]?.[0];
-          const memberId = hoistFormik.get().values?.[props.name];
-          return hoistPreLoadData
-            .get()
-            [props.name].find(
-              (option) => option.value === (memberId ? memberId : member?.id)
-            );
-        })(),
-        isDisabled: hoistFormik.get().values?._separate,
-        onChange: (item) => {
+      <Select
+        {...props}
+        options={memberOption}
+        value={
+          hoistFormik.get().values[props.name]
+            ? {
+                label: hoistFormik.get().values.member_name,
+                value: hoistFormik.get().values[props.name],
+              }
+            : null
+        }
+        isDisabled={hoistFormik.get().values?._separate}
+        onInputChange={setKeyword}
+        onChange={(item) => {
           if (item.id === hoistFormik.get().values[props.name]) return;
           setPopupSet({
             message: "變更會員將清空收件人資料",
             icon: "/icon/warning.svg",
             denyText: "取消",
             denyOnClick: () => {
-              hoistFormik.get().setValues(hoistFormik.get().values);
               handleCloseModal("popup");
             },
             confirmOnClick: () => {
-              const memberData = hoistPreLoadData
-                .get()
-                [props.name].find((member) => `${member.id}` === item.value);
-
               const data = {
                 ...hoistFormik.get().values,
+                member_name: item.name,
                 [props.name]: item.value,
-                member_code: memberData.code,
-                payment: memberData.payment,
+                member_code: item.code,
+                payment: item.payment,
                 person_list: [
                   {
                     id: "_",
@@ -60,8 +111,8 @@ const SaleMember = (props) => {
             },
           });
           handleShowModal("popup");
-        },
-      })}
+        }}
+      />
       <ModalWrapper key="popup" show={isModalOpen("popup")} size="lg">
         <PopUp
           imageSrc={popupSet.icon}
