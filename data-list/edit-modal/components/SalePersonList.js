@@ -69,7 +69,7 @@ const stockColDict = [
   { col: 1, colName: "小計", key: "total", inputType: "total" },
 ];
 
-const mainReceiverKey = "_set_main_reciever";
+const mainReceiverKey = "_set_main_receiver";
 const mainReceiverOption = {
   label: (
     <span className="text-danger">
@@ -170,37 +170,37 @@ const SalePersonList = (props) => {
      *  personList should alway not empty in normal flow. */
     if (!checkArray(personList)) return { id: totalFieldKey, stockList: [] };
 
-    const {
-      id: deprecated,
-      stockList,
-      ...personProps
-    } = personList.find((person) => person.main_reciever) ?? personList[0];
+    const polymer = personList.reduce((keeper, person) => {
+      person.stockList.forEach((stock) => {
+        keeper.has(stock.id)
+          ? (keeper.get(stock.id).qty += +stock.qty)
+          : keeper.set(stock.id, { ...stock, qty: +stock.qty });
+      });
+
+      return keeper;
+    }, new Map());
+
+    const { stockList, _qtyKeeper } = [...polymer.entries()].reduce(
+      (dict, [stockId, stockData]) => {
+        dict.stockList.push(stockData);
+        dict._qtyKeeper.set(stockId, stockData.qty);
+        return dict;
+      },
+      {
+        stockList: [],
+        _qtyKeeper: new Map(),
+      }
+    );
 
     return (tRef.current = {
       id: totalFieldKey,
       stockList,
-      ...personProps,
-      ...(checkArray(stockList) &&
-        (() => {
-          const totalMap = stockList.reduce(
-            (keeper, stock) => keeper.set(stock.id, +stock.qty),
-            new Map()
-          );
-          return {
-            _qtyLimit: totalMap,
-            _qtyKeeper: new Map(totalMap),
-          };
-        })()),
+      _qtyKeeper,
       set_qtyKeeper({ id, delta }) {
         if (!this?._qtyKeeper)
           return console.warn("`set_qtyKeeper`: Missing _qtyKeeper.");
 
         this._qtyKeeper.set(id, this._qtyKeeper.get(id) + +delta);
-      },
-      _qtyValid(id) {
-        return (
-          !this?._qtyKeeper || this._qtyKeeper.get(id) <= this._qtyLimit.get(id)
-        );
       },
     });
   })();
@@ -252,15 +252,15 @@ const SalePersonList = (props) => {
                   <Row
                     className={clsx(
                       "g-0",
-                      person.main_reciever && "ribbon ribbon-end ribbon-clip"
+                      person.main_receiver && "ribbon ribbon-end ribbon-clip"
                     )}
                     style={{
-                      boxShadow: person.main_reciever
+                      boxShadow: person.main_receiver
                         ? "var(--bs-danger) 0px 0px 0px 2px"
                         : "none",
                     }}
                   >
-                    {person.main_reciever && (
+                    {person.main_receiver && (
                       <div className="fs-8 bg-danger w-auto ribbon-label top-0 py-1">
                         主收件人
                         <span className="ribbon-inner"></span>
@@ -275,7 +275,7 @@ const SalePersonList = (props) => {
                           borderColor,
                           {
                             "border-start-0": rc_index !== 0,
-                            "bg-light-danger": person.main_reciever,
+                            "bg-light-danger": person.main_receiver,
                           }
                         )}
                       >
@@ -298,11 +298,11 @@ const SalePersonList = (props) => {
                             ),
                             creatable: true,
                             options: [
-                              ...(person[key] && !person.main_reciever
+                              ...(person[key] && !person.main_receiver
                                 ? [mainReceiverOption]
                                 : []),
                               ...receiverList,
-                              ...(person.main_reciever
+                              ...(person.main_receiver
                                 ? []
                                 : [removeReceiverOption]),
                             ],
@@ -364,12 +364,20 @@ const SalePersonList = (props) => {
                                   props.name,
                                   prevList.map((prevItem) => ({
                                     ...prevItem,
-                                    main_reciever: prevItem.id === person.id,
+                                    main_receiver: prevItem.id === person.id,
                                   }))
                                 );
                               }
 
                               if (option.value === removeReceiverKey) {
+                                person.stockList.forEach((stock) => {
+                                  totalFieldRef.current?.set_qtyKeeper?.(
+                                    {
+                                      id: stock.id,
+                                      delta: -1 * +stock["qty"],
+                                    }
+                                  )
+                                })
                                 return hoistFormik.get().setFieldValue(
                                   props.name,
                                   prevList.filter(
@@ -585,16 +593,7 @@ const SalePersonList = (props) => {
                                         })
                                       ) : (
                                         <InteractNumber
-                                          inputclassname={clsx(
-                                            "text-end",
-                                            false &&
-                                              isSeparate &&
-                                              (totalFieldRef.current?._qtyValid(
-                                                stock.id
-                                              )
-                                                ? "border-success"
-                                                : "border-danger")
-                                          )}
+                                          inputclassname={clsx("text-end")}
                                           value={stock["qty"] ?? 0}
                                           onChange={({ target: { value } }) => {
                                             totalFieldRef.current?.set_qtyKeeper?.(

@@ -16,8 +16,6 @@ const SaleStockList = (props) => {
   if (!hoistFormik.get())
     return <>{console.warn("`SaleStockList`: Missing formik.")}</>;
 
-  if (hoistFormik.get().values?._separate) return <></>;
-
   const { data } = useSession();
   const token = data?.user?.accessToken;
 
@@ -56,6 +54,8 @@ const SaleStockList = (props) => {
   }, [debouncedKeyword, memberId]);
 
   useEffect(() => stockDataCache.clear.bind(stockDataCache), []);
+
+  if (hoistFormik.get().values?._separate) return <></>;
 
   return (
     <div className="border-bottom border-2 border-secondary pt-4 pb-7 mb-2">

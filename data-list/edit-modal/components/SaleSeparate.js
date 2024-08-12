@@ -17,10 +17,10 @@ const mergePerson = (formik, target) => {
     merge: [
       personList.reduce((result, person) => ({
         ...result,
-        ...(person.main_reciever && person),
+        ...(person.main_receiver && person),
         stockList: result.stockList.map((stock, index) => ({
           ...stock,
-          ...(person.main_reciever && { price: stock.price }),
+          ...(person.main_receiver && { price: stock.price }),
           qty:
             (Number(stock.qty) || 0) +
             (Number(person.stockList?.[index]?.qty) || 0),
@@ -28,7 +28,7 @@ const mergePerson = (formik, target) => {
       })),
     ],
     filter: [
-      personList.find((person) => person.main_reciever) || personList[0],
+      personList.find((person) => person.main_receiver) || personList[0],
     ],
   };
 

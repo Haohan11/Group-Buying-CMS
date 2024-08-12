@@ -101,7 +101,7 @@ const SaleMember = (props) => {
                 person_list: [
                   {
                     id: "_",
-                    main_reciever: true,
+                    main_receiver: true,
                   },
                 ],
               };

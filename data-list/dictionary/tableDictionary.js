@@ -1555,6 +1555,10 @@ export const dictionary = {
       //   message: "請提供價錢",
       // }),
     }),
+    editAdaptor: (data) => ({
+      ...data,
+      _separate: data.person_list.length > 1,
+    }),
     formField: {
       code: "系統自動產生",
       status: "處理中",
@@ -1565,7 +1569,7 @@ export const dictionary = {
       person_list: [
         {
           id: "_",
-          main_reciever: true,
+          main_receiver: true,
         },
       ],
       get sale_date() {

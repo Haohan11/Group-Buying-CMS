@@ -172,7 +172,7 @@ const createRowColTree = (arr) =>
       });
 
 const EditModalForm = () => {
-  const { data, status } = useSession();
+  const { data } = useSession();
   const token = data?.user?.accessToken;
 
   const router = useRouter();
@@ -265,14 +265,16 @@ const EditModalForm = () => {
   // console.log("===== formik ======", formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
+
+  /** Append Submit Field to inputDictionary */
   inputDictionary["submit-field"] = (props) => (
     <SubmitField onCancel={closeModal} {...props} />
   );
 
   /**
-   * handle preLoad data
+   * Handle preLoad data.
    * Note that actual use data is hoistPreLoadData not preLoadData
-   * preLoadData is use for cache
+   * which only use for cache.
    */
   useEffect(() => {
     (async () => {
