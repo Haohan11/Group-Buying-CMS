@@ -12,7 +12,7 @@ import Image from "next/image";
 
 import { getInput, NumberInput, InteractNumber } from "./input";
 
-import { checkArray, transImageUrl } from "@/tool/helper";
+import { checkArray, transImageUrl, checkPhone } from "@/tool/helper";
 import { hoistFormik } from "../globalVariable";
 
 const getFetchReceiverUrl = (keyword) => {
@@ -162,7 +162,8 @@ const SalePersonList = (props) => {
   const totalFieldKey = "_all";
   const totalField = (() => {
     const tRef = totalFieldRef;
-    if (!isSeparate) return (tRef.current = null);
+    if (!isSeparate)
+      return (tRef.current = hoistFormik.get().values._total = null);
 
     if (tRef.current) return tRef.current;
 
@@ -188,19 +189,28 @@ const SalePersonList = (props) => {
       },
       {
         stockList: [],
-        _qtyKeeper: new Map(),
+        _qtyKeeper: (() => {
+          const totalMap = new Map();
+          totalMap.valid = function () {
+            return ![...this.values()].every((count) => +count === 0);
+          };
+          return totalMap;
+        })(),
       }
     );
+
+    hoistFormik.get().values._total = _qtyKeeper;
 
     return (tRef.current = {
       id: totalFieldKey,
       stockList,
-      _qtyKeeper,
-      set_qtyKeeper({ id, delta }) {
-        if (!this?._qtyKeeper)
-          return console.warn("`set_qtyKeeper`: Missing _qtyKeeper.");
-
-        this._qtyKeeper.set(id, this._qtyKeeper.get(id) + +delta);
+      set_total({ id, delta }) {
+        hoistFormik
+          .get()
+          .values._total.set(
+            id,
+            hoistFormik.get().values._total.get(id) + +delta
+          );
       },
     });
   })();
@@ -371,13 +381,11 @@ const SalePersonList = (props) => {
 
                               if (option.value === removeReceiverKey) {
                                 person.stockList.forEach((stock) => {
-                                  totalFieldRef.current?.set_qtyKeeper?.(
-                                    {
-                                      id: stock.id,
-                                      delta: -1 * +stock["qty"],
-                                    }
-                                  )
-                                })
+                                  totalFieldRef.current?.set_total?.({
+                                    id: stock.id,
+                                    delta: -1 * +stock["qty"],
+                                  });
+                                });
                                 return hoistFormik.get().setFieldValue(
                                   props.name,
                                   prevList.filter(
@@ -408,7 +416,7 @@ const SalePersonList = (props) => {
                             <NumberInput
                               defaultValue={person[key]}
                               inputclassname={clsx(
-                                /^[0-9]{8,10}$/.test(person[key])
+                                checkPhone(person[key])
                                   ? "is-valid border border-success"
                                   : "is-invalid border border-danger"
                               )}
@@ -585,23 +593,23 @@ const SalePersonList = (props) => {
                                     <div className="w-100 py-2 px-1">
                                       {isTotalField ? (
                                         getInput("plain")({
-                                          value:
-                                            totalFieldRef.current?._qtyKeeper?.get(
-                                              stock.id
-                                            ),
-                                          inputclassname: "text-center",
+                                          value: hoistFormik
+                                            .get()
+                                            .values._total.get(stock.id),
+                                          inputclassname: clsx("text-center", {
+                                            "is-invalid border-danger":
+                                              !hoistFormik.get().values._total.valid?.(),
+                                          }),
                                         })
                                       ) : (
                                         <InteractNumber
                                           inputclassname={clsx("text-end")}
                                           value={stock["qty"] ?? 0}
                                           onChange={({ target: { value } }) => {
-                                            totalFieldRef.current?.set_qtyKeeper?.(
-                                              {
-                                                id: stock.id,
-                                                delta: +value - +stock["qty"],
-                                              }
-                                            );
+                                            totalFieldRef.current?.set_total?.({
+                                              id: stock.id,
+                                              delta: +value - +stock["qty"],
+                                            });
 
                                             setSingleStock({
                                               personId: person.id,
@@ -623,7 +631,7 @@ const SalePersonList = (props) => {
                                           onClick={() => {
                                             isSeparate
                                               ? (() => {
-                                                  totalFieldRef.current?.set_qtyKeeper?.(
+                                                  totalFieldRef.current?.set_total?.(
                                                     {
                                                       id: stock.id,
                                                       delta: -1 * +stock["qty"],
@@ -662,9 +670,9 @@ const SalePersonList = (props) => {
                                     <div className="p-2">
                                       {stock.price *
                                         (isTotalField
-                                          ? totalFieldRef.current?._qtyKeeper?.get(
-                                              stock.id
-                                            )
+                                          ? hoistFormik
+                                              .get()
+                                              .values._total.get(stock.id)
                                           : stock.qty)}
                                     </div>
                                   ),
@@ -693,6 +701,21 @@ const SalePersonList = (props) => {
             );
           }
         )}
+      {(() => {
+        const target = [props.name, "_total"].find(
+          (target) =>
+            hoistFormik.get().touched[target] &&
+            hoistFormik.get().errors[target]
+        );
+        return (
+          target && (
+            <div className="alert alert-danger mt-3 d-flex align-items-center">
+              <span className="fs-3 bi bi-exclamation-octagon-fill me-3"></span>
+              <span role="alert">{hoistFormik.get().errors[target]}</span>
+            </div>
+          )
+        );
+      })()}
     </>
   );
 };

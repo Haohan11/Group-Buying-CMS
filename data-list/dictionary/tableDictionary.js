@@ -1,5 +1,11 @@
 import * as Yup from "yup";
-import { getCurrentTime, transImageUrl, replaceBackendUrl } from "@/tool/helper";
+import {
+  getCurrentTime,
+  transImageUrl,
+  replaceBackendUrl,
+  checkPhone,
+  checkArray,
+} from "@/tool/helper";
 
 import {
   placeHolderColumns,
@@ -1491,7 +1497,9 @@ export const dictionary = {
           },
         ],
         {
-          node: <div className="border-bottom border-2 border-secondary my-2"></div>,
+          node: (
+            <div className="border-bottom border-2 border-secondary my-2"></div>
+          ),
           className: "mb-0",
         },
         {
@@ -1534,26 +1542,37 @@ export const dictionary = {
     })(),
     fetchUrl: "sale-management",
     validationSchema: Yup.object().shape({
-      // Yup.string().when("_currentMode", {
-      //   is: "create",
-      //   then: () => Yup.string().min(4, "至少 4 個字").required("此欄位必填"),
-      //   otherwise: () => Yup.string().min(4, "至少 4 個字"),
-      // }),
-      /**
-       * person_list: Yup.mixed().when("_separate", {
-       *   is: true,
-       *   then: () => Yup.mixed().test({
-       *     test: (data) => {},
-       *     message: "請提供價錢",
-       *   }),
-       })
-       * }),
-       * 
-       */
-      // person_list: Yup.mixed().test({
-      //   test: (data) => !data.some(({ price }) => !/^[1-9][0-9]*$/.test(price)),
-      //   message: "請提供價錢",
-      // }),
+      _total: Yup.mixed()
+        .nullable()
+        .test({
+          test: (data) => {
+            if (data === null) return true;
+            try {
+              return data.valid();
+            } catch (error) {
+              console.error("Validing _total in `SalePersonList`: ", error);
+              return false;
+            }
+          },
+          message: "商品數量不可為零",
+        }),
+      person_list: Yup.mixed().when("_separate", {
+        is: true,
+        then: () => Yup.mixed().test({
+          test: function (personList, ctx) {
+            return (
+              !personList.some(
+                (person) =>
+                  !person.name || !person.address || !checkPhone(person.phone)
+              ) || ctx.createError({ message: "收件人資料有誤" })
+            );
+          },
+        }),
+        otherwise: () => Yup.mixed().test({
+          test: ([person]) => checkArray(person.stockList),
+          message: "尚未添加商品",
+        }),
+      })
     }),
     editAdaptor: (data) => ({
       ...data,

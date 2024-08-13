@@ -14,7 +14,7 @@ import { useTableData } from "../core/tableDataProvider";
 
 import { useSession } from "next-auth/react";
 
-const testMode = false;
+const testMode = true;
 
 import currentTable from "../globalVariable/currentTable";
 import dict from "../dictionary/tableDictionary";
@@ -260,8 +260,7 @@ const EditModalForm = () => {
     },
   });
   hoistFormik.set(formik);
-  formik.values?.["_currentMode"] &&
-    (formik.values["_currentMode"] = currentMode);
+  formik.values["_currentMode"] = currentMode
   // console.log("===== formik ======", formik);
 
   const closeModal = () => setItemIdForUpdate(undefined);
