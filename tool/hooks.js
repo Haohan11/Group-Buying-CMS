@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useModals() {
   const [modals, setModals] = useState({});
@@ -61,4 +61,9 @@ export const useLocalStorage = (key, defaultValue) => {
   const clear = () => localStorage.removeItem(key);
 
   return [value, set, clear];
+}
+
+export const useRenderCount = (callback = console.log) => {
+  const countRef = useRef(0)
+  callback(countRef.current ++)  
 }
