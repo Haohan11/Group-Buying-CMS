@@ -1556,23 +1556,18 @@ export const dictionary = {
           },
           message: "商品數量不可為零",
         }),
-      person_list: Yup.mixed().when("_separate", {
-        is: true,
-        then: () => Yup.mixed().test({
-          test: function (personList, ctx) {
-            return (
-              !personList.some(
-                (person) =>
-                  !person.name || !person.address || !checkPhone(person.phone)
-              ) || ctx.createError({ message: "收件人資料有誤" })
-            );
-          },
-        }),
-        otherwise: () => Yup.mixed().test({
-          test: ([person]) => checkArray(person.stockList),
-          message: "尚未添加商品",
-        }),
-      })
+      person_list: Yup.mixed().test({
+        test: function (personList, ctx) {
+          return personList.some(
+            (person) =>
+              !person.name || !person.address || !checkPhone(person.phone)
+          )
+            ? ctx.createError({ message: "收件人資料有誤" })
+            : personList.length > 1 || checkArray(personList[0].stockList)
+            ? !personList[0].stockList.every(stock => +stock.qty === 0) || ctx.createError({ message: "商品數量不可為零" })
+            : ctx.createError({ message: "尚未添加商品" });
+        },
+      }),
     }),
     editAdaptor: (data) => ({
       ...data,
