@@ -576,15 +576,19 @@ const SalePersonList = (props) => {
                                           inputclassname="text-end"
                                           readonly={isSeparate}
                                           value={stock["price"]}
-                                          onChange={({ target: { value } }) => {
+                                          min={1}
+                                          onChange={({ target }) =>
                                             setSingleStock({
                                               personId: person.id,
                                               stockId: stock.id,
                                               data: {
-                                                price: value,
+                                                price:
+                                                  target.value <= 0
+                                                    ? (target.value = 1)
+                                                    : target.value,
                                               },
-                                            });
-                                          }}
+                                            })
+                                          }
                                         />
                                       )}
                                     </div>
@@ -598,7 +602,9 @@ const SalePersonList = (props) => {
                                             .values._total.get(stock.id),
                                           inputclassname: clsx("text-center", {
                                             "is-invalid border-danger":
-                                              !hoistFormik.get().values._total.valid?.(),
+                                              !hoistFormik
+                                                .get()
+                                                .values._total.valid?.(),
                                           }),
                                         })
                                       ) : (

@@ -41,12 +41,17 @@ const SaleSeparate = ({ target, ...props }) => {
 
   const isSeparate = hoistFormik.get().values?._separate;
   const hasStock = !!hoistFormik.get().values?.[target]?.[0]?.stockList?.length;
+  const priceValid =
+    hasStock &&
+    hoistFormik
+      .get()
+      .values[target][0].stockList.every((stock) => stock.price > 0);
 
   return (
     <Button
       {...props}
       text={`${isSeparate ? "取消" : ""}拆單`}
-      disabled={!hasStock}
+      disabled={!hasStock || !priceValid}
       onClick={() => {
         const formik = hoistFormik.get();
         if (!formik) return;
