@@ -1558,19 +1558,59 @@ export const dictionary = {
         }),
       person_list: Yup.mixed().test({
         test: function (personList, ctx) {
-          return personList.some(
-            (person) =>
-              !person.name || !person.address || !checkPhone(person.phone)
-          )
-            ? ctx.createError({ message: "收件人資料有誤" })
-            : personList.length > 1 || checkArray(personList[0].stockList)
-            ? !personList[0].stockList.every(stock => +stock.qty === 0) || ctx.createError({ message: "商品數量不可為零" })
-            : ctx.createError({ message: "尚未添加商品" });
+          try {
+            return personList.some(
+              (person) =>
+                !person.name || !person.address || !checkPhone(person.phone)
+            )
+              ? ctx.createError({ message: "收件人資料有誤" })
+              : personList.length > 1 || checkArray(personList[0].stockList)
+              ? !personList[0].stockList.every((stock) => +stock.qty === 0) ||
+                ctx.createError({ message: "商品數量不可為零" })
+              : ctx.createError({ message: "尚未添加商品" });
+          } catch (error) {
+            return ctx.createError({ message: "收件人資料有誤" });
+          }
         },
       }),
     }),
     editAdaptor: (data) => ({
       ...data,
+      person_list: (() => {
+        const personList = data.person_list;
+        const personHash = new Map();
+        const stockHash = new Map();
+
+        personList.forEach((person, index) => {
+          if (!person.stockList) return;
+          const PSHash = new Set();
+          person.stockList.forEach((stock) => {
+            stockHash.set(stock.id, stock);
+            PSHash.add(stock.id);
+          });
+
+          personHash.set(index, PSHash);
+        });
+
+        return personList.map((person, index) => {
+          const PSHash = personHash.get(index);
+          return stockHash.size > PSHash.size
+            ? {
+                ...person,
+                stockList: [
+                  ...person.stockList,
+                  ...Array.from(stockHash.keys()).reduce(
+                    (list, stockId) =>
+                      PSHash.has(stockId)
+                        ? list
+                        : [...list, { ...stockHash.get(stockId), qty: 0 }],
+                    []
+                  ),
+                ].sort(),
+              }
+            : person;
+        });
+      })(),
       _separate: data.person_list.length > 1,
     }),
     formField: {
