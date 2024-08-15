@@ -20,7 +20,7 @@ const SidebarMenuMain = () => {
 
   useEffect(() => {
     (async () => {
-      const indexItems = await getIndexItems();  
+      const indexItems = await getIndexItems();
 
       indexItems && setItems(indexItems);
     })();
@@ -64,6 +64,41 @@ const SidebarMenuMain = () => {
           <span className="menu-title">登出</span>
         </Link>
       </div>
+      {false && <div className="menu-item">
+        <div
+          className={clsx("menu-link without-sub")}
+          onClick={async () => {
+            try {
+              /** fetch `/` max 120 */
+              /** fetch `/get-index-item` max 25 */
+              /** fetch `/sale-management` max 18 */
+              /** fetch `/stock-backend` max 12 */
+              const times = 50;
+              await Promise.all(
+                [...new Array(times)].map(
+                  async () =>
+                    await fetch(
+                      `${process.env.NEXT_PUBLIC_BACKENDURL}/stock-backend`,
+                      {
+                        headers: {
+                          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfYWNjb3VudCI6ImFkbWluIiwidXNlcl9wYXNzd29yZCI6IjEyMzQ1NiJ9LCJleHAiOjE3MjM2MzA5NjcsImlhdCI6MTcyMzYwMjE2N30.P9mGvtsxiCkyN_PEDqjcmx467mfPIMjjYph76OrGaig`,
+                        },
+                      }
+                    )
+                )
+              );
+            } catch (error) {
+              console.warn(error);
+            }
+          }}
+        >
+          <span className="menu-icon">
+            {" "}
+            <KTIcon iconName="bi bi-cone-striped" className="fs-2" />
+          </span>
+          <span className="menu-title">Test Fetch</span>
+        </div>
+      </div>}
     </>
   );
 };
