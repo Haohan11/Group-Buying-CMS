@@ -266,12 +266,12 @@ const SalePersonList = (props) => {
                     )}
                     style={{
                       boxShadow: person.main_receiver
-                        ? "var(--bs-danger) 0px 0px 0px 2px"
+                        ? "var(--bs-success) 0px 0px 0px 2px"
                         : "none",
                     }}
                   >
                     {person.main_receiver && (
-                      <div className="fs-8 bg-danger w-auto ribbon-label top-0 py-1">
+                      <div className="fs-8 bg-success w-auto ribbon-label top-0 py-1">
                         主收件人
                         <span className="ribbon-inner"></span>
                       </div>
@@ -285,7 +285,7 @@ const SalePersonList = (props) => {
                           borderColor,
                           {
                             "border-start-0": rc_index !== 0,
-                            "bg-light-danger": person.main_receiver,
+                            "bg-light-success": person.main_receiver,
                           }
                         )}
                       >
