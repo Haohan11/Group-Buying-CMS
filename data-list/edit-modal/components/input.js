@@ -1,3 +1,7 @@
+import { useState, useEffect } from "react";
+
+import { useSession } from "next-auth/react";
+
 import Image from "next/image";
 
 import clsx from "clsx";
@@ -5,12 +9,16 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { Row, Col, FormCheck } from "react-bootstrap";
 
+import { useDebounce } from "@/_metronic/helpers";
+
 import {
   onlyInputNumbers,
   transImageUrl,
   checkArray,
   toArray,
 } from "@/tool/helper";
+
+import { regularReadData } from "@/data-list/core/request";
 
 import { hoistFormik, hoistPreLoadData } from "../globalVariable";
 
@@ -41,6 +49,7 @@ export const ValidateInputField = ({
   onlynumber = false,
   isMulti = false,
   isDisabled,
+  isClearable,
   disabled,
   holder,
   value,
@@ -97,7 +106,7 @@ export const ValidateInputField = ({
                 const SelectComp = creatable ? CreatableSelect : Select;
                 return (
                   <SelectComp
-                    {...{ name, isMulti, isDisabled, value, onInputChange }}
+                    {...{ name, isMulti, isDisabled, isClearable, value, onInputChange }}
                     {...(name && { inputId: `input_${name}` })}
                     className={clsx(
                       "react-select-styled react-select-solid rounded",
@@ -109,8 +118,8 @@ export const ValidateInputField = ({
                       ...theme,
                       colors: {
                         ...theme.colors,
-                        primary: 'var(--bs-gray-200)'
-                      }
+                        primary: "var(--bs-gray-200)",
+                      },
                     })}
                     classNamePrefix="react-select"
                     placeholder={placeholder ?? "請選擇或輸入關鍵字"}
@@ -167,7 +176,7 @@ export const ValidateInputField = ({
               })()
             ) : (
               <div
-                onClick={() => formik.setFieldTouched(name, true)}
+                onClick={() => name && formik.setFieldTouched(name, true)}
                 className="form-select form-select-solid text-gray-500"
               >
                 目前沒有資料
@@ -476,3 +485,62 @@ export const generateInputs = (arr) =>
     }),
     {}
   );
+
+export const AjaxSelect = (() => {
+  const Select = getInput("select");
+
+  return ({ getFetchUrl, optionAdaptor, ...props }) => {
+    if (typeof getFetchUrl !== "function")
+      return (
+        <>{console.error("AjaxSelect: `getFetchUrl` must be a function.")}</>
+      );
+
+    const { data } = useSession();
+    const token = data?.user?.accessToken;
+
+    const [keyword, setKeyword] = useState("");
+    const debouncedKeyword = useDebounce(keyword, 200);
+
+    const [options, setOptions] = useState([]);
+
+    useEffect(() => {
+      if (!token) return;
+      const url = getFetchUrl(debouncedKeyword);
+      (async () => {
+        const res = await regularReadData(token, url);
+        if (!res.data) {
+          console.warn(`AjaxSelect[${props.name}]: Fail to fetch data.`);
+          return;
+        }
+
+        setOptions(optionAdaptor(res.data));
+      })();
+    }, [token, debouncedKeyword]);
+
+    return (
+      <Select
+        {...props}
+        isClearable={true} 
+        value={
+          hoistFormik.get().values[props.name]
+            ? {
+                label: hoistFormik.get().values[props.label_name],
+                value: hoistFormik.get().values[props.name],
+              }
+            : null
+        }
+        options={options}
+        onInputChange={setKeyword}
+        onChange={(item) =>
+          hoistFormik
+            .get()
+            .setValues({
+              ...hoistFormik.get().values,
+              [props.name]: item?.value ?? "",
+              [props.label_name]: item?.label ?? "",
+            })
+        }
+      />
+    );
+  };
+})();

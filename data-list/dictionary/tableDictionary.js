@@ -446,6 +446,22 @@ export const dictionary = {
         ],
       ],
       {
+        type: "ajax-select",
+        props: {
+          getFetchUrl: (keyword) =>
+            `stock-category?page=1&size=5${
+              keyword ? `&keyword=${keyword}` : ""
+            }`,
+          optionAdaptor: (list) => {
+            return list.map((item) => ({...item, label: item.name, value: item.id}));
+          },
+          label_name: "parent_name",
+        },
+        name: "parent",
+        label: "隸屬類別",
+        col: 6,
+      },
+      {
         type: "image",
         label: "精選分類縮圖",
         name: "recommended_image",
@@ -472,6 +488,8 @@ export const dictionary = {
     }),
     formField: {
       name: "",
+      parent: null,
+      parent_name: null,
       description: "",
       is_recommended: false,
       recommended_image: null,

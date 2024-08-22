@@ -40,6 +40,7 @@ import {
   MultiImageInput,
   Button,
   generateInputs,
+  AjaxSelect,
 } from "./components/input";
 
 import PriceTable from "./components/PriceTable";
@@ -110,6 +111,7 @@ const inputDictionary = {
     "select",
     "plain",
   ]),
+  "ajax-select": AjaxSelect,
   "multi-select": MultiSelectInput,
   number: NumberInput,
   switch: SwitchInput,
