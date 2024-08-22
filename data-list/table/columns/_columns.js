@@ -354,6 +354,16 @@ export const stockCategoryColumns = [
     Header: (props) => (
       <UserCustomHeader
         tableProps={props}
+        title="隸屬類別"
+        className="min-w-125px"
+      />
+    ),
+    accessor: "parent_name",
+  },
+  {
+    Header: (props) => (
+      <UserCustomHeader
+        tableProps={props}
         title="備註"
         className="min-w-125px"
       />
