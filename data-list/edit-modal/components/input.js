@@ -22,7 +22,7 @@ import { regularReadData } from "@/data-list/core/request";
 
 import { hoistFormik, hoistPreLoadData } from "../globalVariable";
 
-import countyData from "@/staticdata/county.json";
+import countyData from "@/staticData/county.json";
 
 export const InputLabel = ({ required, text, className, holder, ...props }) =>
   holder ? (
