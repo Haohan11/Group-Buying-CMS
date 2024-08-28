@@ -44,8 +44,8 @@ export const onlyInputNumbers = (event) => {
       "Home",
       "End",
     ].includes(event.key) ||
-    ((event.ctrlKey || event.metaKey) &&
-      ["a", "x", "c", "v"].includes(event.key))
+    event.ctrlKey ||
+    event.metaKey
   )
     return;
 
