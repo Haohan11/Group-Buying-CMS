@@ -1,4 +1,4 @@
-import countyData from "@/staticdata/county.json";
+import countyData from "@/staticData/county.json";
 
 const county = countyData.reduce(
   (polymer, county) => ({
