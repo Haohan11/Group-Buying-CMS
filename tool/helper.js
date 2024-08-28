@@ -16,7 +16,7 @@ export const getFileUrl = (event) => {
   return file && URL.createObjectURL(file);
 };
 
-export const checkPhone = (phone) => /^(?!09)\d{8,10}$|^09\d{8}$/.test(phone)
+export const checkPhone = (phone) => /^(?!09)\d{8,10}$|^09\d{8}$/.test(phone);
 
 export const checkExpires = (time) =>
   time ? time * 1000 < Date.now() : console.log("Invalid exp.");
@@ -43,12 +43,12 @@ export const onlyInputNumbers = (event) => {
       "ArrowRight",
       "Home",
       "End",
-      "Command",
     ].includes(event.key) ||
-    (event.ctrlKey && ["a", "x", "c", "v"].includes(event.key))
+    ((event.ctrlKey || event.metaKey) &&
+      ["a", "x", "c", "v"].includes(event.key))
   )
     return;
-    
+
   event.preventDefault();
 };
 
