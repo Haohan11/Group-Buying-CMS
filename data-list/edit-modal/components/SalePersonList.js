@@ -53,7 +53,7 @@ const personDict = [
   { col: 1, colName: "項次", key: "id", inputType: "fold" },
   { col: 2, colName: "收件人", key: "name", inputType: "personName" },
   { col: 3, colName: "收件人電話", key: "phone", inputType: "phone" },
-  { col: 5, colName: "收件人地址", key: "address", inputType: "address" },
+  { col: 5, colName: "收件人地址", key: "contact_address", inputType: "address" },
   { col: 1, colName: "小計", key: "total", inputType: "total" },
 ];
 
@@ -406,7 +406,7 @@ const SalePersonList = (props) => {
                                     [key]: option.label,
                                     id: option.value,
                                     phone: option.personData?.phone ?? "",
-                                    address:
+                                    contact_address:
                                       option.personData?.contact_address ?? "",
                                   },
                                 });

@@ -110,6 +110,7 @@ const inputDictionary = {
     "date",
     "select",
     "plain",
+    "address",
   ]),
   "ajax-select": AjaxSelect,
   "multi-select": MultiSelectInput,

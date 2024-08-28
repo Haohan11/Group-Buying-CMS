@@ -43,6 +43,7 @@ export const onlyInputNumbers = (event) => {
       "ArrowRight",
       "Home",
       "End",
+      "Command",
     ].includes(event.key) ||
     (event.ctrlKey && ["a", "x", "c", "v"].includes(event.key))
   )

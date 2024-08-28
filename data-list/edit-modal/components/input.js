@@ -22,6 +22,8 @@ import { regularReadData } from "@/data-list/core/request";
 
 import { hoistFormik, hoistPreLoadData } from "../globalVariable";
 
+import countyData from "@/staticdata/county.json";
+
 export const InputLabel = ({ required, text, className, holder, ...props }) =>
   holder ? (
     <div className="fs-6 mb-2 holder">text</div>
@@ -36,35 +38,36 @@ export const InputLabel = ({ required, text, className, holder, ...props }) =>
     </label>
   );
 
-export const ValidateInputField = ({
-  required = false,
-  label,
-  name,
-  formik = hoistFormik.get(),
-  placeholder,
-  inputclassname = "",
-  labelclassname = "",
-  type = "text",
-  readonly = false,
-  onlynumber = false,
-  isMulti = false,
-  isDisabled,
-  isClearable,
-  disabled,
-  holder,
-  value,
-  defaultValue,
-  onClick,
-  onChange,
-  onKeyDown,
-  onBlur,
-  onInputChange, // select
-  noOptionsMessage, // select
-  formatCreateLabel, // creatable select
-  options,
-  creatable, // creatable select
-  onCreateOption, // creatable select
-}) => {
+export const ValidateInputField = (props) => {
+  const {
+    required = false,
+    label,
+    name,
+    formik = hoistFormik.get(),
+    placeholder,
+    inputclassname = "",
+    labelclassname = "",
+    type = "text",
+    readonly = false,
+    onlynumber = false,
+    isMulti = false,
+    isDisabled,
+    isClearable,
+    disabled,
+    holder,
+    value,
+    defaultValue,
+    onClick,
+    onChange,
+    onKeyDown,
+    onBlur,
+    onInputChange, // select
+    noOptionsMessage, // select
+    formatCreateLabel, // creatable select
+    options,
+    creatable, // creatable select
+    onCreateOption, // creatable select
+  } = props;
   return holder ? (
     <>
       <InputLabel holder />
@@ -106,7 +109,14 @@ export const ValidateInputField = ({
                 const SelectComp = creatable ? CreatableSelect : Select;
                 return (
                   <SelectComp
-                    {...{ name, isMulti, isDisabled, isClearable, value, onInputChange }}
+                    {...{
+                      name,
+                      isMulti,
+                      isDisabled,
+                      isClearable,
+                      value,
+                      onInputChange,
+                    }}
                     {...(name && { inputId: `input_${name}` })}
                     className={clsx(
                       "react-select-styled react-select-solid rounded",
@@ -121,6 +131,7 @@ export const ValidateInputField = ({
                         primary: "var(--bs-gray-200)",
                       },
                     })}
+                    maxMenuHeight={250}
                     classNamePrefix="react-select"
                     placeholder={placeholder ?? "請選擇或輸入關鍵字"}
                     noOptionsMessage={
@@ -146,18 +157,18 @@ export const ValidateInputField = ({
                     defaultValue={
                       Array.isArray(options)
                         ? options.find(
-                            (option) => option.value === formik.values[name]
+                            (option) => option.value === formik.values?.[name]
                           ) || toArray(defaultValue)
                         : isMulti
                         ? hoistPreLoadData
                             .get()
                             [name].filter((option) =>
-                              formik.values[name].includes(option.value)
+                              formik.values?.[name].includes(option.value)
                             )
                         : hoistPreLoadData
                             .get()
                             [name].find(
-                              (option) => option.value === formik.values[name]
+                              (option) => option.value === formik.values?.[name]
                             )
                     }
                     onChange={
@@ -194,8 +205,9 @@ export const ValidateInputField = ({
             style={{ minHeight: "120px" }}
           ></textarea>
         ),
+        address: <AddressField {...props} />,
       }[type] ??
-        (["text", "password"].includes(type) && (
+        (["text", "password", "date"].includes(type) && (
           <input
             value={value}
             {...(!readonly && name && formik.getFieldProps(name))}
@@ -520,7 +532,7 @@ export const AjaxSelect = (() => {
     return (
       <Select
         {...props}
-        isClearable={true} 
+        isClearable={true}
         value={
           hoistFormik.get().values[props.name]
             ? {
@@ -532,15 +544,100 @@ export const AjaxSelect = (() => {
         options={options}
         onInputChange={setKeyword}
         onChange={(item) =>
-          hoistFormik
-            .get()
-            .setValues({
-              ...hoistFormik.get().values,
-              [props.name]: item?.value ?? "",
-              [props.label_name]: item?.label ?? "",
-            })
+          hoistFormik.get().setValues({
+            ...hoistFormik.get().values,
+            [props.name]: item?.value ?? "",
+            [props.label_name]: item?.label ?? "",
+          })
         }
       />
     );
   };
 })();
+
+const { countyOptions, countyDict } = countyData.reduce(
+  (polymer, data) => ({
+    countyOptions: polymer.countyOptions.concat({
+      label: data.name,
+      value: data.name,
+    }),
+    countyDict: polymer.countyDict.set(
+      data.name,
+      data.districts.map((district) => ({
+        ...district,
+        label: district.district,
+        value: district.district,
+      }))
+    ),
+  }),
+  {
+    countyOptions: [],
+    countyDict: new Map(),
+  }
+);
+
+function AddressField({
+  name,
+  first_name = "first_address",
+  second_name = "second_address",
+  third_name = "third_address",
+}) {
+  const Select = getInput("select");
+  const Text = getInput("text");
+
+  return (
+    <Row>
+      <Col sm={3}>
+        <Select
+          value={{
+            label: (hoistFormik.get().values[first_name] ||=
+              countyOptions[0].value),
+            value: (hoistFormik.get().values[first_name] ||=
+              countyOptions[0].value),
+          }}
+          options={countyOptions}
+          onChange={({ value }) => {
+            hoistFormik.get().setFieldValue(first_name, value);
+            hoistFormik
+              .get()
+              .setFieldValue(second_name, countyDict.get(value)[0].value);
+          }}
+        />
+      </Col>
+      <Col sm={3}>
+        <Select
+          name={second_name}
+          value={{
+            label: (hoistFormik.get().values[second_name] ||= countyDict.get(
+              countyOptions[0].value
+            )[0].value),
+            value: (hoistFormik.get().values[second_name] ||= countyDict.get(
+              countyOptions[0].value
+            )[0].value),
+          }}
+          options={
+            countyDict.get(hoistFormik.get().values[first_name]) ||
+            countyDict.get(countyOptions[0].value)
+          }
+          onChange={({ value }) => {
+            hoistFormik.get().setFieldValue(second_name, value);
+          }}
+        />
+      </Col>
+      <Col>
+        <Text
+          defaultValue={hoistFormik.get().values[third_name]}
+          inputclassname={
+            hoistFormik.get().touched[name] ? hoistFormik.get().values?.[third_name]?.length >= 2
+              ? "is-valid"
+              : "is-invalid" : ""
+          }
+          onBlur={() => hoistFormik.get().setFieldTouched(name, true)}
+          onChange={(event) => {
+            hoistFormik.get().values[third_name] = event.target.value;
+          }}
+        />
+      </Col>
+    </Row>
+  );
+}

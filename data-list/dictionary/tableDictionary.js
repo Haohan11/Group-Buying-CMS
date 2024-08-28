@@ -453,7 +453,11 @@ export const dictionary = {
               keyword ? `&keyword=${keyword}` : ""
             }`,
           optionAdaptor: (list) => {
-            return list.map((item) => ({...item, label: item.name, value: item.id}));
+            return list.map((item) => ({
+              ...item,
+              label: item.name,
+              value: item.id,
+            }));
           },
           label_name: "parent_name",
         },
@@ -829,6 +833,9 @@ export const dictionary = {
         name: "address",
         props: {
           placeholder: "輸入聯絡地址",
+          // first_name: "contact_city",
+          // second_name: "contact_area",
+          // third_name: "contact_street",
         },
       },
       {
@@ -882,6 +889,15 @@ export const dictionary = {
         .required("此欄位必填"),
       uniform_number: Yup.string().min(8, "至少 8 個數字"),
       address: Yup.string().required("此欄位必填"),
+      // contact_address: Yup.mixed().when("contact_street", {
+      //   is: (address) => address?.length >= 2,
+      //   then: () => Yup.mixed().nullable().test({ test: () => true, message: "請提供聯絡地址" }),
+      //   otherwise: () =>
+      //     Yup.mixed().nullable().test({
+      //       test: () =>  false,
+      //       message: "請提供聯絡地址",
+      //     }),
+      // }),
     }),
     formField: {
       status_id: "applying",
@@ -900,6 +916,10 @@ export const dictionary = {
       payment: null,
       shipping_condition_id: "prepaid",
       address: "",
+      // contact_address: null,
+      // contact_city: null,
+      // contact_area: null,
+      // contact_street: null,
       description: "",
     },
     editAdaptor: (data) => ({
@@ -1406,9 +1426,9 @@ export const dictionary = {
   },
   "sale-management": {
     pageTitle: "訂單作業",
-    searchPlaceholder: "訂單作業",
-    createHeaderText: "訂單作業",
-    editHeaderText: "訂單作業",
+    searchPlaceholder: "訂單",
+    createHeaderText: "訂單",
+    editHeaderText: "訂單",
     column: saleColumns,
     hideSubmitField: true,
     hidePromptField: true,
@@ -1474,7 +1494,7 @@ export const dictionary = {
           {
             type: "select",
             label: "出貨方式 :",
-            name: "delivery",
+            name: "delivery_id",
             className: colClassName,
             props: {
               options: [
@@ -1532,6 +1552,11 @@ export const dictionary = {
           name: "person_list",
           type: "sale-person-list",
         },
+        {
+          type: "textarea",
+          name: "description",
+          label: "訂單備註",
+        },
         Object.defineProperty(
           [
             {
@@ -1579,7 +1604,7 @@ export const dictionary = {
           try {
             return personList.some(
               (person) =>
-                !person.name || !person.address || !checkPhone(person.phone)
+                !person.name || !person.contact_address || !checkPhone(person.phone)
             )
               ? ctx.createError({ message: "收件人資料有誤" })
               : personList.length > 1 || checkArray(personList[0].stockList)
@@ -1634,7 +1659,8 @@ export const dictionary = {
     formField: {
       code: "系統自動產生",
       status: "處理中",
-      delivery: "board",
+      payment: null,
+      delivery_id: "board",
       member_id: null,
       member_code: null,
       member_name: null,
@@ -1647,6 +1673,7 @@ export const dictionary = {
       get sale_date() {
         return getCurrentTime();
       },
+      description: "",
     },
   },
   "sale-type": {

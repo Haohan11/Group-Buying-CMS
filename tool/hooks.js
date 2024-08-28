@@ -64,6 +64,6 @@ export const useLocalStorage = (key, defaultValue) => {
 }
 
 export const useRenderCount = (callback = console.log) => {
-  const countRef = useRef(0)
-  callback(countRef.current ++)  
+  const countRef = useRef(0);
+  callback(countRef.current ++);
 }
