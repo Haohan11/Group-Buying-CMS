@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Row, Col } from "react-bootstrap";
@@ -43,6 +43,7 @@ const SaleStockList = (props) => {
       if (!res?.data) return;
       const rawData = res.data.map((data) => ({
         ...data,
+        price: data.member_price,
         unit_price: data.price,
         qty: 1,
         cover_image: data.cover_image,

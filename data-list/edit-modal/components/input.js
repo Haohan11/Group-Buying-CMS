@@ -103,7 +103,7 @@ export const ValidateInputField = (props) => {
         select: (
           <>
             {options ||
-            (formik.values?.[name] &&
+            ((formik.values?.[name] || formik.values?.[name] === null) &&
               checkArray(hoistPreLoadData.get()?.[name])) ? (
               (() => {
                 const SelectComp = creatable ? CreatableSelect : Select;
@@ -576,68 +576,61 @@ const { countyOptions, countyDict } = countyData.reduce(
   }
 );
 
-function AddressField({
-  name,
-  first_name = "first_address",
-  second_name = "second_address",
-  third_name = "third_address",
-}) {
+const AddressField = (() => {
   const Select = getInput("select");
   const Text = getInput("text");
 
-  return (
-    <Row>
-      <Col sm={3}>
-        <Select
-          value={{
-            label: (hoistFormik.get().values[first_name] ||=
-              countyOptions[0].value),
-            value: (hoistFormik.get().values[first_name] ||=
-              countyOptions[0].value),
-          }}
-          options={countyOptions}
-          onChange={({ value }) => {
-            hoistFormik.get().setFieldValue(first_name, value);
-            hoistFormik
-              .get()
-              .setFieldValue(second_name, countyDict.get(value)[0].value);
-          }}
-        />
-      </Col>
-      <Col sm={3}>
-        <Select
-          name={second_name}
-          value={{
-            label: (hoistFormik.get().values[second_name] ||= countyDict.get(
-              countyOptions[0].value
-            )[0].value),
-            value: (hoistFormik.get().values[second_name] ||= countyDict.get(
-              countyOptions[0].value
-            )[0].value),
-          }}
-          options={
-            countyDict.get(hoistFormik.get().values[first_name]) ||
-            countyDict.get(countyOptions[0].value)
-          }
-          onChange={({ value }) => {
-            hoistFormik.get().setFieldValue(second_name, value);
-          }}
-        />
-      </Col>
-      <Col>
-        <Text
-          defaultValue={hoistFormik.get().values[third_name]}
-          inputclassname={
-            hoistFormik.get().touched[name] ? hoistFormik.get().values?.[third_name]?.length >= 2
-              ? "is-valid"
-              : "is-invalid" : ""
-          }
-          onBlur={() => hoistFormik.get().setFieldTouched(name, true)}
-          onChange={(event) => {
-            hoistFormik.get().values[third_name] = event.target.value;
-          }}
-        />
-      </Col>
-    </Row>
-  );
-}
+  return function AddressField({
+    name,
+    first_name = "first_address",
+    second_name = "second_address",
+    third_name = "third_address",
+  }) {
+    return (
+      <Row>
+        <Col sm={3}>
+          <Select
+            value={{
+              label: (hoistFormik.get().values[first_name] ||=
+                countyOptions[0].value),
+              value: (hoistFormik.get().values[first_name] ||=
+                countyOptions[0].value),
+            }}
+            options={countyOptions}
+            onChange={({ value }) => {
+              hoistFormik.get().setFieldValue(first_name, value);
+              hoistFormik
+                .get()
+                .setFieldValue(second_name, countyDict.get(value)[0].value);
+            }}
+          />
+        </Col>
+        <Col sm={3}>
+          <Select
+            name={second_name}
+            value={{
+              label: (hoistFormik.get().values[second_name] ||= countyDict.get(
+                countyOptions[0].value
+              )[0].value),
+              value: (hoistFormik.get().values[second_name] ||= countyDict.get(
+                countyOptions[0].value
+              )[0].value),
+            }}
+            options={
+              countyDict.get(hoistFormik.get().values[first_name]) ||
+              countyDict.get(countyOptions[0].value)
+            }
+            onChange={({ value }) => {
+              hoistFormik.get().setFieldValue(second_name, value);
+            }}
+          />
+        </Col>
+        <Col>
+          <Text
+            name={third_name}
+          />
+        </Col>
+      </Row>
+    );
+  };
+})();

@@ -1497,16 +1497,6 @@ export const dictionary = {
             name: "delivery_id",
             className: colClassName,
             props: {
-              options: [
-                {
-                  label: "板出",
-                  value: "board",
-                },
-                {
-                  label: "宅配",
-                  value: "home",
-                },
-              ],
               labelclassname,
               inputclassname: `w-100`,
             },
@@ -1583,6 +1573,14 @@ export const dictionary = {
         ),
       ];
     })(),
+    preLoad: [
+      {
+        name: "delivery_id",
+        fetchUrl: "delivery",
+        adaptor: selectAdaptor,
+        createInitor: selectInitializer,
+      },
+    ],
     fetchUrl: "sale-management",
     validationSchema: Yup.object().shape({
       _total: Yup.mixed()
@@ -1660,7 +1658,7 @@ export const dictionary = {
       code: "系統自動產生",
       status: "處理中",
       payment: null,
-      delivery_id: "board",
+      delivery_id: undefined,
       member_id: null,
       member_code: null,
       member_name: null,

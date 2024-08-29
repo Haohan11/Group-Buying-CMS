@@ -269,14 +269,14 @@ const EditModalForm = () => {
   const closeModal = () => setItemIdForUpdate(undefined);
 
   /** Append Submit Field to inputDictionary */
-  inputDictionary["submit-field"] = (props) => (
+  inputDictionary["submit-field"] ??= (props) => (
     <SubmitField onCancel={closeModal} {...props} />
   );
 
   /**
    * Handle preLoad data.
    * Note that actual use data is hoistPreLoadData not preLoadData
-   * which only use for cache.
+   * preLoadData only use for cache.
    */
   useEffect(() => {
     (async () => {
